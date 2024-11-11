@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { Player, Role, Team, TeamComposition } from '$shared/src/types';
 	import Button from '../button/button.svelte';
+	import { teamTextVariants, teamContainerVariants } from './variants.js';
+
 	import PlayerDisplay from './Player.svelte';
 
 	interface Props {
@@ -15,19 +17,15 @@
 	let { score, joinRole, myState, operative, spymaster, team }: Props = $props();
 </script>
 
-<div
-	class=" w-full rounded p-2 text-white shadow-2xl"
-	class:bg-red-team={team === 'red'}
-	class:bg-blue-team={team === 'blue'}
->
+<div class={teamContainerVariants({ team })}>
 	<div class="flex items-center justify-center text-5xl">{score}</div>
-	<div class="text-sm text-red-text">Operatives</div>
+	<div class={teamTextVariants({ team })}>Operatives</div>
 	{#each operative as player}
 		<PlayerDisplay {player} />{/each}
 	{#if !myState.team}
 		<Button onclick={() => joinRole('operative')}>Join Operatives</Button>
 	{/if}
-	<div class="text-sm text-red-text">Spymasters</div>
+	<div class={teamTextVariants({ team })}>Spymasters</div>
 	{#each spymaster as player}
 		<PlayerDisplay {player} />{/each}
 	{#if !myState.team}
