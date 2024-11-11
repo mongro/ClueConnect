@@ -21,7 +21,7 @@
 	import StatusHeader from './StatusHeader.svelte';
 	import Button from './button/button.svelte';
 	import { Pointer } from 'lucide-svelte';
-	import TeamsDisplay from './TeamsDisplay.svelte';
+	import TeamsDisplay from './team/Teams.svelte';
 	import GameControls from './GameControls.svelte';
 	import { LocalStorageHelper } from './LocalStorageHelper';
 	const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io('http://localhost:5000');
