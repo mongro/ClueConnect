@@ -1,0 +1,15 @@
+{
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "commonjs",
+		"outDir": "./dist",
+		"strict": true,
+		"esModuleInterop": true,
+		"paths": {
+			"$shared/*": ["../shared/*"],
+			"$server/*": ["./src/*"]
+		}
+	},
+	"include": ["src/**/*.ts", "../shared/**/*.ts"],
+	"exclude": ["node_modules"]
+}
