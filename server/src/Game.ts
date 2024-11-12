@@ -12,6 +12,7 @@ export class Game {
 	gameover: boolean = false;
 	score: { blue: number; red: number } = { red: 9, blue: 8 };
 	log: GameAction[] = [];
+	suggestions: Partial<Record<number, string[]>> = {};
 	player: Record<string, Player> = {};
 	board: Card[] = createNewBoard();
 
@@ -68,8 +69,20 @@ export class Game {
 		}
 	}
 
+	public getSuggestions() {
+		//Replace credentials of players to names for client usage
+		let suggestionsMappedToNames: Partial<Record<number, string[]>> = {};
+		for (const key in Object.keys(this.suggestions).map(Number)) {
+			let credentials = this.suggestions[key] ?? [];
+			suggestionsMappedToNames[key] = credentials.map((item) => this.player[item].name);
+		}
+
+		return suggestionsMappedToNames;
+	}
+
 	public getState(role: Role): GameState {
-		const { currentClue, currentGuesses, currentTeam, gameover, log, score, winner } = this;
+		const { currentClue, currentGuesses, currentTeam, gameover, log, score, winner, suggestions } =
+			this;
 		const cardsForOperatorives = this.board.map((card) => {
 			const { revealed, type, word } = card;
 			return { revealed, word, type: revealed ? type : 'grey' };
@@ -77,6 +90,7 @@ export class Game {
 
 		return {
 			currentClue,
+			suggestions,
 			currentGuesses,
 			currentTeam,
 			gameover,
@@ -114,6 +128,27 @@ export class Game {
 		this.switchTurnToOtherTeam();
 
 		return { success: true };
+	}
+
+	public toggleSuggestion(credentials: string, cardId: number) {
+		let player = this.player[credentials];
+
+		if (player.role != 'operative' || player.team != this.currentTeam) {
+			return { success: false };
+		}
+		let suggestions = this.suggestions[cardId] ?? [];
+		const index = suggestions.indexOf(credentials);
+
+		if (index === -1) {
+			// Value not found, add it
+			suggestions.push(credentials);
+		} else {
+			// Value found, remove it
+			suggestions.splice(index, 1);
+		}
+		this.suggestions[cardId] = suggestions;
+
+		return { success: true, suggestions: this.suggestions };
 	}
 
 	public makeGuess(credentials: string, cardId: number) {

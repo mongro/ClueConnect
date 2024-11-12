@@ -77,6 +77,10 @@ export class SocketController {
 		this.sendToSpyMasters('gameUpdate', this.getGame().getState('spymaster'));
 	}
 
+	private sendSuggestions(): void {
+		this.sendToAll('suggestionsUpdate', this.getGame().getSuggestions());
+	}
+
 	private sendPlayerState(): void {
 		this.sendToAll('playerUpdate', this.getAllPlayer());
 	}
@@ -120,6 +124,11 @@ export class SocketController {
 	public makeGuess(id: number) {
 		const { success } = this.getGame().makeGuess(this.credentials, id);
 		if (success) this.sendGameState();
+	}
+
+	public toggleSuggestion(id: number) {
+		const { success } = this.getGame().toggleSuggestion(this.credentials, id);
+		if (success) this.sendSuggestions();
 	}
 
 	public endGuessing() {

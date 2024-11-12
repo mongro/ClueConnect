@@ -45,9 +45,11 @@
 		onDestroy(() => {
 			socket.disconnect();
 		});
-
-		socket.on('gameUpdate', (server_game_state) => {
-			gameState = server_game_state;
+		socket.on('suggestionsUpdate', (serverSuggestionsState) => {
+			if (gameState) gameState.suggestions = serverSuggestionsState;
+		});
+		socket.on('gameUpdate', (serverGameState) => {
+			gameState = serverGameState;
 		});
 
 		socket.on('playerUpdate', (serverPlayerState) => {

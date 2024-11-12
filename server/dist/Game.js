@@ -13,6 +13,7 @@ class Game {
     gameover = false;
     score = { red: 9, blue: 8 };
     log = [];
+    suggestions = {};
     player = {};
     board = (0, Board_1.createNewBoard)();
     constructor(id, player) {
@@ -65,14 +66,24 @@ class Game {
             this.switchTurnToOtherTeam();
         }
     }
+    getSuggestions() {
+        //Replace credentials of players to names for client usage
+        let suggestionsMappedToNames = {};
+        for (const key in Object.keys(this.suggestions).map(Number)) {
+            let credentials = this.suggestions[key] ?? [];
+            suggestionsMappedToNames[key] = credentials.map((item) => this.player[item].name);
+        }
+        return suggestionsMappedToNames;
+    }
     getState(role) {
-        const { currentClue, currentGuesses, currentTeam, gameover, log, score, winner } = this;
+        const { currentClue, currentGuesses, currentTeam, gameover, log, score, winner, suggestions } = this;
         const cardsForOperatorives = this.board.map((card) => {
             const { revealed, type, word } = card;
             return { revealed, word, type: revealed ? type : 'grey' };
         });
         return {
             currentClue,
+            suggestions,
             currentGuesses,
             currentTeam,
             gameover,
@@ -105,6 +116,24 @@ class Game {
         }
         this.switchTurnToOtherTeam();
         return { success: true };
+    }
+    toggleSuggestion(credentials, cardId) {
+        let player = this.player[credentials];
+        if (player.role != 'operative' || player.team != this.currentTeam) {
+            return { success: false };
+        }
+        let suggestions = this.suggestions[cardId] ?? [];
+        const index = suggestions.indexOf(credentials);
+        if (index === -1) {
+            // Value not found, add it
+            suggestions.push(credentials);
+        }
+        else {
+            // Value found, remove it
+            suggestions.splice(index, 1);
+        }
+        this.suggestions[cardId] = suggestions;
+        return { success: true, suggestions: this.suggestions };
     }
     makeGuess(credentials, cardId) {
         if (!this.currentClue)

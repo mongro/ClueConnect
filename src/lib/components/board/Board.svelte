@@ -5,6 +5,7 @@
 	import GameControls from './GameControls.svelte';
 	import { Pointer } from 'lucide-svelte';
 	import Card from './Card.svelte';
+	import Suggestions from './Suggestions.svelte';
 
 	interface Props {
 		gameState: GameState;
@@ -40,6 +41,11 @@
 	function endGuessing() {
 		socket.emit('endGuessing');
 	}
+
+	function toggleSuggestion(cardId: number) {
+		if (!isGuessing()) return;
+		socket.emit('toggleSuggestion', cardId);
+	}
 </script>
 
 <div class="col-span-3 flex flex-col items-center gap-4">
@@ -50,6 +56,7 @@
 				word={card.word}
 				revealed={card.revealed}
 				spymaster={myState.role === 'spymaster'}
+				onclick={() => toggleSuggestion(index)}
 			>
 				{#snippet button()}
 					{#if isGuessing()}
@@ -61,6 +68,7 @@
 						>
 					{/if}
 				{/snippet}
+				<Suggestions suggestions={gameState.suggestions[index]} />
 			</Card>
 		{/each}
 	</div>

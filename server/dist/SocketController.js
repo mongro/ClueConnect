@@ -52,6 +52,9 @@ class SocketController {
         this.sendToAll('gameUpdate', this.getGame().getState('operative'));
         this.sendToSpyMasters('gameUpdate', this.getGame().getState('spymaster'));
     }
+    sendSuggestions() {
+        this.sendToAll('suggestionsUpdate', this.getGame().getSuggestions());
+    }
     sendPlayerState() {
         this.sendToAll('playerUpdate', this.getAllPlayer());
     }
@@ -92,6 +95,11 @@ class SocketController {
         const { success } = this.getGame().makeGuess(this.credentials, id);
         if (success)
             this.sendGameState();
+    }
+    toggleSuggestion(id) {
+        const { success } = this.getGame().toggleSuggestion(this.credentials, id);
+        if (success)
+            this.sendSuggestions();
     }
     endGuessing() {
         const { success } = this.getGame().endGuessing(this.credentials);

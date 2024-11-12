@@ -56,6 +56,7 @@ io.on('connection', (socket) => {
 		socket.on('resetGame', () => controller.resetGame());
 		socket.on('giveClue', (word, number) => controller.giveClue(word, number));
 		socket.on('makeGuess', (cardId) => controller.makeGuess(cardId));
+		socket.on('toggleSuggestion', (cardId) => controller.toggleSuggestion(cardId));
 		socket.on('endGuessing', () => controller.endGuessing());
 		socket.on('disconnect', () => controller.handleDisconnect());
 	});

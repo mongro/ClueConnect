@@ -1,16 +1,19 @@
 <script lang="ts" generics="T">
 	import type { CardType } from '$shared/src/types';
 	import type { Snippet } from 'svelte';
+	import socket from '$lib/socket';
 
 	interface Props {
 		type: CardType;
 		word: string;
 		revealed: boolean;
 		button: Snippet;
+		children: Snippet<[]>;
 		spymaster: boolean;
+		onclick: () => void;
 	}
 
-	let { type, word, button, revealed, spymaster }: Props = $props();
+	let { children, type, word, button, revealed, spymaster, onclick }: Props = $props();
 </script>
 
 <div
@@ -24,10 +27,17 @@
 		class:bg-neutral-900={type === 'black' && spymaster}
 		class:bg-neutral-300={type === 'grey' || !spymaster}
 	>
-		<div class=" absolute bottom-4 flex w-full items-center justify-center bg-white text-center">
+		<div
+			role="button"
+			class=" absolute bottom-4 flex w-full items-center justify-center bg-white text-center"
+			{onclick}
+			tabindex="0"
+			onkeydown={onclick}
+		>
 			{word}
 		</div>
 		{@render button()}
+		{@render children()}
 	</div>
 	<div
 		class="flip-it absolute h-full w-full backface-hidden"
