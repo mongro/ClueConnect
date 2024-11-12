@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { io, Socket } from 'socket.io-client';
+	import socket from '../socket';
 	import { page } from '$app/stores';
 	import type {
 		ServerToClientEvents,
@@ -12,19 +12,13 @@
 	} from '$shared/src/types';
 	import { onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
-	import Card from './Card.svelte';
 	import EventLog from './EventLog.svelte';
 	import Message from './Message.svelte';
-	import ClueInput from './ClueInput.svelte';
-	import ClueDisplay from './ClueDisplay.svelte';
 	import JoinCard from './JoinCard.svelte';
 	import StatusHeader from './StatusHeader.svelte';
-	import Button from './button/button.svelte';
-	import { Pointer } from 'lucide-svelte';
 	import TeamsDisplay from './team/Teams.svelte';
-	import GameControls from './GameControls.svelte';
 	import { LocalStorageHelper } from './LocalStorageHelper';
-	const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io('http://localhost:5000');
+	import Board from './board/Board.svelte';
 	let gameState = $state<GameState>();
 	let playerState = $state<Player[]>([]);
 	let myState = $state<Player | null>(null);
@@ -63,37 +57,6 @@
 		socket.on('myStatus', (serverMyState) => {
 			myState = serverMyState;
 		});
-	}
-
-	function isGuessing() {
-		return (
-			myState?.role === 'operative' &&
-			myState.team === gameState?.currentTeam &&
-			gameState?.currentClue !== null
-		);
-	}
-
-	function isGivingClue() {
-		return (
-			myState?.team === gameState?.currentTeam &&
-			gameState?.currentClue === null &&
-			myState?.role === 'spymaster'
-		);
-	}
-	function joinRoleAndTeam(role: Role, team: Team) {
-		socket.emit('joinTeamAndRole', team, role);
-	}
-
-	function giveClue(word: string, number: number) {
-		socket.emit('giveClue', word, number);
-	}
-
-	function makeGuess(cardId: number) {
-		socket.emit('makeGuess', cardId);
-	}
-
-	function endGuessing() {
-		socket.emit('endGuessing');
 	}
 
 	function syncWithLobby(id: string) {
@@ -141,40 +104,10 @@
 			<JoinCard handleJoin={join} />
 		{/if}
 		{#if gameState && myState}
-			<TeamsDisplay score={gameState.score} {joinRoleAndTeam} {myState} {teams} />
+			<TeamsDisplay score={gameState.score} {myState} {teams} />
 		{/if}
-		{#if gameState}
-			<div class="col-span-3 flex flex-col items-center gap-4">
-				<div class="grid aspect-2 w-full grid-cols-5 grid-rows-5 gap-2">
-					{#each gameState.board as card, index}
-						<Card
-							type={card.type}
-							word={card.word}
-							revealed={card.revealed}
-							spymaster={myState?.role === 'spymaster'}
-						>
-							{#snippet button()}
-								{#if isGuessing()}
-									<Button
-										onclick={() => makeGuess(index)}
-										class="absolute right-0"
-										size="icon"
-										variant="outline"><Pointer /></Button
-									>
-								{/if}
-							{/snippet}
-						</Card>
-					{/each}
-				</div>
-				<GameControls
-					currentClue={gameState.currentClue}
-					currentTeam={gameState.currentTeam}
-					isGuessing={isGuessing()}
-					isGivingClue={isGivingClue()}
-					{endGuessing}
-					{giveClue}
-				/>
-			</div>
+		{#if gameState && myState}
+			<Board {gameState} {myState} />
 		{/if}
 
 		<EventLog messages={gameState ? gameState.log : []}>

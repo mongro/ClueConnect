@@ -1,7 +1,7 @@
 <script lang="ts">
-	import ClueDisplay from './ClueDisplay.svelte';
-	import Button from './button/button.svelte';
-	import ClueInput from './ClueInput.svelte';
+	import ClueDisplay from '../ClueDisplay.svelte';
+	import Button from '../button/button.svelte';
+	import ClueInput from '../ClueInput.svelte';
 	import type { Clue, Team } from '$shared/src/types';
 	interface Props {
 		currentClue: Clue | null;

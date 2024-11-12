@@ -4,17 +4,21 @@
 	import { teamTextVariants, teamContainerVariants } from './variants.js';
 
 	import PlayerDisplay from './Player.svelte';
+	import socket from '$lib/socket';
 
 	interface Props {
 		score: number;
-		joinRole: (role: Role) => void;
 		myState: Player;
 		spymaster: Player[];
 		operative: Player[];
 		team: Team;
 	}
 
-	let { score, joinRole, myState, operative, spymaster, team }: Props = $props();
+	let { score, myState, operative, spymaster, team }: Props = $props();
+
+	function joinRoleAndTeam(role: Role, team: Team) {
+		socket.emit('joinTeamAndRole', team, role);
+	}
 </script>
 
 <div class={teamContainerVariants({ team })}>
@@ -23,12 +27,12 @@
 	{#each operative as player}
 		<PlayerDisplay {player} />{/each}
 	{#if !myState.team}
-		<Button onclick={() => joinRole('operative')}>Join Operatives</Button>
+		<Button onclick={() => joinRoleAndTeam('operative', team)}>Join Operatives</Button>
 	{/if}
 	<div class={teamTextVariants({ team })}>Spymasters</div>
 	{#each spymaster as player}
 		<PlayerDisplay {player} />{/each}
 	{#if !myState.team}
-		<Button onclick={() => joinRole('spymaster')}>Join Spymasters</Button>
+		<Button onclick={() => joinRoleAndTeam('spymaster', team)}>Join Spymasters</Button>
 	{/if}
 </div>
