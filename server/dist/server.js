@@ -43,9 +43,10 @@ io.on('connection', (socket) => {
         const lobby = LobbyDB_1.default.get(id);
         if (!lobby)
             return;
-        if (!lobby.hasPlayer(credentials))
+        const player = lobby.getPlayerFromCredentials(credentials);
+        if (!player)
             return;
-        const controller = new SocketController_1.SocketController(socket, io, lobby, credentials);
+        const controller = new SocketController_1.SocketController(socket, io, lobby, player);
         controller.sync();
         //socket.on('sync', (team, role) => controller.startGame());
         socket.on('joinTeamAndRole', (team, role) => controller.joinTeamAndRole(team, role));

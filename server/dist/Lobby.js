@@ -9,19 +9,33 @@ const crypto_1 = __importDefault(require("crypto"));
 class Lobby {
     id;
     game;
-    player = {};
+    players = {};
+    credentialsToIdMap = {};
     playerLimit = 10;
     isLocked = false;
-    IdForNewPlayer = 1;
+    IdForNewPlayer = 0;
     constructor(id) {
         this.id = id;
-        this.game = new Game_1.Game(1, this.player);
+        this.game = new Game_1.Game(1, this.players);
     }
     get isFull() {
-        return this.isLocked || this.playerLimit < Object.keys(this.player).length - 1;
+        return this.isLocked || this.playerLimit < Object.keys(this.players).length - 1;
     }
-    hasPlayer(credentials) {
-        return this.player[credentials] !== undefined;
+    hasPlayer(id) {
+        return this.players[id] !== undefined;
+    }
+    getPlayerFromCredentials(credentials) {
+        const id = this.credentialsToIdMap[credentials];
+        if (id === undefined)
+            return null;
+        return this.players[id];
+    }
+    kickPlayer(id) {
+        if (this.players[id]) {
+            delete this.players[id];
+            return { success: true };
+        }
+        return { success: false };
     }
     addPlayer(name) {
         if (this.isFull)
@@ -31,25 +45,11 @@ class Lobby {
             id: this.IdForNewPlayer++,
             name: name,
             isConnected: true,
-            isHost: Object.keys(this.player).length === 0
+            isHost: Object.keys(this.players).length === 0
         };
-        this.player[credentials] = playerNew;
+        this.players[playerNew.id] = playerNew;
+        this.credentialsToIdMap[credentials] = playerNew.id;
         return credentials;
-    }
-    getOrAddPlayer(credentials, name) {
-        if (this.isFull)
-            return { success: false, isNew: false };
-        if (this.player[credentials] !== undefined) {
-            return { success: true, isNew: false, player: this.player[credentials] };
-        }
-        const playerNew = {
-            id: this.IdForNewPlayer++,
-            name: name ?? 'Unknown',
-            isConnected: true,
-            isHost: Object.keys(this.player).length === 0
-        };
-        this.player[credentials] = playerNew;
-        return { success: true, isNew: true, player: playerNew };
     }
 }
 exports.Lobby = Lobby;

@@ -15,7 +15,7 @@ export class SocketController {
 		private socket: Socket<ClientToServerEvents, ServerToClientEvents, {}, {}>,
 		private io: Server<ClientToServerEvents, ServerToClientEvents, {}, {}>,
 		private lobby: Lobby,
-		private credentials: string
+		private player: Player
 	) {}
 
 	// AUXILIARY PRIVATE METHODS
@@ -41,6 +41,14 @@ export class SocketController {
 		this.socket.emit(event, ...data);
 	}
 
+	private sendToSingleClient<T extends keyof ServerToClientEvents>(
+		id: number,
+		event: T,
+		...data: Parameters<ServerToClientEvents[T]>
+	) {
+		this.io.to(this.getLobbyChannel() + id).emit(event, ...data);
+	}
+
 	private sendToOthers<T extends keyof ServerToClientEvents>(
 		event: T,
 		...data: Parameters<ServerToClientEvents[T]>
@@ -62,7 +70,7 @@ export class SocketController {
 	}
 
 	private getAllPlayer(): Player[] {
-		const playerGroup = this.lobby.player;
+		const playerGroup = this.lobby.players;
 		return Object.values(playerGroup);
 	}
 
@@ -78,37 +86,34 @@ export class SocketController {
 	}
 
 	private sendSuggestions(): void {
-		this.sendToAll('suggestionsUpdate', this.getGame().getSuggestions());
+		this.sendToAll('suggestionsUpdate', this.getGame().getState('operative').suggestions);
 	}
 
 	private sendPlayerState(): void {
 		this.sendToAll('playerUpdate', this.getAllPlayer());
 	}
 	private sendMyPlayerStatus(): void {
-		this.sendToMe('myStatus', this.lobby.player[this.credentials]);
+		this.sendToMe('myStatus', this.player);
 	}
 
 	// PUBLIC METHODS
 
 	public sync() {
-		let player = this.lobby.player[this.credentials];
-		if (player.role === 'spymaster') {
+		if (this.player.role === 'spymaster') {
 			this.socket.join(this.getSpyMasterChannel());
 			this.sendToMe('gameUpdate', this.getGame().getState('spymaster'));
 		}
 		this.socket.join(this.getLobbyChannel());
+		this.socket.join(this.getLobbyChannel() + this.player.id);
 
-		this.lobby.player[this.credentials] = {
-			...player,
-			isConnected: true
-		};
+		this.player.isConnected = true;
 		this.sendGameState();
 		this.sendPlayerState();
 		this.sendMyPlayerStatus();
 	}
 
 	public joinTeamAndRole(team: Team, role: Role) {
-		const { success } = this.getGame().setPlayerRole(this.credentials, role, team);
+		const { success } = this.getGame().setPlayerRole(this.player, role, team);
 		if (success) {
 			if (role === 'spymaster') {
 				this.socket.join(this.getSpyMasterChannel());
@@ -122,37 +127,42 @@ export class SocketController {
 	}
 
 	public makeGuess(id: number) {
-		const { success } = this.getGame().makeGuess(this.credentials, id);
+		const { success } = this.getGame().makeGuess(this.player, id);
 		if (success) this.sendGameState();
 	}
 
 	public toggleSuggestion(id: number) {
-		const { success } = this.getGame().toggleSuggestion(this.credentials, id);
+		const { success } = this.getGame().toggleSuggestion(this.player, id);
 		if (success) this.sendSuggestions();
 	}
 
 	public endGuessing() {
-		const { success } = this.getGame().endGuessing(this.credentials);
+		const { success } = this.getGame().endGuessing(this.player);
 		if (success) this.sendGameState();
 	}
 
+	public kickPlayer(id: number) {
+		const { success } = this.lobby.kickPlayer(id);
+		if (success) this.sendToSingleClient(id, 'kick');
+	}
+
 	public giveClue(word: string, number: number) {
-		const { success } = this.getGame().giveClue(this.credentials, { clue: word, number });
+		const { success } = this.getGame().giveClue(this.player, { clue: word, number });
 		if (success) this.sendGameState();
 	}
 
 	public startGame() {}
 
 	public handleDisconnect() {
-		this.lobby.player[this.credentials] = {
-			...this.lobby.player[this.credentials],
-			isConnected: false
+		this.player = {
+			...this.player,
+			isConnected: true
 		};
 		this.sendPlayerState();
 	}
 
 	public resetGame(): void {
-		if (!this.lobby.player[this.credentials].isHost) return;
+		if (!this.player.isHost) return;
 		this.sendGameState();
 	}
 }

@@ -12,7 +12,7 @@ export class Game {
 	gameover: boolean = false;
 	score: { blue: number; red: number } = { red: 9, blue: 8 };
 	log: GameAction[] = [];
-	suggestions: Partial<Record<number, string[]>> = {};
+	suggestions: Partial<Record<number, number[]>> = {};
 	player: Record<string, Player> = {};
 	board: Card[] = createNewBoard();
 
@@ -69,17 +69,6 @@ export class Game {
 		}
 	}
 
-	public getSuggestions() {
-		//Replace credentials of players to names for client usage
-		let suggestionsMappedToNames: Partial<Record<number, string[]>> = {};
-		for (const key in Object.keys(this.suggestions).map(Number)) {
-			let credentials = this.suggestions[key] ?? [];
-			suggestionsMappedToNames[key] = credentials.map((item) => this.player[item].name);
-		}
-
-		return suggestionsMappedToNames;
-	}
-
 	public getState(role: Role): GameState {
 		const { currentClue, currentGuesses, currentTeam, gameover, log, score, winner, suggestions } =
 			this;
@@ -110,18 +99,16 @@ export class Game {
 		this.currentTeam = 'red';
 	}
 
-	public setPlayerRole(credentials: string, role: Role, team: Team): { success: boolean } {
-		const player = this.player[credentials];
+	public setPlayerRole(player: Player, role: Role, team: Team): { success: boolean } {
 		if (this.playersWithRole(role, team) < this.maxSpyMasters) {
-			this.player[credentials] = { ...player, role, team };
+			player.role = role;
+			player.team = team;
 			return { success: true };
 		}
 		return { success: false };
 	}
 
-	public endGuessing(credentials: string) {
-		let player = this.player[credentials];
-
+	public endGuessing(player: Player) {
 		if (player.role != 'operative' || player.team != this.currentTeam) {
 			return { success: false };
 		}
@@ -130,18 +117,16 @@ export class Game {
 		return { success: true };
 	}
 
-	public toggleSuggestion(credentials: string, cardId: number) {
-		let player = this.player[credentials];
-
+	public toggleSuggestion(player: Player, cardId: number) {
 		if (player.role != 'operative' || player.team != this.currentTeam) {
 			return { success: false };
 		}
 		let suggestions = this.suggestions[cardId] ?? [];
-		const index = suggestions.indexOf(credentials);
+		const index = suggestions.indexOf(player.id);
 
 		if (index === -1) {
 			// Value not found, add it
-			suggestions.push(credentials);
+			suggestions.push(player.id);
 		} else {
 			// Value found, remove it
 			suggestions.splice(index, 1);
@@ -151,12 +136,11 @@ export class Game {
 		return { success: true, suggestions: this.suggestions };
 	}
 
-	public makeGuess(credentials: string, cardId: number) {
+	public makeGuess(player: Player, cardId: number) {
 		if (!this.currentClue)
 			return {
 				success: false
 			};
-		let player = this.player[credentials];
 		if (this.currentClue.number < this.currentGuesses) {
 			return { success: false };
 		}
@@ -173,8 +157,7 @@ export class Game {
 		return { success: true };
 	}
 
-	public giveClue(credentials: string, clue: Clue) {
-		let player = this.player[credentials];
+	public giveClue(player: Player, clue: Clue) {
 		if (this.currentClue != null) {
 			return { success: false };
 		}

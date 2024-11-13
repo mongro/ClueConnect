@@ -11,12 +11,12 @@ class SocketController {
     socket;
     io;
     lobby;
-    credentials;
-    constructor(socket, io, lobby, credentials) {
+    player;
+    constructor(socket, io, lobby, player) {
         this.socket = socket;
         this.io = io;
         this.lobby = lobby;
-        this.credentials = credentials;
+        this.player = player;
     }
     // AUXILIARY PRIVATE METHODS
     getLobbyChannel() {
@@ -31,6 +31,9 @@ class SocketController {
     sendToMe(event, ...data) {
         this.socket.emit(event, ...data);
     }
+    sendToSingleClient(id, event, ...data) {
+        this.io.to(this.getLobbyChannel() + id).emit(event, ...data);
+    }
     sendToOthers(event, ...data) {
         this.socket.broadcast.to(this.getLobbyChannel()).emit(event, ...data);
     }
@@ -41,7 +44,7 @@ class SocketController {
         this.io.to(this.getLobbyChannel()).emit(event, ...data);
     }
     getAllPlayer() {
-        const playerGroup = this.lobby.player;
+        const playerGroup = this.lobby.players;
         return Object.values(playerGroup);
     }
     // PRIVATE METHODS
@@ -53,32 +56,29 @@ class SocketController {
         this.sendToSpyMasters('gameUpdate', this.getGame().getState('spymaster'));
     }
     sendSuggestions() {
-        this.sendToAll('suggestionsUpdate', this.getGame().getSuggestions());
+        this.sendToAll('suggestionsUpdate', this.getGame().getState('operative').suggestions);
     }
     sendPlayerState() {
         this.sendToAll('playerUpdate', this.getAllPlayer());
     }
     sendMyPlayerStatus() {
-        this.sendToMe('myStatus', this.lobby.player[this.credentials]);
+        this.sendToMe('myStatus', this.player);
     }
     // PUBLIC METHODS
     sync() {
-        let player = this.lobby.player[this.credentials];
-        if (player.role === 'spymaster') {
+        if (this.player.role === 'spymaster') {
             this.socket.join(this.getSpyMasterChannel());
             this.sendToMe('gameUpdate', this.getGame().getState('spymaster'));
         }
         this.socket.join(this.getLobbyChannel());
-        this.lobby.player[this.credentials] = {
-            ...player,
-            isConnected: true
-        };
+        this.socket.join(this.getLobbyChannel() + this.player.id);
+        this.player.isConnected = true;
         this.sendGameState();
         this.sendPlayerState();
         this.sendMyPlayerStatus();
     }
     joinTeamAndRole(team, role) {
-        const { success } = this.getGame().setPlayerRole(this.credentials, role, team);
+        const { success } = this.getGame().setPlayerRole(this.player, role, team);
         if (success) {
             if (role === 'spymaster') {
                 this.socket.join(this.getSpyMasterChannel());
@@ -92,35 +92,40 @@ class SocketController {
         }
     }
     makeGuess(id) {
-        const { success } = this.getGame().makeGuess(this.credentials, id);
+        const { success } = this.getGame().makeGuess(this.player, id);
         if (success)
             this.sendGameState();
     }
     toggleSuggestion(id) {
-        const { success } = this.getGame().toggleSuggestion(this.credentials, id);
+        const { success } = this.getGame().toggleSuggestion(this.player, id);
         if (success)
             this.sendSuggestions();
     }
     endGuessing() {
-        const { success } = this.getGame().endGuessing(this.credentials);
+        const { success } = this.getGame().endGuessing(this.player);
         if (success)
             this.sendGameState();
     }
+    kickPlayer(id) {
+        const { success } = this.lobby.kickPlayer(id);
+        if (success)
+            this.sendToSingleClient(id, 'kick');
+    }
     giveClue(word, number) {
-        const { success } = this.getGame().giveClue(this.credentials, { clue: word, number });
+        const { success } = this.getGame().giveClue(this.player, { clue: word, number });
         if (success)
             this.sendGameState();
     }
     startGame() { }
     handleDisconnect() {
-        this.lobby.player[this.credentials] = {
-            ...this.lobby.player[this.credentials],
-            isConnected: false
+        this.player = {
+            ...this.player,
+            isConnected: true
         };
         this.sendPlayerState();
     }
     resetGame() {
-        if (!this.lobby.player[this.credentials].isHost)
+        if (!this.player.isHost)
             return;
         this.sendGameState();
     }

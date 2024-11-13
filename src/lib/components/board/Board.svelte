@@ -10,9 +10,10 @@
 	interface Props {
 		gameState: GameState;
 		myState: Player;
+		playerState: Player[];
 	}
 
-	let { gameState, myState }: Props = $props();
+	let { gameState, myState, playerState }: Props = $props();
 
 	function giveClue(word: string, number: number) {
 		socket.emit('giveClue', word, number);
@@ -68,7 +69,7 @@
 						>
 					{/if}
 				{/snippet}
-				<Suggestions suggestions={gameState.suggestions[index]} />
+				<Suggestions suggestions={gameState.suggestions[index] ?? []} {playerState} />
 			</Card>
 		{/each}
 	</div>

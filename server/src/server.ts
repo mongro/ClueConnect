@@ -44,10 +44,10 @@ io.on('connection', (socket) => {
 	socket.on('joinLobby', (id, credentials) => {
 		const lobby = lobbyDb.get(id);
 		if (!lobby) return;
+		const player = lobby.getPlayerFromCredentials(credentials);
+		if (!player) return;
 
-		if (!lobby.hasPlayer(credentials)) return;
-
-		const controller = new SocketController(socket, io, lobby, credentials);
+		const controller = new SocketController(socket, io, lobby, player);
 		controller.sync();
 
 		//socket.on('sync', (team, role) => controller.startGame());

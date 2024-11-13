@@ -8,9 +8,7 @@ const router = Router();
 
 const createLobby = (req: Request, res: Response) => {
 	try {
-		console.log('create', req);
 		const { name } = req.body;
-		console.log('body', req.body);
 		let id = crypto.randomUUID();
 		let attempts = 0;
 		while (lobbyDb.get(id) && attempts < 15) {

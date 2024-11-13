@@ -10,9 +10,7 @@ const Lobby_1 = require("./Lobby");
 const router = (0, express_1.Router)();
 const createLobby = (req, res) => {
     try {
-        console.log('create', req);
         const { name } = req.body;
-        console.log('body', req.body);
         let id = crypto_1.default.randomUUID();
         let attempts = 0;
         while (LobbyDB_1.default.get(id) && attempts < 15) {

@@ -109,7 +109,7 @@
 			<TeamsDisplay score={gameState.score} {myState} {teams} />
 		{/if}
 		{#if gameState && myState}
-			<Board {gameState} {myState} />
+			<Board {gameState} {myState} {playerState} />
 		{/if}
 
 		<EventLog messages={gameState ? gameState.log : []}>

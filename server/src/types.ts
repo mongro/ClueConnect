@@ -34,7 +34,7 @@ export type GameAction =
 			clue: Clue;
 	  };
 export type GameState = {
-	suggestions: Partial<Record<string, string[]>>;
+	suggestions: Partial<Record<string, number[]>>;
 	board: Card[];
 	currentClue: Clue | null;
 	currentGuesses: number;
@@ -46,13 +46,15 @@ export type GameState = {
 };
 
 export interface ServerToClientEvents {
+	kick: () => void;
 	gameUpdate: (state: GameState) => void;
 	playerUpdate: (player: Player[]) => void;
-	suggestionsUpdate: (suggestions: Partial<Record<number, string[]>>) => void;
+	suggestionsUpdate: (suggestions: Partial<Record<number, number[]>>) => void;
 	myStatus: (player: Player) => void;
 }
 
 export interface ClientToServerEvents {
+	kickPlayer: (id: string) => void;
 	sync: (id: string, credentials: string) => void;
 	joinLobby: (id: string, credentials: string, name?: string) => void;
 	joinTeamAndRole: (team: Team, role: Role) => void;

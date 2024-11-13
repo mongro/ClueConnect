@@ -66,15 +66,6 @@ class Game {
             this.switchTurnToOtherTeam();
         }
     }
-    getSuggestions() {
-        //Replace credentials of players to names for client usage
-        let suggestionsMappedToNames = {};
-        for (const key in Object.keys(this.suggestions).map(Number)) {
-            let credentials = this.suggestions[key] ?? [];
-            suggestionsMappedToNames[key] = credentials.map((item) => this.player[item].name);
-        }
-        return suggestionsMappedToNames;
-    }
     getState(role) {
         const { currentClue, currentGuesses, currentTeam, gameover, log, score, winner, suggestions } = this;
         const cardsForOperatorives = this.board.map((card) => {
@@ -101,32 +92,30 @@ class Game {
         this.score = { red: 9, blue: 8 };
         this.currentTeam = 'red';
     }
-    setPlayerRole(credentials, role, team) {
-        const player = this.player[credentials];
+    setPlayerRole(player, role, team) {
         if (this.playersWithRole(role, team) < this.maxSpyMasters) {
-            this.player[credentials] = { ...player, role, team };
+            player.role = role;
+            player.team = team;
             return { success: true };
         }
         return { success: false };
     }
-    endGuessing(credentials) {
-        let player = this.player[credentials];
+    endGuessing(player) {
         if (player.role != 'operative' || player.team != this.currentTeam) {
             return { success: false };
         }
         this.switchTurnToOtherTeam();
         return { success: true };
     }
-    toggleSuggestion(credentials, cardId) {
-        let player = this.player[credentials];
+    toggleSuggestion(player, cardId) {
         if (player.role != 'operative' || player.team != this.currentTeam) {
             return { success: false };
         }
         let suggestions = this.suggestions[cardId] ?? [];
-        const index = suggestions.indexOf(credentials);
+        const index = suggestions.indexOf(player.id);
         if (index === -1) {
             // Value not found, add it
-            suggestions.push(credentials);
+            suggestions.push(player.id);
         }
         else {
             // Value found, remove it
@@ -135,12 +124,11 @@ class Game {
         this.suggestions[cardId] = suggestions;
         return { success: true, suggestions: this.suggestions };
     }
-    makeGuess(credentials, cardId) {
+    makeGuess(player, cardId) {
         if (!this.currentClue)
             return {
                 success: false
             };
-        let player = this.player[credentials];
         if (this.currentClue.number < this.currentGuesses) {
             return { success: false };
         }
@@ -156,8 +144,7 @@ class Game {
         this.privateRevealCard(cardId);
         return { success: true };
     }
-    giveClue(credentials, clue) {
-        let player = this.player[credentials];
+    giveClue(player, clue) {
         if (this.currentClue != null) {
             return { success: false };
         }
