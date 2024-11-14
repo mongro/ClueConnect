@@ -88,7 +88,6 @@ class SocketController {
                 this.socket.leave(this.getSpyMasterChannel());
             }
             this.sendPlayerState();
-            this.sendMyPlayerStatus();
         }
     }
     makeGuess(id) {

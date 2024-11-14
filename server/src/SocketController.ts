@@ -122,7 +122,6 @@ export class SocketController {
 				this.socket.leave(this.getSpyMasterChannel());
 			}
 			this.sendPlayerState();
-			this.sendMyPlayerStatus();
 		}
 	}
 

@@ -43,10 +43,26 @@
 
 	if (browser) {
 		const credentials = LocalStorageHelper.getLobbyEntry(lobbyId);
-		if (credentials) socket.emit('joinLobby', lobbyId, credentials);
+		console.log(credentials);
+		console.log(socket.connected);
+		console.log(socket);
+		if (credentials) {
+			socket.connect();
+			socket.emit('joinLobby', lobbyId, credentials);
+		}
+		console.log('Browser');
+		console.log(socket.connected);
 
 		onDestroy(() => {
+			console.log('Disconnect');
 			socket.disconnect();
+		});
+
+		socket.on('disconnect', function () {
+			console.log('disconnect');
+		});
+		socket.on('connect', function () {
+			console.log('connect');
 		});
 		socket.on('suggestionsUpdate', (serverSuggestionsState) => {
 			if (gameState) gameState.suggestions = serverSuggestionsState;
@@ -57,7 +73,11 @@
 
 		socket.on('playerUpdate', (serverPlayerState) => {
 			playerState = serverPlayerState;
-			if (myState) myState = serverPlayerState[myState.id];
+			if (myState) {
+				const myId = myState.id;
+				const myStateUpdate = serverPlayerState.find((player) => player.id === myId);
+				if (myStateUpdate) myState = myStateUpdate;
+			}
 		});
 
 		socket.on('myStatus', (serverMyState) => {
