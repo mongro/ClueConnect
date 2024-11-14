@@ -1,5 +1,7 @@
 <script lang="ts">
 	import socket from '../socket';
+	import { goto } from '$app/navigation';
+
 	import { page } from '$app/stores';
 	import type {
 		ServerToClientEvents,
@@ -19,6 +21,7 @@
 	import TeamsDisplay from './team/Teams.svelte';
 	import { LocalStorageHelper } from './LocalStorageHelper';
 	import Board from './board/Board.svelte';
+	import JoinLobbyCard from './JoinLobbyCard.svelte';
 	let gameState = $state<GameState>();
 	let playerState = $state<Player[]>([]);
 	let myState = $state<Player | null>(null);
@@ -54,43 +57,23 @@
 
 		socket.on('playerUpdate', (serverPlayerState) => {
 			playerState = serverPlayerState;
+			if (myState) myState = serverPlayerState[myState.id];
 		});
 
 		socket.on('myStatus', (serverMyState) => {
 			myState = serverMyState;
 		});
-	}
 
-	function syncWithLobby(id: string) {
-		const credentials = LocalStorageHelper.getLobbyEntry(id);
-		if (credentials) socket.emit('joinLobby', id, credentials);
-	}
-
-	async function join(name: string) {
-		try {
-			const myHeaders = new Headers();
-			myHeaders.append('Content-Type', 'application/json');
-
-			const res = await fetch('http://localhost:5000/joinLobby', {
-				method: 'POST',
-				body: JSON.stringify({ name, lobbyId }),
-				headers: myHeaders
-			});
-			if (!res.ok) {
-				throw new Error(`Response status: ${res.status}`);
-			}
-
-			const response = await res.json();
-			LocalStorageHelper.setLobbyEntry(response.lobbyId, response.credentials);
-			syncWithLobby(response.lobbyId);
-		} catch (error) {
-			console.error(error);
-		}
+		socket.on('kick', () => {
+			goto('/');
+		});
 	}
 </script>
 
-<div class="mx-auto max-w-screen-2xl bg-slate-600">
-	{#if gameState && myState}
+<div class="mx-auto max-w-screen-2xl">
+	{#if !myState || !gameState}
+		<JoinLobbyCard {lobbyId} />
+	{:else}
 		<div>
 			<StatusHeader
 				currentTeam={gameState.currentTeam}
@@ -100,22 +83,16 @@
 				inGuessPhase={gameState.currentClue !== null}
 			/>
 		</div>
-	{/if}
-	<div class=" grid grid-cols-5 gap-4 pt-4">
-		{#if !myState}
-			<JoinCard handleJoin={join} />
-		{/if}
-		{#if gameState && myState}
+		<div class=" grid grid-cols-5 gap-4 pt-4">
 			<TeamsDisplay score={gameState.score} {myState} {teams} />
-		{/if}
-		{#if gameState && myState}
-			<Board {gameState} {myState} {playerState} />
-		{/if}
 
-		<EventLog messages={gameState ? gameState.log : []}>
-			{#snippet row(d)}
-				<Message message={d} />
-			{/snippet}
-		</EventLog>
-	</div>
+			<Board {gameState} {myState} {playerState} />
+
+			<EventLog messages={gameState.log}>
+				{#snippet row(d)}
+					<Message message={d} />
+				{/snippet}
+			</EventLog>
+		</div>
+	{/if}
 </div>

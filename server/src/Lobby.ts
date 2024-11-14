@@ -30,6 +30,18 @@ export class Lobby {
 		return this.players[id];
 	}
 
+	public get host() {
+		return Object.values(this.players).find((player) => player.isHost);
+	}
+	public setHost(id: number) {
+		const player = this.players[id];
+		const currentHost = this.host;
+		if (currentHost) currentHost.isHost = false;
+		if (player) {
+			this.players[id].isHost = true;
+			return { success: true };
+		} else return { success: false };
+	}
 	public kickPlayer(id: number) {
 		if (this.players[id]) {
 			delete this.players[id];

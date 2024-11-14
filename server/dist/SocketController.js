@@ -107,9 +107,21 @@ class SocketController {
             this.sendGameState();
     }
     kickPlayer(id) {
+        if (!this.player.isHost)
+            return;
         const { success } = this.lobby.kickPlayer(id);
-        if (success)
+        if (success) {
             this.sendToSingleClient(id, 'kick');
+            this.sendPlayerState();
+        }
+    }
+    makeHost(id) {
+        if (!this.player.isHost)
+            return;
+        const { success } = this.lobby.setHost(id);
+        if (success) {
+            this.sendPlayerState();
+        }
     }
     giveClue(word, number) {
         const { success } = this.getGame().giveClue(this.player, { clue: word, number });

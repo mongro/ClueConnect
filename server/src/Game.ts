@@ -25,6 +25,7 @@ export class Game {
 		this.currentTeam = this.currentTeam === 'blue' ? 'red' : 'blue';
 		this.currentGuesses = 0;
 		this.currentClue = null;
+		this.suggestions = {};
 	}
 	private declareWinner(team: Team) {
 		this.gameover = true;

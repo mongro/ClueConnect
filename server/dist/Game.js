@@ -24,6 +24,7 @@ class Game {
         this.currentTeam = this.currentTeam === 'blue' ? 'red' : 'blue';
         this.currentGuesses = 0;
         this.currentClue = null;
+        this.suggestions = {};
     }
     declareWinner(team) {
         this.gameover = true;

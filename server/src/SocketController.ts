@@ -142,8 +142,19 @@ export class SocketController {
 	}
 
 	public kickPlayer(id: number) {
+		if (!this.player.isHost) return;
 		const { success } = this.lobby.kickPlayer(id);
-		if (success) this.sendToSingleClient(id, 'kick');
+		if (success) {
+			this.sendToSingleClient(id, 'kick');
+			this.sendPlayerState();
+		}
+	}
+	public makeHost(id: number) {
+		if (!this.player.isHost) return;
+		const { success } = this.lobby.setHost(id);
+		if (success) {
+			this.sendPlayerState();
+		}
 	}
 
 	public giveClue(word: string, number: number) {

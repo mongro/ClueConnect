@@ -3,16 +3,23 @@
 	import { LocalStorageHelper } from './LocalStorageHelper';
 	import { goto } from '$app/navigation';
 	import Input from './input/Input.svelte';
+	import socket from '$lib/socket';
 
 	let name = $state('');
-	async function createLobby(name: string) {
+	let { lobbyId }: { lobbyId: string } = $props();
+	function syncWithLobby(id: string) {
+		const credentials = LocalStorageHelper.getLobbyEntry(id);
+		if (credentials) socket.emit('joinLobby', id, credentials);
+	}
+
+	async function join(name: string) {
 		try {
 			const myHeaders = new Headers();
 			myHeaders.append('Content-Type', 'application/json');
 
-			const res = await fetch('http://localhost:5000/createLobby', {
+			const res = await fetch('http://localhost:5000/joinLobby', {
 				method: 'POST',
-				body: JSON.stringify({ name }),
+				body: JSON.stringify({ name, lobbyId }),
 				headers: myHeaders
 			});
 			if (!res.ok) {
@@ -21,7 +28,7 @@
 
 			const response = await res.json();
 			LocalStorageHelper.setLobbyEntry(response.lobbyId, response.credentials);
-			goto('/game/' + response.lobbyId);
+			syncWithLobby(response.lobbyId);
 		} catch (error) {
 			console.error(error);
 		}
@@ -32,6 +39,6 @@
 	<div class="w-full max-w-96 rounded bg-white p-4 shadow">
 		<h1 class="mb-4 text-xl font-bold">Welcome to Clue Connect!</h1>
 		<Input bind:value={name} class="mb-2" />
-		<Button onclick={() => createLobby(name)}>Create Lobby</Button>
+		<Button onclick={() => join(name)}>Join Lobby</Button>
 	</div>
 </div>

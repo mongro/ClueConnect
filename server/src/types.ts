@@ -54,7 +54,8 @@ export interface ServerToClientEvents {
 }
 
 export interface ClientToServerEvents {
-	kickPlayer: (id: string) => void;
+	kickPlayer: (id: number) => void;
+	makeHost: (id: number) => void;
 	sync: (id: string, credentials: string) => void;
 	joinLobby: (id: string, credentials: string, name?: string) => void;
 	joinTeamAndRole: (team: Team, role: Role) => void;

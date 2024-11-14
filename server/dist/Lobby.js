@@ -30,6 +30,21 @@ class Lobby {
             return null;
         return this.players[id];
     }
+    get host() {
+        return Object.values(this.players).find((player) => player.isHost);
+    }
+    setHost(id) {
+        const player = this.players[id];
+        const currentHost = this.host;
+        if (currentHost)
+            currentHost.isHost = false;
+        if (player) {
+            this.players[id].isHost = true;
+            return { success: true };
+        }
+        else
+            return { success: false };
+    }
     kickPlayer(id) {
         if (this.players[id]) {
             delete this.players[id];
