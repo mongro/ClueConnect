@@ -52,7 +52,10 @@
 		}
 		console.log('Browser');
 		console.log(socket.connected);
-
+		$effect(() => {
+			console.log(myState);
+		});
+		$inspect(playerState);
 		onDestroy(() => {
 			console.log('Disconnect');
 			socket.disconnect();

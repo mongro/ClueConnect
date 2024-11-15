@@ -157,6 +157,7 @@ export class SocketController {
 	}
 
 	public giveClue(word: string, number: number) {
+		console.log('memory', process.memoryUsage());
 		const { success } = this.getGame().giveClue(this.player, { clue: word, number });
 		if (success) this.sendGameState();
 	}
@@ -164,10 +165,7 @@ export class SocketController {
 	public startGame() {}
 
 	public handleDisconnect() {
-		this.player = {
-			...this.player,
-			isConnected: true
-		};
+		this.player.isConnected = false;
 		this.sendPlayerState();
 	}
 

@@ -18,10 +18,14 @@
 	}
 </script>
 
-<div class="mb-1 flex items-center rounded bg-primary p-2 text-lg">
-	<OnlineStatus online={player.isConnected} />{player.name}
+<div class="mb-1 flex items-center justify-between rounded bg-primary p-2 text-lg">
+	<div class="flex items-center">
+		<OnlineStatus online={player.isConnected} />{player.name}
+	</div>
 	{#if myState.isHost && !player.isHost}
-		<Button onclick={() => kickPlayer(player.id)}>Kick</Button>
-		<Button onclick={() => makeHost(player.id)}>Make Host</Button>
+		<div class="flex items-center gap-1">
+			<Button size="sm" onclick={() => kickPlayer(player.id)} variant="destructive">Kick</Button>
+			<Button size="sm" onclick={() => makeHost(player.id)} variant="secondary">Make Host</Button>
+		</div>
 	{/if}
 </div>

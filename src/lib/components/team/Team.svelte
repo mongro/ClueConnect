@@ -24,15 +24,19 @@
 <div class={teamContainerVariants({ team })}>
 	<div class="flex items-center justify-center text-5xl">{score}</div>
 	<div class={teamTextVariants({ team })}>Operatives</div>
-	{#each operative as player}
-		<PlayerDisplay {player} {myState} />{/each}
-	{#if !myState.team}
-		<Button onclick={() => joinRoleAndTeam('operative', team)}>Join Operatives</Button>
-	{/if}
+	<div class="mt-1 min-h-24">
+		{#each operative as player}
+			<PlayerDisplay {player} {myState} />{/each}
+		{#if !myState.team}
+			<Button onclick={() => joinRoleAndTeam('operative', team)}>Join Operatives</Button>
+		{/if}
+	</div>
 	<div class={teamTextVariants({ team })}>Spymasters</div>
-	{#each spymaster as player}
-		<PlayerDisplay {player} {myState} />{/each}
-	{#if !myState.team}
-		<Button onclick={() => joinRoleAndTeam('spymaster', team)}>Join Spymasters</Button>
-	{/if}
+	<div class="mt-1 min-h-24">
+		{#each spymaster as player}
+			<PlayerDisplay {player} {myState} />{/each}
+		{#if !myState.team}
+			<Button onclick={() => joinRoleAndTeam('spymaster', team)}>Join Spymasters</Button>
+		{/if}
+	</div>
 </div>

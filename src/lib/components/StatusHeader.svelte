@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Role, Team } from '$shared/src/types';
+	import type { TransitionConfig } from 'svelte/transition';
 
 	interface Props {
 		currentTeam: Team;
@@ -10,6 +11,27 @@
 	}
 
 	let { currentTeam, myTeam, myRole, inGuessPhase, winner }: Props = $props();
+
+	let message = $derived(createMessage());
+
+	function typewriter(node: Element, { speed = 1 }): TransitionConfig {
+		const text = node.textContent;
+		const valid = node.childNodes.length === 1 && node.childNodes[0].nodeType === Node.TEXT_NODE;
+
+		if (!valid || !text) {
+			throw new Error(`This transition only works on elements with a single text node child`);
+		}
+
+		const duration = text.length / (speed * 0.01);
+
+		return {
+			duration,
+			tick: (t: number) => {
+				const i = Math.trunc(text.length * t);
+				node.textContent = text.slice(0, i);
+			}
+		};
+	}
 	function createMessage() {
 		if (winner) {
 			return `The ${winner} team wins!`;
@@ -28,8 +50,10 @@
 	}
 </script>
 
-<div class="flex items-center justify-center">
-	<div class="rounded bg-white px-2 py-2 text-center text-2xl">
-		{createMessage()}
-	</div>
+<div class="mt-4 flex min-h-16 items-center justify-center">
+	{#key message}
+		<div class="rounded bg-white px-2 py-2 text-center text-2xl" in:typewriter={{ speed: 2 }}>
+			{message}
+		</div>
+	{/key}
 </div>
