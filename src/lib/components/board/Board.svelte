@@ -49,8 +49,10 @@
 	}
 </script>
 
-<div class="col-span-3 flex flex-col items-center gap-4">
-	<div class="grid aspect-2 w-full grid-cols-5 grid-rows-5 gap-2">
+<div
+	class="col-span-5 col-start-1 flex flex-col items-center gap-4 lg:col-span-3 lg:col-start-2 lg:row-start-1"
+>
+	<div class="grid-row-6 grid aspect-2 w-full grid-cols-4 gap-2 sm:grid-cols-5">
 		{#each gameState.board as card, index}
 			<Card
 				type={card.type}

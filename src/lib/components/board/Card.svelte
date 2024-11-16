@@ -11,14 +11,31 @@
 		children: Snippet<[]>;
 		spymaster: boolean;
 		onclick: () => void;
+		delay?: number;
 	}
 
-	let { children, type, word, button, revealed, spymaster, onclick }: Props = $props();
+	let { children, type, word, button, revealed, spymaster, onclick, delay }: Props = $props();
+
+	function deal(node: Element, { duration = 200, delay = 1 }) {
+		const rect = node.getBoundingClientRect();
+		const viewportCenterX = window.innerWidth / 2;
+		const elementCenterX = rect.left + rect.width / 2;
+		console.log('diff', elementCenterX - viewportCenterX, rect.left);
+		const deg = Math.random() * 30;
+		const dir = Math.random() < 0.5 ? 1 : -1;
+		return {
+			duration,
+			delay,
+			css: (t: number) =>
+				`transform: rotate(${dir * deg * t}deg) translate(${(viewportCenterX - elementCenterX) * (1 - t)}px,${-rect.top * (1 - t)}px)`
+		};
+	}
 </script>
 
 <div
-	class="p relative h-full w-full rounded text-xl uppercase transition-transform duration-1000 perspective preserve3d"
+	class="p relative h-full w-full rounded text-base uppercase transition-transform duration-1000 perspective preserve3d sm:text-xl"
 	class:flip-it={revealed}
+	in:deal|global={{ duration: 400, delay: Math.random() * 1000 }}
 >
 	<div
 		class="absolute h-full w-full backface-hidden"

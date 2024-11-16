@@ -54,6 +54,7 @@ io.on('connection', (socket) => {
 		socket.on('joinTeamAndRole', (team, role) => controller.joinTeamAndRole(team, role));
 		socket.on('startGame', () => controller.startGame());
 		socket.on('resetGame', () => controller.resetGame());
+		socket.on('resetTeams', () => controller.resetTeams());
 		socket.on('kickPlayer', (id: number) => controller.kickPlayer(id));
 		socket.on('makeHost', (id: number) => controller.makeHost(id));
 		socket.on('giveClue', (word, number) => controller.giveClue(word, number));

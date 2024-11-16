@@ -16,12 +16,12 @@
 	import { browser } from '$app/environment';
 	import EventLog from './EventLog.svelte';
 	import Message from './Message.svelte';
-	import JoinCard from './JoinCard.svelte';
 	import StatusHeader from './StatusHeader.svelte';
 	import TeamsDisplay from './team/Teams.svelte';
 	import { LocalStorageHelper } from './LocalStorageHelper';
 	import Board from './board/Board.svelte';
 	import JoinLobbyCard from './JoinLobbyCard.svelte';
+	import Header from './Header.svelte';
 	let gameState = $state<GameState>();
 	let playerState = $state<Player[]>([]);
 	let myState = $state<Player | null>(null);
@@ -93,11 +93,12 @@
 	}
 </script>
 
-<div class="mx-auto max-w-screen-2xl">
+<div class="mx-auto max-w-screen-2xl px-2">
 	{#if !myState || !gameState}
 		<JoinLobbyCard {lobbyId} />
 	{:else}
 		<div>
+			<Header {gameState} />
 			<StatusHeader
 				currentTeam={gameState.currentTeam}
 				winner={gameState.winner}

@@ -87,11 +87,20 @@ class Game {
     }
     reset() {
         this.board = (0, Board_1.createNewBoard)();
+        this.winner = null;
+        this.suggestions = {};
         this.log = [];
         this.currentClue = null;
         this.gameover = false;
         this.score = { red: 9, blue: 8 };
         this.currentTeam = 'red';
+        this.resetTeams();
+    }
+    resetTeams() {
+        for (let player of Object.values(this.player)) {
+            player.role = undefined;
+            player.team = undefined;
+        }
     }
     setPlayerRole(player, role, team) {
         if (this.playersWithRole(role, team) < this.maxSpyMasters) {

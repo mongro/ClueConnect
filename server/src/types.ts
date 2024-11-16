@@ -61,6 +61,7 @@ export interface ClientToServerEvents {
 	joinTeamAndRole: (team: Team, role: Role) => void;
 	startGame: () => void;
 	resetGame: () => void;
+	resetTeams: () => void;
 	giveClue: (word: string, number: number) => void;
 	makeGuess: (cardId: number) => void;
 	toggleSuggestion: (cardId: number) => void;

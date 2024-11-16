@@ -93,11 +93,21 @@ export class Game {
 
 	public reset(): void {
 		this.board = createNewBoard();
+		this.winner = null;
+		this.suggestions = {};
 		this.log = [];
 		this.currentClue = null;
 		this.gameover = false;
 		this.score = { red: 9, blue: 8 };
 		this.currentTeam = 'red';
+		this.resetTeams();
+	}
+
+	public resetTeams() {
+		for (let player of Object.values(this.player)) {
+			player.role = undefined;
+			player.team = undefined;
+		}
 	}
 
 	public setPlayerRole(player: Player, role: Role, team: Team): { success: boolean } {

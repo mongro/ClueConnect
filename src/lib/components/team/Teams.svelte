@@ -11,7 +11,7 @@
 	let { score, myState, teams }: Props = $props();
 </script>
 
-<div class="flex flex-col gap-4">
+<div class="col-span-2 row-start-2 flex flex-col gap-4 lg:col-span-1 lg:col-start-1 lg:row-start-1">
 	<TeamDisplay
 		team="red"
 		score={score.red}

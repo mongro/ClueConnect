@@ -52,7 +52,10 @@
 
 <div class="mt-4 flex min-h-16 items-center justify-center">
 	{#key message}
-		<div class="rounded bg-white px-2 py-2 text-center text-2xl" in:typewriter={{ speed: 2 }}>
+		<div
+			class="rounded bg-white px-2 py-2 text-center text-xl sm:text-2xl"
+			in:typewriter={{ speed: 2 }}
+		>
 			{message}
 		</div>
 	{/key}

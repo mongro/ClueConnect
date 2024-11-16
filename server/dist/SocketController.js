@@ -48,15 +48,15 @@ class SocketController {
         return Object.values(playerGroup);
     }
     // PRIVATE METHODS
-    getGame() {
+    get game() {
         return this.lobby.game;
     }
     sendGameState() {
-        this.sendToAll('gameUpdate', this.getGame().getState('operative'));
-        this.sendToSpyMasters('gameUpdate', this.getGame().getState('spymaster'));
+        this.sendToAll('gameUpdate', this.game.getState('operative'));
+        this.sendToSpyMasters('gameUpdate', this.game.getState('spymaster'));
     }
     sendSuggestions() {
-        this.sendToAll('suggestionsUpdate', this.getGame().getState('operative').suggestions);
+        this.sendToAll('suggestionsUpdate', this.game.getState('operative').suggestions);
     }
     sendPlayerState() {
         this.sendToAll('playerUpdate', this.getAllPlayer());
@@ -68,7 +68,7 @@ class SocketController {
     sync() {
         if (this.player.role === 'spymaster') {
             this.socket.join(this.getSpyMasterChannel());
-            this.sendToMe('gameUpdate', this.getGame().getState('spymaster'));
+            this.sendToMe('gameUpdate', this.game.getState('spymaster'));
         }
         this.socket.join(this.getLobbyChannel());
         this.socket.join(this.getLobbyChannel() + this.player.id);
@@ -78,11 +78,11 @@ class SocketController {
         this.sendMyPlayerStatus();
     }
     joinTeamAndRole(team, role) {
-        const { success } = this.getGame().setPlayerRole(this.player, role, team);
+        const { success } = this.game.setPlayerRole(this.player, role, team);
         if (success) {
             if (role === 'spymaster') {
                 this.socket.join(this.getSpyMasterChannel());
-                this.sendToMe('gameUpdate', this.getGame().getState('spymaster'));
+                this.sendToMe('gameUpdate', this.game.getState('spymaster'));
             }
             else {
                 this.socket.leave(this.getSpyMasterChannel());
@@ -91,17 +91,17 @@ class SocketController {
         }
     }
     makeGuess(id) {
-        const { success } = this.getGame().makeGuess(this.player, id);
+        const { success } = this.game.makeGuess(this.player, id);
         if (success)
             this.sendGameState();
     }
     toggleSuggestion(id) {
-        const { success } = this.getGame().toggleSuggestion(this.player, id);
+        const { success } = this.game.toggleSuggestion(this.player, id);
         if (success)
             this.sendSuggestions();
     }
     endGuessing() {
-        const { success } = this.getGame().endGuessing(this.player);
+        const { success } = this.game.endGuessing(this.player);
         if (success)
             this.sendGameState();
     }
@@ -124,7 +124,7 @@ class SocketController {
     }
     giveClue(word, number) {
         console.log('memory', process.memoryUsage());
-        const { success } = this.getGame().giveClue(this.player, { clue: word, number });
+        const { success } = this.game.giveClue(this.player, { clue: word, number });
         if (success)
             this.sendGameState();
     }
@@ -136,7 +136,15 @@ class SocketController {
     resetGame() {
         if (!this.player.isHost)
             return;
+        this.game.reset();
         this.sendGameState();
+        this.sendPlayerState();
+    }
+    resetTeams() {
+        if (!this.player.isHost)
+            return;
+        this.game.resetTeams();
+        this.sendPlayerState();
     }
 }
 exports.SocketController = SocketController;
