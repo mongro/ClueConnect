@@ -5,7 +5,7 @@
 	import OnlineStatus from '../OnlineStatus.svelte';
 	interface Props {
 		player: Player;
-		myState: Player;
+		myState: Player | null;
 	}
 
 	let { player, myState }: Props = $props();
@@ -18,11 +18,11 @@
 	}
 </script>
 
-<div class="mb-1 flex items-center justify-between rounded bg-primary p-2 text-lg">
+<div class="mb-1 flex items-center justify-between rounded bg-primary p-2 text-base lg:text-lg">
 	<div class="flex items-center">
 		<OnlineStatus online={player.isConnected} />{player.name}
 	</div>
-	{#if myState.isHost && !player.isHost}
+	{#if myState?.isHost && !player.isHost}
 		<div class="flex items-center gap-1">
 			<Button size="sm" onclick={() => kickPlayer(player.id)} variant="destructive">Kick</Button>
 			<Button size="sm" onclick={() => makeHost(player.id)} variant="secondary">Make Host</Button>

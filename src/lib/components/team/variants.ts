@@ -7,12 +7,15 @@ export const teamTextVariants = cva('text-sm', {
 		}
 	}
 });
-export const teamContainerVariants = cva('w-full rounded p-2 text-white shadow-2xl', {
-	variants: {
-		team: {
-			red: 'bg-red-team',
-			blue: 'bg-blue-team'
+export const teamContainerVariants = cva(
+	'flex flex-col w-full rounded p-2 text-white shadow-2xl flex-grow max-h-72',
+	{
+		variants: {
+			team: {
+				red: 'bg-red-team',
+				blue: 'bg-blue-team'
+			}
 		}
 	}
-});
+);
 export type TeamProps = VariantProps<typeof teamTextVariants>;

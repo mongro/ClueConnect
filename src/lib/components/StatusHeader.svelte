@@ -4,13 +4,12 @@
 
 	interface Props {
 		currentTeam: Team;
-		myTeam: Team | undefined;
-		myRole: Role | undefined;
 		inGuessPhase: boolean;
 		winner: Team | null;
 	}
+	import { lobby } from '$lib/players.svelte';
 
-	let { currentTeam, myTeam, myRole, inGuessPhase, winner }: Props = $props();
+	let { currentTeam, inGuessPhase, winner }: Props = $props();
 
 	let message = $derived(createMessage());
 
@@ -33,6 +32,7 @@
 		};
 	}
 	function createMessage() {
+		let { myRole, myTeam } = lobby;
 		if (winner) {
 			return `The ${winner} team wins!`;
 		}

@@ -15,16 +15,20 @@ const createLobby = (req: Request, res: Response) => {
 			id = crypto.randomUUID();
 			attempts++;
 		}
-		if (attempts === 15) res.status(200).json({ success: false });
+		if (attempts === 15) {
+			res.status(200).json({ success: false });
+			return;
+		}
 		const lobby = new Lobby(id);
 		const credentials = lobby.addPlayer(name);
 		if (credentials) {
 			lobbyDb.add(id, lobby);
 			res.status(200).json({ success: true, credentials, lobbyId: id });
+			return;
 		}
 		res.status(200).json({ success: false });
 	} catch (error) {
-		console.error('Error in createRoom:', error);
+		console.error('Error in createLobby:', error);
 		res.status(500).json({ message: 'Internal server error' });
 	}
 };
@@ -40,10 +44,14 @@ const joinLobby = (req: Request, res: Response) => {
 			return;
 		}
 		const credentials = lobby.addPlayer(name);
-		if (credentials) res.status(200).json({ success: true, credentials, lobbyId });
+		if (credentials) {
+			res.status(200).json({ success: true, credentials, lobbyId });
+			return;
+		}
+
 		res.status(200).json({ success: false, message: 'Not allowed to join lobby.' });
 	} catch (error) {
-		console.error('Error in createRoom:', error);
+		console.error('Error in joinLobby:', error);
 		res.status(500).json({ message: 'Internal server error' });
 	}
 };

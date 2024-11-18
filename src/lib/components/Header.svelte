@@ -3,6 +3,7 @@
 	import type { GameState } from '$shared/src/types';
 	import Button from './button/button.svelte';
 	import CopyToClipboard from './CopyToClipboard.svelte';
+	import { lobby } from '$lib/players.svelte';
 
 	interface Props {
 		gameState: GameState;
@@ -18,7 +19,8 @@
 </script>
 
 <div class="flex items-center gap-2">
-	<Button onclick={restart}>Reset Game</Button>
-	<Button onclick={resetTeams}>Reset Teams</Button>
-	<CopyToClipboard />
+	{#if lobby.myState?.isHost}
+		<Button onclick={restart}>Reset Game</Button>
+		<Button onclick={resetTeams}>Reset Teams</Button>
+	{/if}
 </div>

@@ -6,14 +6,13 @@
 	import { Pointer } from 'lucide-svelte';
 	import Card from './Card.svelte';
 	import Suggestions from './Suggestions.svelte';
+	import { lobby } from '$lib/players.svelte';
 
 	interface Props {
 		gameState: GameState;
-		myState: Player;
-		playerState: Player[];
 	}
 
-	let { gameState, myState, playerState }: Props = $props();
+	let { gameState }: Props = $props();
 
 	function giveClue(word: string, number: number) {
 		socket.emit('giveClue', word, number);
@@ -25,17 +24,17 @@
 
 	function isGuessing() {
 		return (
-			myState?.role === 'operative' &&
-			myState.team === gameState?.currentTeam &&
+			lobby.myRole === 'operative' &&
+			lobby.myTeam === gameState?.currentTeam &&
 			gameState?.currentClue !== null
 		);
 	}
 
 	function isGivingClue() {
 		return (
-			myState?.team === gameState?.currentTeam &&
+			lobby.myTeam === gameState?.currentTeam &&
 			gameState?.currentClue === null &&
-			myState?.role === 'spymaster'
+			lobby.myRole === 'spymaster'
 		);
 	}
 
@@ -58,7 +57,7 @@
 				type={card.type}
 				word={card.word}
 				revealed={card.revealed}
-				spymaster={myState.role === 'spymaster'}
+				spymaster={lobby.myRole === 'spymaster'}
 				onclick={() => toggleSuggestion(index)}
 			>
 				{#snippet button()}
@@ -71,7 +70,7 @@
 						>
 					{/if}
 				{/snippet}
-				<Suggestions suggestions={gameState.suggestions[index] ?? []} {playerState} />
+				<Suggestions suggestions={gameState.suggestions[index] ?? []} />
 			</Card>
 		{/each}
 	</div>

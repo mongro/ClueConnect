@@ -23,9 +23,7 @@
 	});
 </script>
 
-<div
-	class="col-span-3 row-start-2 flex h-80 flex-col overflow-hidden rounded bg-white shadow-xl lg:row-start-1"
->
+<div class=" mb-2 flex max-h-96 flex-grow flex-col overflow-hidden rounded bg-white shadow-xl">
 	<div class="flex-none text-center text-xl">Event Log</div>
 	<div bind:this={container} class="flex-auto overflow-y-auto">
 		{#each messages as message}

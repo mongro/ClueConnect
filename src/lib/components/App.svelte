@@ -1,6 +1,7 @@
 <script lang="ts">
 	import socket from '../socket';
 	import { goto } from '$app/navigation';
+	import { lobby } from '$lib/players.svelte';
 
 	import { page } from '$app/stores';
 	import type {
@@ -22,8 +23,9 @@
 	import Board from './board/Board.svelte';
 	import JoinLobbyCard from './JoinLobbyCard.svelte';
 	import Header from './Header.svelte';
+	import CopyToClipboard from './CopyToClipboard.svelte';
 	let gameState = $state<GameState>();
-	let playerState = $state<Player[]>([]);
+	/* 	let playerState = $state<Player[]>([]);
 	let myState = $state<Player | null>(null);
 
 	let teams = $derived.by(() => {
@@ -38,24 +40,18 @@
 			}
 		}
 		return teams;
-	});
+	}); */
 	const lobbyId = $page.params.id;
-
 	if (browser) {
+		console.log('ZZZZZZZZZZZZZZZ');
+		$inspect(lobby.myState);
+		$inspect(lobby.players);
 		const credentials = LocalStorageHelper.getLobbyEntry(lobbyId);
-		console.log(credentials);
-		console.log(socket.connected);
-		console.log(socket);
 		if (credentials) {
 			socket.connect();
 			socket.emit('joinLobby', lobbyId, credentials);
 		}
-		console.log('Browser');
-		console.log(socket.connected);
-		$effect(() => {
-			console.log(myState);
-		});
-		$inspect(playerState);
+
 		onDestroy(() => {
 			console.log('Disconnect');
 			socket.disconnect();
@@ -74,7 +70,7 @@
 			gameState = serverGameState;
 		});
 
-		socket.on('playerUpdate', (serverPlayerState) => {
+		/* 	socket.on('playerUpdate', (serverPlayerState) => {
 			playerState = serverPlayerState;
 			if (myState) {
 				const myId = myState.id;
@@ -85,7 +81,7 @@
 
 		socket.on('myStatus', (serverMyState) => {
 			myState = serverMyState;
-		});
+		}); */
 
 		socket.on('kick', () => {
 			goto('/');
@@ -93,30 +89,36 @@
 	}
 </script>
 
-<div class="mx-auto max-w-screen-2xl px-2">
-	{#if !myState || !gameState}
+<div class="mx-auto flex h-full max-w-screen-2xl flex-col px-2">
+	{#if !lobby.myState || !gameState || !lobby.players}
 		<JoinLobbyCard {lobbyId} />
+		LobbyState{!lobby.myState?.name}
+		gameState{!gameState}
+		{!lobby.myState || !gameState}
 	{:else}
 		<div>
 			<Header {gameState} />
 			<StatusHeader
 				currentTeam={gameState.currentTeam}
 				winner={gameState.winner}
-				myRole={myState.role}
-				myTeam={myState.team}
 				inGuessPhase={gameState.currentClue !== null}
 			/>
 		</div>
-		<div class=" grid grid-cols-5 gap-4 pt-4">
-			<TeamsDisplay score={gameState.score} {myState} {teams} />
+		<div class=" grid flex-grow grid-cols-5 grid-rows-[max-content_1fr] gap-4 pt-4 lg:grid-rows-1">
+			<TeamsDisplay score={gameState.score} />
 
-			<Board {gameState} {myState} {playerState} />
-
-			<EventLog messages={gameState.log}>
-				{#snippet row(d)}
-					<Message message={d} />
-				{/snippet}
-			</EventLog>
+			<Board {gameState} />
+			<div class="col-span-3 row-start-2 flex flex-col gap-2 lg:row-start-1">
+				<div class="flex flex-col items-center rounded bg-secondary p-2">
+					<span class="mr-2">Send this link to invite other players.</span>
+					<CopyToClipboard />
+				</div>
+				<EventLog messages={gameState.log}>
+					{#snippet row(d)}
+						<Message message={d} />
+					{/snippet}
+				</EventLog>
+			</div>
 		</div>
 	{/if}
 </div>

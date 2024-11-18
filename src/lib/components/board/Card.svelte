@@ -1,7 +1,6 @@
 <script lang="ts" generics="T">
 	import type { CardType } from '$shared/src/types';
 	import type { Snippet } from 'svelte';
-	import socket from '$lib/socket';
 
 	interface Props {
 		type: CardType;
@@ -11,10 +10,9 @@
 		children: Snippet<[]>;
 		spymaster: boolean;
 		onclick: () => void;
-		delay?: number;
 	}
 
-	let { children, type, word, button, revealed, spymaster, onclick, delay }: Props = $props();
+	let { children, type, word, button, revealed, spymaster, onclick }: Props = $props();
 
 	function deal(node: Element, { duration = 200, delay = 1 }) {
 		const rect = node.getBoundingClientRect();
@@ -32,38 +30,40 @@
 	}
 </script>
 
-<div
-	class="p relative h-full w-full rounded text-base uppercase transition-transform duration-1000 perspective preserve3d sm:text-xl"
-	class:flip-it={revealed}
-	in:deal|global={{ duration: 400, delay: Math.random() * 1000 }}
->
+{#key word}
 	<div
-		class="absolute h-full w-full backface-hidden"
-		class:bg-red-card={type === 'red' && spymaster}
-		class:bg-blue-card={type === 'blue' && spymaster}
-		class:bg-neutral-900={type === 'black' && spymaster}
-		class:bg-neutral-300={type === 'grey' || !spymaster}
+		class="p relative h-full w-full rounded text-base uppercase transition-transform duration-1000 perspective preserve3d sm:text-xl"
+		class:flip-it={revealed}
+		in:deal|global={{ duration: 400, delay: Math.random() * 1000 }}
 	>
 		<div
-			role="button"
-			class=" absolute bottom-4 flex w-full items-center justify-center bg-white text-center"
-			{onclick}
-			tabindex="0"
-			onkeydown={onclick}
+			class="absolute h-full w-full backface-hidden"
+			class:bg-red-card={type === 'red' && spymaster}
+			class:bg-blue-card={type === 'blue' && spymaster}
+			class:bg-neutral-900={type === 'black' && spymaster}
+			class:bg-neutral-300={type === 'grey' || !spymaster}
 		>
-			{word}
+			<div
+				role="button"
+				class=" absolute bottom-4 flex w-full items-center justify-center bg-white text-center"
+				{onclick}
+				tabindex="0"
+				onkeydown={onclick}
+			>
+				{word}
+			</div>
+			{@render button()}
+			{@render children()}
 		</div>
-		{@render button()}
-		{@render children()}
+		<div
+			class="flip-it absolute h-full w-full backface-hidden"
+			class:bg-red-card={type === 'red'}
+			class:bg-blue-card={type === 'blue'}
+			class:bg-neutral-900={type === 'black'}
+			class:bg-neutral-300={type === 'grey'}
+		></div>
 	</div>
-	<div
-		class="flip-it absolute h-full w-full backface-hidden"
-		class:bg-red-card={type === 'red'}
-		class:bg-blue-card={type === 'blue'}
-		class:bg-neutral-900={type === 'black'}
-		class:bg-neutral-300={type === 'grey'}
-	></div>
-</div>
+{/key}
 
 <style>
 	.flip-it {

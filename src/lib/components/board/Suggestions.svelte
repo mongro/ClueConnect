@@ -3,21 +3,21 @@
 	import { scale } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
 	import { suggestionVariants } from './variants.js';
+	import { lobby } from '$lib/players.svelte.js';
 
 	interface Props {
 		suggestions: number[];
-		playerState: Player[];
 	}
-	let { suggestions, playerState }: Props = $props();
+	let { suggestions }: Props = $props();
 
-	let players = $derived.by(() => {
-		let player = suggestions.map((id) => playerState.find((player) => player.id === id));
+	let suggestingPlayers = $derived.by(() => {
+		let player = suggestions.map((id) => lobby.players.find((player) => player.id === id));
 		return player.filter((player) => player !== undefined);
 	});
 </script>
 
 <div class={'absolute left-2 top-2 flex flex-wrap items-center text-xs'}>
-	{#each players as player (player.id)}
+	{#each suggestingPlayers as player (player.id)}
 		<div
 			class={suggestionVariants({ team: player.team })}
 			in:scale={{ duration: 400 }}
