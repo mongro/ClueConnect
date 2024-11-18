@@ -20,7 +20,7 @@
 </script>
 
 <div class={teamContainerVariants({ team })}>
-	<div class="flex items-center justify-center text-5xl">{score}</div>
+	<div class="flex items-center justify-center text-xl md:text-3xl lg:text-5xl">{score}</div>
 	<div class={teamTextVariants({ team })}>Operatives</div>
 	<div class="mt-1 flex-grow">
 		{#each lobby.getMembers(team, 'operative') as player}

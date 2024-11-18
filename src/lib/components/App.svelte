@@ -25,27 +25,8 @@
 	import Header from './Header.svelte';
 	import CopyToClipboard from './CopyToClipboard.svelte';
 	let gameState = $state<GameState>();
-	/* 	let playerState = $state<Player[]>([]);
-	let myState = $state<Player | null>(null);
-
-	let teams = $derived.by(() => {
-		let teams: TeamComposition = {
-			red: { operative: [], spymaster: [] },
-			blue: { operative: [], spymaster: [] }
-		};
-		for (let i = 0; i < playerState.length; i++) {
-			const { role, team } = playerState[i];
-			if (team && role) {
-				teams[team][role].push(playerState[i]);
-			}
-		}
-		return teams;
-	}); */
 	const lobbyId = $page.params.id;
 	if (browser) {
-		console.log('ZZZZZZZZZZZZZZZ');
-		$inspect(lobby.myState);
-		$inspect(lobby.players);
 		const credentials = LocalStorageHelper.getLobbyEntry(lobbyId);
 		if (credentials) {
 			socket.connect();
@@ -70,19 +51,6 @@
 			gameState = serverGameState;
 		});
 
-		/* 	socket.on('playerUpdate', (serverPlayerState) => {
-			playerState = serverPlayerState;
-			if (myState) {
-				const myId = myState.id;
-				const myStateUpdate = serverPlayerState.find((player) => player.id === myId);
-				if (myStateUpdate) myState = myStateUpdate;
-			}
-		});
-
-		socket.on('myStatus', (serverMyState) => {
-			myState = serverMyState;
-		}); */
-
 		socket.on('kick', () => {
 			goto('/');
 		});
@@ -92,12 +60,9 @@
 <div class="mx-auto flex h-full max-w-screen-2xl flex-col px-2">
 	{#if !lobby.myState || !gameState || !lobby.players}
 		<JoinLobbyCard {lobbyId} />
-		LobbyState{!lobby.myState?.name}
-		gameState{!gameState}
-		{!lobby.myState || !gameState}
 	{:else}
 		<div>
-			<Header {gameState} />
+			<Header />
 			<StatusHeader
 				currentTeam={gameState.currentTeam}
 				winner={gameState.winner}
