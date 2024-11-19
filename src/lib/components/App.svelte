@@ -1,7 +1,7 @@
 <script lang="ts">
 	import socket from '../socket';
 	import { goto } from '$app/navigation';
-	import { lobby } from '$lib/players.svelte';
+	import { lobby } from '$lib/lobby.svelte';
 
 	import { page } from '$app/stores';
 	import type { GameState } from '$shared/src/types';

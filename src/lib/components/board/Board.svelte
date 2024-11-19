@@ -6,7 +6,7 @@
 	import { Pointer } from 'lucide-svelte';
 	import Card from './Card.svelte';
 	import Suggestions from './Suggestions.svelte';
-	import { lobby } from '$lib/players.svelte';
+	import { lobby } from '$lib/lobby.svelte';
 
 	interface Props {
 		gameState: GameState;

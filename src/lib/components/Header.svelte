@@ -1,7 +1,7 @@
 <script lang="ts">
 	import socket from '$lib/socket';
 	import Button from './button/button.svelte';
-	import { lobby } from '$lib/players.svelte';
+	import { lobby } from '$lib/lobby.svelte';
 	import { UserRound } from 'lucide-svelte';
 	import PlayersCard from './PlayersCard.svelte';
 	import { clickOutside } from '$lib/actions/clickOutside';

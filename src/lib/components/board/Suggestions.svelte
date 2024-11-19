@@ -3,7 +3,7 @@
 	import { scale } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
 	import { suggestionVariants } from './variants.js';
-	import { lobby } from '$lib/players.svelte.js';
+	import { lobby } from '$lib/lobby.svelte.js';
 
 	interface Props {
 		suggestions: number[];

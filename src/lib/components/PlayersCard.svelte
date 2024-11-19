@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lobby } from '$lib/players.svelte';
+	import { lobby } from '$lib/lobby.svelte';
 	import { type Player as PlayerType } from '$shared/src/types';
 	import { Search, Binary, Binoculars } from 'lucide-svelte';
 

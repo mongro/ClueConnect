@@ -7,7 +7,7 @@
 		inGuessPhase: boolean;
 		winner: Team | null;
 	}
-	import { lobby } from '$lib/players.svelte';
+	import { lobby } from '$lib/lobby.svelte';
 
 	let { currentTeam, inGuessPhase, winner }: Props = $props();
 

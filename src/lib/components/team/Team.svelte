@@ -5,7 +5,7 @@
 
 	import PlayerDisplay from './Player.svelte';
 	import socket from '$lib/socket';
-	import { lobby } from '$lib/players.svelte';
+	import { lobby } from '$lib/lobby.svelte';
 
 	interface Props {
 		score: number;
