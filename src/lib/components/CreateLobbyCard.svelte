@@ -1,31 +1,9 @@
 <script lang="ts">
 	import Button from './button/button.svelte';
-	import { LocalStorageHelper } from './LocalStorageHelper';
-	import { goto } from '$app/navigation';
 	import Input from './input/Input.svelte';
+	import { createLobby } from '$lib/api';
 
 	let name = $state('');
-	async function createLobby(name: string) {
-		try {
-			const myHeaders = new Headers();
-			myHeaders.append('Content-Type', 'application/json');
-
-			const res = await fetch('http://localhost:5000/createLobby', {
-				method: 'POST',
-				body: JSON.stringify({ name }),
-				headers: myHeaders
-			});
-			if (!res.ok) {
-				throw new Error(`Response status: ${res.status}`);
-			}
-
-			const response = await res.json();
-			LocalStorageHelper.setLobbyEntry(response.lobbyId, response.credentials);
-			goto('/game/' + response.lobbyId);
-		} catch (error) {
-			console.error(error);
-		}
-	}
 </script>
 
 <div class="item-center mt-4 flex justify-center">
