@@ -9,6 +9,7 @@
 	import { clickOutside } from '$lib/actions/clickOutside';
 	import Button from './button/button.svelte';
 	import socket from '$lib/socket';
+	import CopyToClipboard from './CopyToClipboard.svelte';
 
 	let { close }: { close: () => void } = $props();
 
@@ -26,6 +27,10 @@
 	transition:fly={{ y: -20 }}
 	class="absolute top-10 z-50 min-h-40 min-w-80 rounded bg-white p-4 text-secondary shadow-md"
 >
+	<div class="hidden flex-col items-center rounded bg-secondary p-2 text-primary sm:flex">
+		<span class="mr-2">Send this link to invite other players.</span>
+		<CopyToClipboard />
+	</div>
 	<h2 class="mb-2 text-xl text-primary">Players in this lobby</h2>
 	{#each lobby.players as player}
 		<Player {player} myState={lobby.myState}>

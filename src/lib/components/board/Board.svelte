@@ -51,20 +51,22 @@
 <div
 	class="col-span-5 col-start-1 flex flex-col items-center gap-4 lg:col-span-3 lg:col-start-2 lg:row-start-1"
 >
-	<div class="grid-row-6 grid aspect-2 w-full grid-cols-4 gap-2 sm:grid-cols-5">
+	<div class="grid w-full grid-cols-5 gap-1 sm:gap-2">
 		{#each gameState.board as card, index}
 			<Card
 				type={card.type}
 				word={card.word}
 				revealed={card.revealed}
-				spymaster={lobby.myRole === 'spymaster'}
 				onclick={() => toggleSuggestion(index)}
 			>
-				{#snippet button()}
-					{#if isGuessing()}
+				{#snippet button(revealed: boolean, flip: () => void)}
+					{#if isGuessing() || revealed}
 						<Button
-							onclick={() => makeGuess(index)}
-							class="absolute right-0"
+							onclick={() => {
+								if (!revealed) makeGuess(index);
+								else flip();
+							}}
+							class="absolute right-0 top-0"
 							size="icon"
 							variant="outline"><Pointer /></Button
 						>

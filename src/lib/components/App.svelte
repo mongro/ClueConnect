@@ -4,15 +4,7 @@
 	import { lobby } from '$lib/players.svelte';
 
 	import { page } from '$app/stores';
-	import type {
-		ServerToClientEvents,
-		ClientToServerEvents,
-		GameState,
-		Role,
-		Team,
-		Player,
-		TeamComposition
-	} from '$shared/src/types';
+	import type { GameState } from '$shared/src/types';
 	import { onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import EventLog from './EventLog.svelte';
@@ -24,6 +16,7 @@
 	import JoinLobbyCard from './JoinLobbyCard.svelte';
 	import Header from './Header.svelte';
 	import CopyToClipboard from './CopyToClipboard.svelte';
+
 	let gameState = $state<GameState>();
 	const lobbyId = $page.params.id;
 	if (browser) {
@@ -69,12 +62,14 @@
 				inGuessPhase={gameState.currentClue !== null}
 			/>
 		</div>
-		<div class=" grid flex-grow grid-cols-5 grid-rows-[max-content_1fr] gap-4 pt-4 lg:grid-rows-1">
+		<div
+			class=" mt-2 grid flex-grow grid-cols-5 grid-rows-[max-content_1fr] gap-4 sm:mt-4 lg:grid-rows-1"
+		>
 			<TeamsDisplay score={gameState.score} />
 
 			<Board {gameState} />
 			<div class="col-span-3 row-start-2 flex flex-col gap-2 lg:row-start-1">
-				<div class="flex flex-col items-center rounded bg-secondary p-2">
+				<div class="hidden flex-col items-center rounded bg-secondary p-2 sm:flex">
 					<span class="mr-2">Send this link to invite other players.</span>
 					<CopyToClipboard />
 				</div>

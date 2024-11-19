@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="#1f2937" />
+
+  <!-- Dynamic Waves -->
+  <path d="M0,300 Q480,150 960,300 T1920,300 L1920,1080 L0,1080 Z" fill="#9ca3af" opacity="0.8" />
+  <path d="M0,800 Q640,650 1280,800 T2560,800 L2560,1080 L0,1080 Z" fill="#6b7280" opacity="0.6" />
+
+  <!-- Letters -->
+  <text x="150" y="200" font-family="Arial, sans-serif" font-size="150" fill="#e5e7eb" transform="rotate(-10 150,200)">?</text>
+  <text x="1300" y="300" font-family="Arial, sans-serif" font-size="180" fill="#d1d5db" transform="rotate(5 1300,300)">?</text>
+  <text x="600" y="500" font-family="Arial, sans-serif" font-size="200" fill="#9ca3af" transform="rotate(-15 600,500)">?</text>
+  <text x="1600" y="550" font-family="Arial, sans-serif" font-size="160" fill="#4b5563" transform="rotate(10 1600,550)">?</text>
+  <text x="900" y="850" font-family="Arial, sans-serif" font-size="240" fill="#6b7280" transform="rotate(-25 900,850)">?</text>
+  <text x="1200" y="1000" font-family="Arial, sans-serif" font-size="140" fill="#b91c1cs" transform="rotate(15 1200,1000)">?</text>
+  <text x="200" y="950" font-family="Arial, sans-serif" font-size="120" fill="#d1d5db" transform="rotate(-5 200,950)">?</text>
+  <text x="1750" y="700" font-family="Arial, sans-serif" font-size="150" fill="#1f2937" transform="rotate(20 1750,700)">?</text>
+  <text x="1000" y="500" font-family="Arial, sans-serif" font-size="140" fill="#e5e7eb" transform="rotate(-10 1000,500)">?</text>
+
+  <!-- Border -->
+  <rect x="20" y="20" width="1880" height="1040" fill="none" stroke="#4b5563" stroke-width="20" rx="50" ry="50" />
+</svg>

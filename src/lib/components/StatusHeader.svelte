@@ -50,10 +50,10 @@
 	}
 </script>
 
-<div class="mt-4 flex min-h-16 items-center justify-center">
+<div class="mt-2 flex h-8 select-none items-center justify-center sm:mt-4 sm:h-12">
 	{#key message}
 		<div
-			class="rounded bg-white px-2 py-2 text-center text-xl sm:text-2xl"
+			class="rounded bg-white p-1 text-center text-base sm:p-2 sm:text-2xl"
 			in:typewriter={{ speed: 2 }}
 		>
 			{message}
