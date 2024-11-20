@@ -17,7 +17,7 @@ export async function joinLobby(name: string, id: string) {
 
 		const res = await fetch(`${PUBLIC_SERVER_URL}/joinLobby`, {
 			method: 'POST',
-			body: JSON.stringify({ name, id }),
+			body: JSON.stringify({ name, lobbyId: id }),
 			headers: myHeaders
 		});
 		if (!res.ok) {
