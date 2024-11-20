@@ -5,7 +5,10 @@ import socket from './socket';
 
 function syncWithLobby(id: string) {
 	const credentials = LocalStorageHelper.getLobbyEntry(id);
-	if (credentials) socket.emit('joinLobby', id, credentials);
+	if (credentials) {
+		socket.connect();
+		socket.emit('joinLobby', id, credentials);
+	}
 }
 export async function joinLobby(name: string, id: string) {
 	try {
