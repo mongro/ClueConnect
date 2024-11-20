@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { ActionData } from './$types';
 
@@ -19,3 +19,4 @@
 	<button formaction="?/register">Register</button>
 </form>
 <p style="color: red">{form?.message ?? ''}</p>
+ -->
