@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+/* import { eq } from 'drizzle-orm';
 import { sha256 } from '@oslojs/crypto/sha2';
 import { encodeBase32LowerCaseNoPadding, encodeHexLowerCase } from '@oslojs/encoding';
 import { db } from '$lib/server/db';
@@ -65,3 +65,4 @@ export async function validateSession(sessionId: string) {
 }
 
 export type SessionValidationResult = Awaited<ReturnType<typeof validateSession>>;
+ */

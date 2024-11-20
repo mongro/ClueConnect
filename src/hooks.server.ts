@@ -1,4 +1,4 @@
-import type { Handle } from '@sveltejs/kit';
+/* import type { Handle } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import * as auth from '$lib/server/auth.js';
 
@@ -8,8 +8,8 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 		event.locals.user = null;
 		event.locals.session = null;
 		return resolve(event);
-	}
-
+	} */
+/* 
 	const { session, user } = await auth.validateSession(sessionId);
 	if (session) {
 		event.cookies.set(auth.sessionCookieName, session.id, {
@@ -30,3 +30,4 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 };
 
 export const handle: Handle = handleAuth;
+ */
