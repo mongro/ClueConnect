@@ -66,10 +66,23 @@
 								if (!revealed) makeGuess(index);
 								else flip();
 							}}
+							aria-label="guessCard"
 							class="absolute right-0 top-0"
 							size="icon"
 							variant="outline"><Pointer /></Button
 						>
+					{/if}
+				{/snippet}
+				{#snippet suggestButton(revealed: boolean)}
+					{#if isGuessing() && !revealed}
+						<div
+							role="button"
+							aria-label="suggestCard"
+							class=" absolute inset-0 bg-transparent"
+							onclick={() => toggleSuggestion(index)}
+							tabindex="0"
+							onkeydown={() => toggleSuggestion(index)}
+						></div>
 					{/if}
 				{/snippet}
 				<Suggestions suggestions={gameState.suggestions[index] ?? []} />

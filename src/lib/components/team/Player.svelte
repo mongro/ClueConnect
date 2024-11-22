@@ -1,8 +1,7 @@
 <script lang="ts">
-	import socket from '$lib/socket';
 	import type { Player, Role } from '$shared/src/types';
 	import type { Snippet } from 'svelte';
-	import Button from '../button/button.svelte';
+	import { _ } from 'svelte-i18n';
 	import OnlineStatus from '../OnlineStatus.svelte';
 	interface Props {
 		player: Player;
@@ -18,7 +17,7 @@
 		<OnlineStatus online={player.isConnected} />
 		<span>{player.name}</span>
 		{#if player.isHost}
-			<span class="ml-2 text-xs">-HOST-</span>
+			<span class="ml-2 text-xs">{`-${$_('host')}-`}</span>
 		{/if}
 	</div>
 	{#if rightSide}

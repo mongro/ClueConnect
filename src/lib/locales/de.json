@@ -1,0 +1,32 @@
+{
+	"welcome": "Willkommen bei Clue Connect",
+	"copyToClipboard": "Versende diese URL, um andere Spieler einzuladen",
+	"joinLobby": "Trete Spielrunde bei",
+	"createLobby": "Erstelle Spielrunde",
+	"resetGame": "Setze Spiel zurück",
+	"resetTeams": "Setze Teams zurück",
+	"rules": "Regeln",
+	"winnerMessage": "Das {winner, select,blue {blaue}red {rote}other {blaue}} Team gewinnt!",
+	"messageStatusNoTeam": {
+		"spymaster": "Der {team,select, blue {blaue} red {rote}other {blaue}} Geheimdienstchef überlegt sich einen Hinweis. Um zu spielen trete einem Team bei.",
+		"operative": "Die {team,select, blue {blauen} red {roten}other {blaue}} Agenten sind an der Reihe. Um zu spielen trete einem Team bei."
+	},
+	"messageStatusOpponentTeam": {
+		"spymaster": "Der gegnerische Geheimdienstchef überlegt sich einen Hinweis. Warte bis dein Team dran ist.",
+		"operative": "Die gegnerischen Agenten sind an der Reihe. Warte bis dein Team dran ist."
+	},
+	"waitingForClue": "Warte bis dein Geheimdienstchef dir einen Hinweis gibt.",
+	"waitingForGuess": "Deine Ermittler sind an der Reihe.",
+	"givingClue": "Gib deinen Ermittlern einen Hinweis.",
+	"logClue": "gibt den Hinweis",
+	"logGuess": "wählt",
+	"giveClueButton": "Gib einen Hinweis",
+	"endGuessingButton": "Beende Raten",
+	"makeGuess": "Rate ein Wort.",
+	"spymaster": "Geheimdienstchef",
+	"becomeSpymaster": "Werde Geheimdienstchef",
+	"agents": "Ermittler",
+	"joinAgents": "Den Agenten beitreten",
+	"playersLobby": "Spieler in dieser Lobby",
+	"makeHost": "Zum Moderator machen"
+}

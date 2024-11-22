@@ -8,11 +8,12 @@
 		word: string;
 		revealed: boolean;
 		button: Snippet<[boolean, () => void]>;
-		children: Snippet<[]>;
-		onclick: () => void;
+		children: Snippet;
+		onclick?: () => void;
+		suggestButton: Snippet<[boolean]>;
 	}
 
-	let { children, type, word, button, revealed, onclick }: Props = $props();
+	let { children, type, word, button, revealed, onclick, suggestButton }: Props = $props();
 
 	let showCardbackAfterReveal = $state(true);
 
@@ -24,7 +25,6 @@
 		const rect = node.getBoundingClientRect();
 		const viewportCenterX = window.innerWidth / 2;
 		const elementCenterX = rect.left + rect.width / 2;
-		console.log('diff', elementCenterX - viewportCenterX, rect.left);
 		const deg = Math.random() * 30;
 		const dir = Math.random() < 0.5 ? 1 : -1;
 		return {
@@ -61,12 +61,9 @@
 				/>
 			{/if}
 			<div
-				role="button"
 				class=" absolute bottom-1 flex w-full items-center justify-center bg-white text-center sm:bottom-4"
-				{onclick}
-				tabindex="0"
-				onkeydown={onclick}
 			>
+				{@render suggestButton(revealed)}
 				{word}
 			</div>
 			{@render button(revealed, toggleShowCardbackAfterReveal)}

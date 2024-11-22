@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Role, Team } from '$shared/src/types';
+	import { _ } from 'svelte-i18n';
 	import type { TransitionConfig } from 'svelte/transition';
 
 	interface Props {
@@ -34,19 +35,20 @@
 	function createMessage() {
 		let { myRole, myTeam } = lobby;
 		if (winner) {
-			return `The ${winner} team wins!`;
+			return $_('winnerMessage', { values: { winner } });
 		}
 		if (myTeam === undefined) {
-			return `The ${currentTeam} ${inGuessPhase ? 'operative' : 'spymaster'} is playing. To play, join a team.`;
+			return $_(`messageStatusNoTeam.${inGuessPhase ? 'operative' : 'spymaster'}`, {
+				values: { team: currentTeam }
+			});
 		}
 		if (currentTeam === myTeam) {
-			if (myRole === 'spymaster' && inGuessPhase) return 'Your operative is guessing now';
-			if (myRole === 'operative' && inGuessPhase) return 'Make a guess now';
-			if (myRole === 'spymaster' && !inGuessPhase) return 'Give a clue to your operatives.';
-			if (myRole === 'operative' && !inGuessPhase) return 'Wait for your spymaster to give a clue';
+			if (myRole === 'spymaster' && inGuessPhase) return $_('waitingForGuess');
+			if (myRole === 'operative' && inGuessPhase) return $_('makeGuess');
+			if (myRole === 'spymaster' && !inGuessPhase) return $_('givingClue');
+			if (myRole === 'operative' && !inGuessPhase) return $_('waitingForClue');
 		}
-		if (inGuessPhase) return 'The opponent operatives are guessing. Wait for your turn.';
-		else return 'The opponent spymaster is preparing a clue. Wait for your turn.';
+		return $_(`messageStatusOpponentTeam.${inGuessPhase ? 'operative' : 'spymaster'}`);
 	}
 </script>
 

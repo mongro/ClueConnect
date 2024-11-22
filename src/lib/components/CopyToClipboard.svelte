@@ -26,7 +26,7 @@
 
 <div class="flex items-center">
 	<Input readonly value={url} />
-	<Button size="icon" onclick={copyToClipboard}>
+	<Button size="icon" onclick={copyToClipboard} aria-label="copyToClipboard">
 		{#if !error && !success}
 			<Clipboard />
 		{/if}

@@ -3,6 +3,8 @@
 	import Button from '../button/button.svelte';
 	import ClueInput from '../ClueInput.svelte';
 	import type { Clue, Team } from '$shared/src/types';
+	import { _ } from 'svelte-i18n';
+
 	interface Props {
 		currentClue: Clue | null;
 		currentTeam: Team;
@@ -23,6 +25,6 @@
 {/if}
 {#if isGuessing}
 	<div class="flex items-center justify-center">
-		<Button size="lg" onclick={endGuessing} variant="destructive">End guessing</Button>
+		<Button size="lg" onclick={endGuessing} variant="destructive">{$_('endGuessingButton')}</Button>
 	</div>
 {/if}

@@ -1,5 +1,6 @@
 <script lang="ts" generics="T">
 	import { tick, type Snippet } from 'svelte';
+	import { _ } from 'svelte-i18n';
 
 	interface Props {
 		messages: T[];

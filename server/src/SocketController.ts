@@ -4,8 +4,7 @@ import type { Server, Socket } from 'socket.io';
 import type { Lobby } from './Lobby';
 import { Role, Team, Player } from './types';
 
-const SPYMASTER_CHANNEL = '/spymasters';
-const OPERATIVE_CHANNEL = '/operatives';
+const SPYMASTER_CHANNEL_KEYWORD = '/spymasters';
 /**
  * This class is responsible for handling all events for a given socket.
  * It connects the server with the methods in Game class.
@@ -20,18 +19,18 @@ export class SocketController {
 
 	// AUXILIARY PRIVATE METHODS
 
-	private getLobbyChannel() {
+	private get lobbyChannel() {
 		return this.lobby.id;
 	}
 
-	private getSpyMasterChannel() {
-		return this.lobby.id + SPYMASTER_CHANNEL;
+	private get spymasterChannel() {
+		return this.lobby.id + SPYMASTER_CHANNEL_KEYWORD;
 	}
 	private sendToAll<T extends keyof ServerToClientEvents>(
 		event: T,
 		...data: Parameters<ServerToClientEvents[T]>
 	): void {
-		this.io.to(this.getLobbyChannel()).emit(event, ...data);
+		this.io.to(this.lobbyChannel).emit(event, ...data);
 	}
 
 	private sendToMe<T extends keyof ServerToClientEvents>(
@@ -46,27 +45,27 @@ export class SocketController {
 		event: T,
 		...data: Parameters<ServerToClientEvents[T]>
 	) {
-		this.io.to(this.getLobbyChannel() + id).emit(event, ...data);
+		this.io.to(this.lobbyChannel + id).emit(event, ...data);
 	}
 
 	private sendToOthers<T extends keyof ServerToClientEvents>(
 		event: T,
 		...data: Parameters<ServerToClientEvents[T]>
 	) {
-		this.socket.broadcast.to(this.getLobbyChannel()).emit(event, ...data);
+		this.socket.broadcast.to(this.lobbyChannel).emit(event, ...data);
 	}
 
 	private sendToSpyMasters<T extends keyof ServerToClientEvents>(
 		event: T,
 		...data: Parameters<ServerToClientEvents[T]>
 	) {
-		this.io.to(this.getSpyMasterChannel()).emit(event, ...data);
+		this.io.to(this.spymasterChannel).emit(event, ...data);
 	}
 	private sendToOperatives<T extends keyof ServerToClientEvents>(
 		event: T,
 		...data: Parameters<ServerToClientEvents[T]>
 	) {
-		this.io.to(this.getLobbyChannel()).emit(event, ...data);
+		this.io.to(this.lobbyChannel).emit(event, ...data);
 	}
 
 	private getAllPlayer(): Player[] {
@@ -100,11 +99,11 @@ export class SocketController {
 
 	public sync() {
 		if (this.player.role === 'spymaster') {
-			this.socket.join(this.getSpyMasterChannel());
+			this.socket.join(this.spymasterChannel);
 			this.sendToMe('gameUpdate', this.game.getState('spymaster'));
 		}
-		this.socket.join(this.getLobbyChannel());
-		this.socket.join(this.getLobbyChannel() + this.player.id);
+		this.socket.join(this.lobbyChannel);
+		this.socket.join(this.lobbyChannel + this.player.id);
 
 		this.player.isConnected = true;
 		this.sendGameState();
@@ -116,10 +115,10 @@ export class SocketController {
 		const { success } = this.game.setPlayerRole(this.player, role, team);
 		if (success) {
 			if (role === 'spymaster') {
-				this.socket.join(this.getSpyMasterChannel());
+				this.socket.join(this.spymasterChannel);
 				this.sendToMe('gameUpdate', this.game.getState('spymaster'));
 			} else {
-				this.socket.leave(this.getSpyMasterChannel());
+				this.socket.leave(this.spymasterChannel);
 			}
 			this.sendPlayerState();
 		}
@@ -157,7 +156,6 @@ export class SocketController {
 	}
 
 	public giveClue(word: string, number: number) {
-		console.log('memory', process.memoryUsage());
 		const { success } = this.game.giveClue(this.player, { clue: word, number });
 		if (success) this.sendGameState();
 	}
@@ -172,11 +170,13 @@ export class SocketController {
 	public resetGame(): void {
 		if (!this.player.isHost) return;
 		this.game.reset();
+		this.io.socketsLeave(this.spymasterChannel);
 		this.sendGameState();
 		this.sendPlayerState();
 	}
 	public resetTeams(): void {
 		if (!this.player.isHost) return;
+		this.io.socketsLeave(this.spymasterChannel);
 		this.game.resetTeams();
 		this.sendPlayerState();
 	}

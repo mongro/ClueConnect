@@ -1,33 +1,15 @@
-/* import type { Handle } from '@sveltejs/kit';
-import { dev } from '$app/environment';
-import * as auth from '$lib/server/auth.js';
+import type { Handle } from '@sveltejs/kit';
+import { locale } from 'svelte-i18n';
 
-const handleAuth: Handle = async ({ event, resolve }) => {
-	const sessionId = event.cookies.get(auth.sessionCookieName);
-	if (!sessionId) {
-		event.locals.user = null;
-		event.locals.session = null;
+/* export const handle: Handle = async ({ event, resolve }) => {
+	console.log('hook');
+	let lang = event.request.headers.get('cookie');
+	if (lang) {
+		locale.set(lang);
 		return resolve(event);
-	} */
-/* 
-	const { session, user } = await auth.validateSession(sessionId);
-	if (session) {
-		event.cookies.set(auth.sessionCookieName, session.id, {
-			path: '/',
-			sameSite: 'lax',
-			httpOnly: true,
-			expires: session.expiresAt,
-			secure: !dev
-		});
-	} else {
-		event.cookies.delete(auth.sessionCookieName, { path: '/' });
 	}
 
-	event.locals.user = user;
-	event.locals.session = session;
+	lang = event.request.headers.get('accept-language')?.split(',')[0] ?? null;
 
 	return resolve(event);
-};
-
-export const handle: Handle = handleAuth;
- */
+}; */

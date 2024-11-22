@@ -1,0 +1,33 @@
+{
+	"welcome": "Welcome to Clue Connect",
+	"copyToClipboard": "Send this link to invite other players",
+	"joinLobby": "Join lobby",
+	"createLobby": "Create lobby",
+	"resetGame": "Reset game",
+	"resetTeams": "Reset teams",
+	"rules": "Rules",
+	"winnerMessage": "The {winner} team wins!",
+	"messageStatusNoTeam": {
+		"spymaster": "The {team} spymaster is preparing a clue. Wait for your turn.",
+		"operative": "The {team} agents are guessing. Wait for your turn."
+	},
+	"messageStatusOpponentTeam": {
+		"spymaster": "The opponent spymaster is preparing a clue. Wait for your turn.",
+		"operative": "The opponent agents are guessing. Wait for your turn."
+	},
+	"waitingForClue": "Wait for your spymaster to give a clue",
+	"waitingForGuess": "Your agents are guessing.",
+	"givingClue": "Give a clue to your operatives.",
+	"logClue": "gives clue",
+	"logGuess": "chooses",
+	"endGuessingButton": "End guessing",
+	"giveClueButton": "Give clue",
+	"makeGuess": "Make a guess now",
+	"spymaster": "Spymaster",
+	"becomeSpymaster": "Become spymaster",
+	"agents": "Agents",
+	"joinAgents": "Join agents",
+	"playersLobby": "Players in this Lobby",
+	"makeHost": "Make Host",
+	"host": "Moderator"
+}

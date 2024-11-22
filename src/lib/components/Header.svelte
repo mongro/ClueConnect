@@ -4,7 +4,8 @@
 	import { lobby } from '$lib/lobby.svelte';
 	import { UserRound } from 'lucide-svelte';
 	import PlayersCard from './PlayersCard.svelte';
-	import { clickOutside } from '$lib/actions/clickOutside';
+	import { _ } from 'svelte-i18n';
+	import LanguageSelect from './LanguageSelect.svelte';
 
 	let showPlayersCard = $state(false);
 	function restart() {
@@ -29,7 +30,8 @@
 
 	<Button onclick={openShowPlayers}><UserRound /><span>{lobby.players.length}</span></Button>
 	{#if lobby.myState?.isHost}
-		<Button onclick={restart}>Reset Game</Button>
-		<Button onclick={resetTeams}>Reset Teams</Button>
+		<Button onclick={restart}>{$_('resetGame')}</Button>
+		<Button onclick={resetTeams}>{$_('resetTeams')}</Button>
 	{/if}
+	<LanguageSelect />
 </div>

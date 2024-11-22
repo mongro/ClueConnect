@@ -2,7 +2,7 @@
 	import socket from '../socket';
 	import { goto } from '$app/navigation';
 	import { lobby } from '$lib/lobby.svelte';
-
+	import { _ } from 'svelte-i18n';
 	import { page } from '$app/stores';
 	import type { GameState } from '$shared/src/types';
 	import { onDestroy } from 'svelte';
@@ -70,7 +70,7 @@
 			<Board {gameState} />
 			<div class="col-span-3 row-start-2 flex flex-col gap-2 lg:row-start-1">
 				<div class="hidden flex-col items-center rounded bg-secondary p-2 sm:flex">
-					<span class="mr-2">Send this link to invite other players.</span>
+					<span class="mr-2">{$_('copyToClipboard')}</span>
 					<CopyToClipboard />
 				</div>
 				<EventLog messages={gameState.log}>

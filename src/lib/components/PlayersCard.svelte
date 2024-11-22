@@ -2,7 +2,7 @@
 	import { lobby } from '$lib/lobby.svelte';
 	import { type Player as PlayerType } from '$shared/src/types';
 	import { Search, Binary, Binoculars } from 'lucide-svelte';
-
+	import { _ } from 'svelte-i18n';
 	import { fly } from 'svelte/transition';
 	import Player from './team/Player.svelte';
 	import { teamVariants } from './generalVariants';
@@ -28,10 +28,10 @@
 	class="absolute top-10 z-50 min-h-40 min-w-80 rounded bg-white p-4 text-secondary shadow-md"
 >
 	<div class="hidden flex-col items-center rounded bg-secondary p-2 text-primary sm:flex">
-		<span class="mr-2">Send this link to invite other players.</span>
+		<span class="mr-2">{$_('copyToClipboard')}</span>
 		<CopyToClipboard />
 	</div>
-	<h2 class="mb-2 text-xl text-primary">Players in this lobby</h2>
+	<h2 class="mb-2 text-xl text-primary">{$_('playersLobby')}</h2>
 	{#each lobby.players as player}
 		<Player {player} myState={lobby.myState}>
 			{#snippet rightSide(player: PlayerType, myState: PlayerType | null)}
@@ -41,7 +41,7 @@
 							>Kick</Button
 						>
 						<Button size="sm" onclick={() => makeHost(player.id)} variant="secondary"
-							>Make Host</Button
+							>{$_('makeHost')}</Button
 						>
 					</div>
 				{/if}
