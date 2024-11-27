@@ -3,13 +3,12 @@
 	import { _, locale } from 'svelte-i18n';
 	import { browser } from '$app/environment';
 
-	const currentLanguage = $locale === 'en' || $locale === 'de' ? $locale : 'en';
-
+	const currLocale = $locale ? $locale.split('-')[0] : 'en';
+	const currentLanguage = currLocale === 'en' || currLocale === 'de' ? currLocale : 'en';
 	let selectedLocale = $state<Selected<string>>({
 		value: currentLanguage,
 		label: currentLanguage
 	});
-	console.log($locale);
 
 	function setLocale(localeNew: string) {
 		if (browser) {
@@ -39,10 +38,10 @@
 	<Select.Trigger
 		class="rounded-9px border-border-input placeholder:text-foreground-alt/50 inline-flex h-10 w-12 items-center border bg-background px-[11px] text-sm transition-colors  focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2 focus:ring-offset-background"
 	>
-		<Select.Value placeholder="Select a language" />
+		<Select.Value class="uppercase" placeholder="Select a language" />
 	</Select.Trigger>
 	<Select.Content
-		class=" rounded-xl border border-muted bg-background px-3 py-3 shadow-popover outline-none"
+		class="absolute z-50 rounded-xl border border-muted bg-background px-3 py-3 shadow-popover outline-none"
 		sameWidth={false}
 	>
 		<Select.Item

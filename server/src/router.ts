@@ -6,13 +6,31 @@ import { Lobby } from './Lobby';
 
 const router = Router();
 
+const getGame = (req: Request, res: Response) => {
+	try {
+		const { id } = req.params;
+		console.log(id);
+
+		const lobby = lobbyDb.get(id);
+		console.log('players', lobby?.playersAll);
+		if (!lobby) {
+			res.status(404).json({ message: 'Lobby not found' });
+			return;
+		}
+		res.status(200).json({ game: lobby.game, players: lobby.playersAll });
+	} catch (error) {
+		console.error('Error in createLobby:', error);
+		res.status(500).json({ message: 'Internal server error' });
+	}
+};
+
 const createLobby = (req: Request, res: Response) => {
 	try {
 		const { name } = req.body;
-		let id = crypto.randomUUID();
+		let id = Math.random().toString(36).slice(-6);
 		let attempts = 0;
 		while (lobbyDb.get(id) && attempts < 15) {
-			id = crypto.randomUUID();
+			id = Math.random().toString(36).slice(-6);
 			attempts++;
 		}
 		if (attempts === 15) {
@@ -58,5 +76,6 @@ const joinLobby = (req: Request, res: Response) => {
 
 router.post('/createLobby', createLobby);
 router.post('/joinLobby', joinLobby);
+router.get('/getGame/:id', getGame);
 
 export default router;

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lobby } from '$lib/lobby.svelte';
+	import { getLobbyState } from '$lib/lobby.svelte';
 	import { type Player as PlayerType } from '$shared/src/types';
 	import { Search, Binary, Binoculars } from 'lucide-svelte';
 	import { _ } from 'svelte-i18n';
@@ -32,8 +32,8 @@
 		<CopyToClipboard />
 	</div>
 	<h2 class="mb-2 text-xl text-primary">{$_('playersLobby')}</h2>
-	{#each lobby.players as player}
-		<Player {player} myState={lobby.myState}>
+	{#each getLobbyState().players as player}
+		<Player {player} myState={getLobbyState().myState}>
 			{#snippet rightSide(player: PlayerType, myState: PlayerType | null)}
 				{#if myState?.isHost && !player.isHost}
 					<div class="flex items-center gap-1">

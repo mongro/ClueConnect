@@ -1,13 +1,16 @@
 <script lang="ts">
 	import socket from '$lib/socket';
 	import Button from './button/button.svelte';
-	import { lobby } from '$lib/lobby.svelte';
+	import { getLobbyState } from '$lib/lobby.svelte';
 	import { UserRound } from 'lucide-svelte';
 	import PlayersCard from './PlayersCard.svelte';
 	import { _ } from 'svelte-i18n';
 	import LanguageSelect from './LanguageSelect.svelte';
+	import Modal from './Modal.svelte';
 
 	let showPlayersCard = $state(false);
+	let lobby = getLobbyState();
+
 	function restart() {
 		socket.emit('resetGame');
 	}
@@ -29,9 +32,10 @@
 	{/if}
 
 	<Button onclick={openShowPlayers}><UserRound /><span>{lobby.players.length}</span></Button>
-	{#if lobby.myState?.isHost}
+	{#if getLobbyState().myState?.isHost}
 		<Button onclick={restart}>{$_('resetGame')}</Button>
 		<Button onclick={resetTeams}>{$_('resetTeams')}</Button>
 	{/if}
 	<LanguageSelect />
+	<Modal />
 </div>

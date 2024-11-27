@@ -37,7 +37,7 @@ class Game {
             return count;
         }, 0);
     }
-    privateRevealCard(cardId) {
+    revealCard(cardId) {
         if (!this.currentClue)
             return;
         const { type, word } = this.board[cardId];
@@ -151,7 +151,7 @@ class Game {
             word: this.board[cardId].word,
             player: player.name
         });
-        this.privateRevealCard(cardId);
+        this.revealCard(cardId);
         return { success: true };
     }
     giveClue(player, clue) {

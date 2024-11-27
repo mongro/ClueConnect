@@ -1,14 +1,15 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import Button from './button/button.svelte';
 	import Input from './input/Input.svelte';
-	import { fade } from 'svelte/transition';
 	import { Clipboard, Check, Ban } from 'lucide-svelte';
 
 	let error: boolean = $state(false);
 	let success: boolean = $state(false);
-	let url = window.location.href;
-	console.log('URl' + url);
+	let url = browser ? window.location.href : '';
+
 	async function copyToClipboard() {
+		if (!browser) return;
 		try {
 			await navigator.clipboard.writeText(url);
 			success = true;

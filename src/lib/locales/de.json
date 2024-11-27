@@ -28,5 +28,17 @@
 	"agents": "Ermittler",
 	"joinAgents": "Den Agenten beitreten",
 	"playersLobby": "Spieler in dieser Lobby",
-	"makeHost": "Zum Moderator machen"
+	"makeHost": "Zum Moderator machen",
+	"overview": "Überblick",
+	"guessing": "Raten",
+	"strategy": "Strategie",
+	"gameplay": "Spielablauf",
+	"winning": "Spielende",
+	"overviewText": "Codenames ist ein wortbasiertes Partyspiel für 4 oder mehr Spieler, das Teamarbeit und Deduktion fördert. Die Spieler werden in zwei Teams aufgeteilt, jedes mit einem Geheimdienstchef (Spymaster) und mindestens einem Ermittler. Ziel ist es, alle Codenamen des eigenen Teams auf dem Spielfeld zu identifizieren, bevor das andere Team dies tut. Ein 5x5-Raster mit zufälligen Wortkarten wird ausgelegt, wobei jede Karte einen potenziellen \"Codenamen\" darstellt.  Nur die Geheimdienstchefs wissen, welche Karten zu ihrem Team gehören, welche neutral sind und welche Karte der Attentäter ist – diese Karte zu wählen, beendet das Spiel sofort mit einer Niederlage.",
+	"winningText": " Der Sieg wird errungen, indem alle Codenamen des eigenen Teams zuerst identifiziert werden. Die Wahl des Attentäters führt sofort zu einer Niederlage. Die einfachen Regeln und die strategische Tiefe machen das Spiel zu einem Favoriten für Spieleabende, wobei Variationen und thematische Editionen die Wiederspielbarkeit erhöhen.",
+	"strategyText": "Strategisches Denken ist entscheidend. Geheimdienstchefs müssen Hinweise geben, die mehrere Wörter verknüpfen, ohne Mehrdeutigkeiten zu schaffen. Ermittler interpretieren Hinweise kreativ und wägen Risiken sorgfältig ab. Teams können Raten überspringen, wenn sie unsicher sind, was jedoch den Fortschritt verlangsamen kann.",
+	"guessingRules": "<li>Errate bis zu der durch die Zahl angegebenen Anzahl, plus eine zusätzliche Vermutung, wenn gewünscht.</li><li>Ist die Vermutung richtig, wird die entsprechende Karte mit der Farbe des Teams markiert.</li><li>Bei einer falschen Vermutung endet der Zug, und die Karte wird für das gegnerische Team oder als neutral markiert.</li><li>Wird der Attentäter gewählt, endet das Spiel sofort mit einer Niederlage für dieses Team.</li>",
+
+	"clueRules": "<li>Einem einzelnen Wort (z. B. „Ozean“).</li><li>Einer Zahl, die angibt, wie viele Wörter mit dem Hinweis verbunden sind.</li>",
+	"spymasterRoleText": "Der Geheimdienstchef gibt ein Ein-Wort-Hinweis, um seinem Team zu helfen, die zugehörigen Codenamen zu erraten. Jeder Hinweis besteht aus:"
 }

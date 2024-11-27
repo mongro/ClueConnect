@@ -8,11 +8,12 @@
 		inGuessPhase: boolean;
 		winner: Team | null;
 	}
-	import { lobby } from '$lib/lobby.svelte';
+	import { getLobbyState } from '$lib/lobby.svelte';
 
 	let { currentTeam, inGuessPhase, winner }: Props = $props();
 
 	let message = $derived(createMessage());
+	let lobby = getLobbyState();
 
 	function typewriter(node: Element, { speed = 1 }): TransitionConfig {
 		const text = node.textContent;
@@ -33,20 +34,19 @@
 		};
 	}
 	function createMessage() {
-		let { myRole, myTeam } = lobby;
 		if (winner) {
 			return $_('winnerMessage', { values: { winner } });
 		}
-		if (myTeam === undefined) {
+		if (lobby.myTeam === undefined) {
 			return $_(`messageStatusNoTeam.${inGuessPhase ? 'operative' : 'spymaster'}`, {
 				values: { team: currentTeam }
 			});
 		}
-		if (currentTeam === myTeam) {
-			if (myRole === 'spymaster' && inGuessPhase) return $_('waitingForGuess');
-			if (myRole === 'operative' && inGuessPhase) return $_('makeGuess');
-			if (myRole === 'spymaster' && !inGuessPhase) return $_('givingClue');
-			if (myRole === 'operative' && !inGuessPhase) return $_('waitingForClue');
+		if (currentTeam === lobby.myTeam) {
+			if (lobby.myRole === 'spymaster' && inGuessPhase) return $_('waitingForGuess');
+			if (lobby.myRole === 'operative' && inGuessPhase) return $_('makeGuess');
+			if (lobby.myRole === 'spymaster' && !inGuessPhase) return $_('givingClue');
+			if (lobby.myRole === 'operative' && !inGuessPhase) return $_('waitingForClue');
 		}
 		return $_(`messageStatusOpponentTeam.${inGuessPhase ? 'operative' : 'spymaster'}`);
 	}

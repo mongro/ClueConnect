@@ -24,6 +24,10 @@ export class Lobby {
 		return this.players[id] !== undefined;
 	}
 
+	get playersAll(): Player[] {
+		return Object.values(this.players);
+	}
+
 	public getPlayerFromCredentials(credentials: string) {
 		const id = this.credentialsToIdMap[credentials];
 		if (id === undefined) return null;

@@ -3,7 +3,7 @@
 	import { scale } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
 	import { suggestionVariants } from './variants.js';
-	import { lobby } from '$lib/lobby.svelte.js';
+	import { getLobbyState } from '$lib/lobby.svelte.js';
 
 	interface Props {
 		suggestions: number[];
@@ -11,7 +11,9 @@
 	let { suggestions }: Props = $props();
 
 	let suggestingPlayers = $derived.by(() => {
-		let player = suggestions.map((id) => lobby.players.find((player) => player.id === id));
+		let player = suggestions.map((id) =>
+			getLobbyState().players.find((player) => player.id === id)
+		);
 		return player.filter((player) => player !== undefined);
 	});
 </script>

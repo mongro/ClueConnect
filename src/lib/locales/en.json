@@ -29,5 +29,16 @@
 	"joinAgents": "Join agents",
 	"playersLobby": "Players in this Lobby",
 	"makeHost": "Make Host",
-	"host": "Moderator"
+	"host": "Moderator",
+	"overview": "Overview",
+	"guessing": "Guessing",
+	"strategy": "Strategy",
+	"gameplay": "Gameplay",
+	"winning": "Winning",
+	"overviewText": "Codenames is a word-based party game for 4 or more players, designed to foster teamwork and deduction. Players are divided into two teams, each with a Spymaster and at least one Field Operative. The goal is to identify all of your team’s codenames on the grid before the other team does. A 5x5 grid of random word cards is laid out, each card representing a potential  \"codename. \" Teams take turns, and only the Spymasters know which cards belong to their team, which are neutral, and which card is the assassin—choosing this card ends the game immediately in a loss.",
+	"winningText": "Victory is achieved by identifying all of your team’s codenames first. Choosing the assassin loses the game instantly. The game’s simple rules and strategic depth make it afavorite for game nights, with variations and themed editions adding replayability.",
+	"strategyText": "Strategic thinking is key. Spymasters must craft clues that link multiple words while avoiding ambiguity. Field Operatives interpret clues creatively and weigh risks carefully. Teams can skip guesses if uncertain, but progress may be slowed.",
+	"guessingRules": "<li>Guess up to the number indicated by the clue, plus one additional guess if desired.</li><li>If a guess is correct, the corresponding card is marked with the team’s color.</li><li>If incorrect, the turn ends, and the card is marked for the opposing team or as neutral.</li><li>Guessing the assassin ends the game immediately with a loss for that team.</li>",
+	"ClueRules": "<li>A single word (e.g., “Ocean”).</li><li>A number indicating how many words are linked to the clue.</li>",
+	"spymasterRoleText": "The Spymaster provides one-word clues to help their teammates guess the codenames associated with their team. Each clue consists of:"
 }

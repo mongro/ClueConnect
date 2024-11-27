@@ -24,6 +24,9 @@ class Lobby {
     hasPlayer(id) {
         return this.players[id] !== undefined;
     }
+    get playersAll() {
+        return Object.values(this.players);
+    }
     getPlayerFromCredentials(credentials) {
         const id = this.credentialsToIdMap[credentials];
         if (id === undefined)

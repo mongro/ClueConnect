@@ -1,18 +1,20 @@
 <script lang="ts">
 	import socket from '$lib/socket';
-	import type { GameState, Player } from '$shared/src/types';
+	import type { CardType, GameState, Player } from '$shared/src/types';
 	import Button from '../button/button.svelte';
 	import GameControls from './GameControls.svelte';
 	import { Pointer } from 'lucide-svelte';
 	import Card from './Card.svelte';
 	import Suggestions from './Suggestions.svelte';
-	import { lobby } from '$lib/lobby.svelte';
+	import { getLobbyState } from '$lib/lobby.svelte';
+	import { wordContainerVariants } from './variants';
 
 	interface Props {
 		gameState: GameState;
 	}
 
 	let { gameState }: Props = $props();
+	let lobby = getLobbyState();
 
 	function giveClue(word: string, number: number) {
 		socket.emit('giveClue', word, number);
@@ -26,14 +28,14 @@
 		return (
 			lobby.myRole === 'operative' &&
 			lobby.myTeam === gameState?.currentTeam &&
-			gameState?.currentClue !== null
+			lobby.gameState?.currentClue !== null
 		);
 	}
 
 	function isGivingClue() {
 		return (
 			lobby.myTeam === gameState?.currentTeam &&
-			gameState?.currentClue === null &&
+			lobby.gameState?.currentClue === null &&
 			lobby.myRole === 'spymaster'
 		);
 	}

@@ -39,7 +39,7 @@ export class Game {
 		}, 0);
 	}
 
-	privateRevealCard(cardId: number) {
+	private revealCard(cardId: number) {
 		if (!this.currentClue) return;
 		const { type, word } = this.board[cardId];
 		this.board[cardId] = { type, word, revealed: true };
@@ -164,7 +164,7 @@ export class Game {
 			word: this.board[cardId].word,
 			player: player.name
 		});
-		this.privateRevealCard(cardId);
+		this.revealCard(cardId);
 		return { success: true };
 	}
 

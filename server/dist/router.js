@@ -5,16 +5,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const LobbyDB_1 = __importDefault(require("./LobbyDB"));
 const express_1 = require("express");
-const crypto_1 = __importDefault(require("crypto"));
 const Lobby_1 = require("./Lobby");
 const router = (0, express_1.Router)();
+const getGame = (req, res) => {
+    try {
+        const { id } = req.params;
+        console.log(id);
+        const lobby = LobbyDB_1.default.get(id);
+        console.log('players', lobby?.playersAll);
+        if (!lobby) {
+            res.status(404).json({ message: 'Lobby not found' });
+            return;
+        }
+        res.status(200).json({ game: lobby.game, players: lobby.playersAll });
+    }
+    catch (error) {
+        console.error('Error in createLobby:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
 const createLobby = (req, res) => {
     try {
         const { name } = req.body;
-        let id = crypto_1.default.randomUUID();
+        let id = Math.random().toString(36).slice(-6);
         let attempts = 0;
         while (LobbyDB_1.default.get(id) && attempts < 15) {
-            id = crypto_1.default.randomUUID();
+            id = Math.random().toString(36).slice(-6);
             attempts++;
         }
         if (attempts === 15) {
@@ -59,4 +75,5 @@ const joinLobby = (req, res) => {
 };
 router.post('/createLobby', createLobby);
 router.post('/joinLobby', joinLobby);
+router.get('/getGame/:id', getGame);
 exports.default = router;

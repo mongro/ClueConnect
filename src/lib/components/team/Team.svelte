@@ -5,7 +5,7 @@
 	import { _ } from 'svelte-i18n';
 	import PlayerDisplay from './Player.svelte';
 	import socket from '$lib/socket';
-	import { lobby } from '$lib/lobby.svelte';
+	import { getLobbyState } from '$lib/lobby.svelte';
 
 	interface Props {
 		score: number;
@@ -23,17 +23,17 @@
 	<div class="flex items-center justify-center text-xl md:text-3xl lg:text-5xl">{score}</div>
 	<div class={teamTextVariants({ team })}>{$_('agents')}</div>
 	<div class="mt-1 flex-grow">
-		{#each lobby.getMembers(team, 'operative') as player}
-			<PlayerDisplay {player} myState={lobby.myState} />{/each}
-		{#if !lobby.myTeam}
+		{#each getLobbyState().getMembers(team, 'operative') as player}
+			<PlayerDisplay {player} myState={getLobbyState().myState} />{/each}
+		{#if !getLobbyState().myTeam}
 			<Button onclick={() => joinRoleAndTeam('operative', team)}>{$_('joinAgents')}</Button>
 		{/if}
 	</div>
 	<div class={teamTextVariants({ team })}>{$_('spymaster')}</div>
 	<div class="mt-1 flex-grow">
-		{#each lobby.getMembers(team, 'spymaster') as player}
-			<PlayerDisplay {player} myState={lobby.myState} />{/each}
-		{#if !lobby.myTeam}
+		{#each getLobbyState().getMembers(team, 'spymaster') as player}
+			<PlayerDisplay {player} myState={getLobbyState().myState} />{/each}
+		{#if !getLobbyState().myTeam}
 			<Button onclick={() => joinRoleAndTeam('spymaster', team)}>{$_('becomeSpymaster')}</Button>
 		{/if}
 	</div>

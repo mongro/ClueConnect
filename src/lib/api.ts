@@ -10,6 +10,12 @@ function syncWithLobby(id: string) {
 		socket.emit('joinLobby', id, credentials);
 	}
 }
+
+export async function getGame(id: string) {
+	console.log('req to', `${PUBLIC_SERVER_URL}/getGame/${id}`);
+	return await fetch(`${PUBLIC_SERVER_URL}/getGame/${id}`);
+}
+
 export async function joinLobby(name: string, id: string) {
 	try {
 		const myHeaders = new Headers();

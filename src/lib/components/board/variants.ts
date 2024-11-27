@@ -15,4 +15,18 @@ export const teamContainerVariants = cva('w-full rounded p-2 text-white shadow-2
 		}
 	}
 });
+
+export const wordContainerVariants = cva(
+	' absolute bottom-1 flex w-full items-center justify-center text-center sm:bottom-4',
+	{
+		variants: {
+			type: {
+				red: 'bg-red-team text-white',
+				blue: 'bg-blue-team text-white',
+				grey: 'bg-white ',
+				black: 'bg-primary text-white '
+			}
+		}
+	}
+);
 export type SuggestionProps = VariantProps<typeof suggestionVariants>;
