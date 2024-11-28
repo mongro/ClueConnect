@@ -40,5 +40,7 @@
 	"guessingRules": "<li>Errate bis zu der durch die Zahl angegebenen Anzahl, plus eine zusätzliche Vermutung, wenn gewünscht.</li><li>Ist die Vermutung richtig, wird die entsprechende Karte mit der Farbe des Teams markiert.</li><li>Bei einer falschen Vermutung endet der Zug, und die Karte wird für das gegnerische Team oder als neutral markiert.</li><li>Wird der Attentäter gewählt, endet das Spiel sofort mit einer Niederlage für dieses Team.</li>",
 
 	"clueRules": "<li>Einem einzelnen Wort (z. B. „Ozean“).</li><li>Einer Zahl, die angibt, wie viele Wörter mit dem Hinweis verbunden sind.</li>",
-	"spymasterRoleText": "Der Geheimdienstchef gibt ein Ein-Wort-Hinweis, um seinem Team zu helfen, die zugehörigen Codenamen zu erraten. Jeder Hinweis besteht aus:"
+	"spymasterRoleText": "Der Geheimdienstchef gibt ein Ein-Wort-Hinweis, um seinem Team zu helfen, die zugehörigen Codenamen zu erraten. Jeder Hinweis besteht aus:",
+	"spymasterRoleText2": "Der Geheimdienstchef muss vermeiden, Hinweise zu geben, die die Spieler zu Codenamen des gegnerischen Teams oder zum Attentäter führen. Nonverbale oder zusätzliche Hinweise sind strikt verboten.",
+	"operativeRoleText": "Die Ermittler diskutieren den Hinweis und raten die Codenamen, indem sie auf Karten im Raster zeigen. Regeln für das Raten:"
 }

@@ -40,5 +40,7 @@
 	"strategyText": "Strategic thinking is key. Spymasters must craft clues that link multiple words while avoiding ambiguity. Field Operatives interpret clues creatively and weigh risks carefully. Teams can skip guesses if uncertain, but progress may be slowed.",
 	"guessingRules": "<li>Guess up to the number indicated by the clue, plus one additional guess if desired.</li><li>If a guess is correct, the corresponding card is marked with the team’s color.</li><li>If incorrect, the turn ends, and the card is marked for the opposing team or as neutral.</li><li>Guessing the assassin ends the game immediately with a loss for that team.</li>",
 	"ClueRules": "<li>A single word (e.g., “Ocean”).</li><li>A number indicating how many words are linked to the clue.</li>",
-	"spymasterRoleText": "The Spymaster provides one-word clues to help their teammates guess the codenames associated with their team. Each clue consists of:"
+	"spymasterRoleText": "The Spymaster provides one-word clues to help their teammates guess the codenames associated with their team. Each clue consists of:",
+	"spymasterRoleText2": "Spymasters must avoid giving clues that lead teammates to guess codenames of the opposing team or the assassin. Non-verbal or additional hints are strictly prohibited.",
+	"operativeRoleText": "Field Operatives discuss the clue and guess codenames by pointing to cards on the grid. Rules for guessing:"
 }
