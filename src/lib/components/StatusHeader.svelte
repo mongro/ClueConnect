@@ -7,10 +7,11 @@
 		currentTeam: Team;
 		inGuessPhase: boolean;
 		winner: Team | null;
+		hasStarted: boolean;
 	}
 	import { getLobbyState } from '$lib/lobby.svelte';
 
-	let { currentTeam, inGuessPhase, winner }: Props = $props();
+	let { currentTeam, inGuessPhase, winner, hasStarted }: Props = $props();
 
 	let message = $derived(createMessage());
 	let lobby = getLobbyState();
@@ -34,6 +35,11 @@
 		};
 	}
 	function createMessage() {
+		if (!hasStarted) {
+			if (lobby.myState?.isHost) {
+				return $_('setupMessageHost');
+			} else return $_('setupMessage');
+		}
 		if (winner) {
 			return $_('winnerMessage', { values: { winner } });
 		}

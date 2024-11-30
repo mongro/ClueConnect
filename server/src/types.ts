@@ -33,6 +33,15 @@ export type GameAction =
 			team: Team;
 			clue: Clue;
 	  };
+
+export type GameLanguage = 'en' | 'de';
+
+export type AppearanceCustomWords = 'low' | 'middle' | 'high' | 'notFixed';
+export type GameOptions = {
+	language: GameLanguage;
+	customWords: string[];
+	appearanceCustomWords: AppearanceCustomWords;
+};
 export type GameState = {
 	suggestions: Partial<Record<string, number[]>>;
 	board: Card[];
@@ -43,6 +52,13 @@ export type GameState = {
 	score: { blue: number; red: number };
 	log: GameAction[];
 	winner: Team | null;
+	options: Partial<GameOptions>;
+};
+
+export const defaultOptions: GameOptions = {
+	language: 'en',
+	customWords: [],
+	appearanceCustomWords: 'notFixed'
 };
 
 export interface ServerToClientEvents {
@@ -59,7 +75,7 @@ export interface ClientToServerEvents {
 	sync: (id: string, credentials: string) => void;
 	joinLobby: (id: string, credentials: string, name?: string) => void;
 	joinTeamAndRole: (team: Team, role: Role) => void;
-	startGame: () => void;
+	startGame: (options?: Partial<GameOptions>) => void;
 	resetGame: () => void;
 	resetTeams: () => void;
 	giveClue: (word: string, number: number) => void;

@@ -21,6 +21,9 @@ class SocketController {
     get lobbyChannel() {
         return this.lobby.id;
     }
+    get isHost() {
+        return this.player.isHost;
+    }
     get spymasterChannel() {
         return this.lobby.id + SPYMASTER_CHANNEL_KEYWORD;
     }
@@ -105,7 +108,7 @@ class SocketController {
             this.sendGameState();
     }
     kickPlayer(id) {
-        if (!this.player.isHost)
+        if (!this.isHost)
             return;
         const { success } = this.lobby.kickPlayer(id);
         if (success) {
@@ -114,7 +117,7 @@ class SocketController {
         }
     }
     makeHost(id) {
-        if (!this.player.isHost)
+        if (!this.isHost)
             return;
         const { success } = this.lobby.setHost(id);
         if (success) {
@@ -126,21 +129,29 @@ class SocketController {
         if (success)
             this.sendGameState();
     }
-    startGame() { }
     handleDisconnect() {
         this.player.isConnected = false;
         this.sendPlayerState();
     }
-    resetGame() {
-        if (!this.player.isHost)
+    startGame(options = {}) {
+        if (!this.isHost)
             return;
-        this.game.reset();
+        console.log('optController', options);
+        this.game.startGame(options);
+        this.io.socketsLeave(this.spymasterChannel);
+        this.sendGameState();
+        this.sendPlayerState();
+    }
+    resetGame() {
+        if (!this.isHost)
+            return;
+        this.game.resetGame();
         this.io.socketsLeave(this.spymasterChannel);
         this.sendGameState();
         this.sendPlayerState();
     }
     resetTeams() {
-        if (!this.player.isHost)
+        if (!this.isHost)
             return;
         this.io.socketsLeave(this.spymasterChannel);
         this.game.resetTeams();

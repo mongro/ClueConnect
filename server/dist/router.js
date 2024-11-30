@@ -10,9 +10,7 @@ const router = (0, express_1.Router)();
 const getGame = (req, res) => {
     try {
         const { id } = req.params;
-        console.log(id);
         const lobby = LobbyDB_1.default.get(id);
-        console.log('players', lobby?.playersAll);
         if (!lobby) {
             res.status(404).json({ message: 'Lobby not found' });
             return;

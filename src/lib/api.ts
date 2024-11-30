@@ -7,6 +7,7 @@ function syncWithLobby(id: string) {
 	const credentials = LocalStorageHelper.getLobbyEntry(id);
 	if (credentials) {
 		socket.connect();
+		console.log('connect Socket, sync');
 		socket.emit('joinLobby', id, credentials);
 	}
 }

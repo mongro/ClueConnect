@@ -15,10 +15,19 @@ class Game {
     log = [];
     suggestions = {};
     player = {};
-    board = (0, Board_1.createNewBoard)();
+    board = [];
+    options = {};
     constructor(id, player) {
         this.id = id;
         this.player = player;
+    }
+    get hasStarted() {
+        return this.board.length > 0;
+    }
+    isPlayerTurn(player) {
+        return (this.hasStarted &&
+            player.team == this.currentTeam &&
+            player.role == (this.currentClue ? 'operative' : 'spymaster'));
     }
     switchTurnToOtherTeam() {
         this.currentTeam = this.currentTeam === 'blue' ? 'red' : 'blue';
@@ -68,12 +77,13 @@ class Game {
         }
     }
     getState(role) {
-        const { currentClue, currentGuesses, currentTeam, gameover, log, score, winner, suggestions } = this;
+        const { currentClue, currentGuesses, currentTeam, gameover, log, score, winner, suggestions, options } = this;
         const cardsForOperatorives = this.board.map((card) => {
             const { revealed, type, word } = card;
             return { revealed, word, type: revealed ? type : 'grey' };
         });
         return {
+            options,
             currentClue,
             suggestions,
             currentGuesses,
@@ -85,11 +95,17 @@ class Game {
             winner
         };
     }
-    reset() {
-        this.board = (0, Board_1.createNewBoard)();
+    startGame(options) {
+        console.log('opt', options);
+        this.resetGame();
+        this.board = (0, Board_1.createNewBoard)(options);
+        this.options = options;
+    }
+    resetGame() {
         this.winner = null;
         this.suggestions = {};
         this.log = [];
+        this.board = [];
         this.currentClue = null;
         this.gameover = false;
         this.score = { red: 9, blue: 8 };
@@ -97,6 +113,8 @@ class Game {
         this.resetTeams();
     }
     resetTeams() {
+        if (this.hasStarted)
+            return;
         for (let player of Object.values(this.player)) {
             player.role = undefined;
             player.team = undefined;
@@ -111,14 +129,14 @@ class Game {
         return { success: false };
     }
     endGuessing(player) {
-        if (player.role != 'operative' || player.team != this.currentTeam) {
+        if (!this.isPlayerTurn(player)) {
             return { success: false };
         }
         this.switchTurnToOtherTeam();
         return { success: true };
     }
     toggleSuggestion(player, cardId) {
-        if (player.role != 'operative' || player.team != this.currentTeam) {
+        if (!this.isPlayerTurn(player)) {
             return { success: false };
         }
         let suggestions = this.suggestions[cardId] ?? [];
@@ -142,7 +160,7 @@ class Game {
         if (this.currentClue.number < this.currentGuesses) {
             return { success: false };
         }
-        if (player.role != 'operative' || player.team != this.currentTeam) {
+        if (!this.isPlayerTurn(player)) {
             return { success: false };
         }
         this.log.push({
@@ -158,7 +176,8 @@ class Game {
         if (this.currentClue != null) {
             return { success: false };
         }
-        if (player.role != 'spymaster' || player.team != this.currentTeam) {
+        if (!this.isPlayerTurn(player)) {
+            console.log('notplayersTurn');
             return { success: false };
         }
         this.log.push({

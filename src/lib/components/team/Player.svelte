@@ -5,8 +5,8 @@
 	import OnlineStatus from '../OnlineStatus.svelte';
 	interface Props {
 		player: Player;
-		myState: Player | null;
-		rightSide?: Snippet<[Player, Player | null]>;
+		myState?: Player | undefined;
+		rightSide?: Snippet<[Player, Player | undefined]>;
 	}
 
 	let { player, myState, rightSide }: Props = $props();

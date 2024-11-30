@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.germanNouns = void 0;
-exports.germanNouns = [
+exports.words = void 0;
+exports.words = [
     // Abstract Words
     'Liebe',
     'Hoffnung',

@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
 import { Server } from 'socket.io';
-import { ClientToServerEvents, ServerToClientEvents } from './types';
+import { ClientToServerEvents, GameOptions, ServerToClientEvents } from './types';
 import lobbyDb from './LobbyDB';
 import { SocketController } from './SocketController';
 import router from './router';
@@ -41,6 +41,7 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents, {}, {}>(server
  * Socket IO Event Handling
  */
 io.on('connection', (socket) => {
+	console.log('id', socket.id, Date.now().toLocaleString('de'));
 	socket.on('joinLobby', (id, credentials) => {
 		const lobby = lobbyDb.get(id);
 		if (!lobby) return;
@@ -52,7 +53,7 @@ io.on('connection', (socket) => {
 
 		//socket.on('sync', (team, role) => controller.startGame());
 		socket.on('joinTeamAndRole', (team, role) => controller.joinTeamAndRole(team, role));
-		socket.on('startGame', () => controller.startGame());
+		socket.on('startGame', (options?: Partial<GameOptions>) => controller.startGame(options));
 		socket.on('resetGame', () => controller.resetGame());
 		socket.on('resetTeams', () => controller.resetTeams());
 		socket.on('kickPlayer', (id: number) => controller.kickPlayer(id));

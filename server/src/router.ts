@@ -9,10 +9,8 @@ const router = Router();
 const getGame = (req: Request, res: Response) => {
 	try {
 		const { id } = req.params;
-		console.log(id);
 
 		const lobby = lobbyDb.get(id);
-		console.log('players', lobby?.playersAll);
 		if (!lobby) {
 			res.status(404).json({ message: 'Lobby not found' });
 			return;

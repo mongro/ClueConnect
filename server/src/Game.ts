@@ -1,5 +1,5 @@
 import { createNewBoard } from './Board';
-import { Card, Clue, GameAction, GameState, Player, Role, Team, TeamComposition } from './types';
+import { Card, Clue, GameAction, GameOptions, GameState, Player, Role, Team } from './types';
 
 export class Game {
 	id: number;
@@ -14,11 +14,24 @@ export class Game {
 	log: GameAction[] = [];
 	suggestions: Partial<Record<number, number[]>> = {};
 	player: Record<string, Player> = {};
-	board: Card[] = createNewBoard();
+	board: Card[] = [];
+	options: Partial<GameOptions> = {};
 
 	constructor(id: number, player: Record<string, Player>) {
 		this.id = id;
 		this.player = player;
+	}
+
+	private get hasStarted() {
+		return this.board.length > 0;
+	}
+
+	private isPlayerTurn(player: Player) {
+		return (
+			this.hasStarted &&
+			player.team == this.currentTeam &&
+			player.role == (this.currentClue ? 'operative' : 'spymaster')
+		);
 	}
 
 	private switchTurnToOtherTeam() {
@@ -71,14 +84,24 @@ export class Game {
 	}
 
 	public getState(role: Role): GameState {
-		const { currentClue, currentGuesses, currentTeam, gameover, log, score, winner, suggestions } =
-			this;
+		const {
+			currentClue,
+			currentGuesses,
+			currentTeam,
+			gameover,
+			log,
+			score,
+			winner,
+			suggestions,
+			options
+		} = this;
 		const cardsForOperatorives = this.board.map((card) => {
 			const { revealed, type, word } = card;
 			return { revealed, word, type: revealed ? type : 'grey' };
 		});
 
 		return {
+			options,
 			currentClue,
 			suggestions,
 			currentGuesses,
@@ -91,11 +114,17 @@ export class Game {
 		};
 	}
 
-	public reset(): void {
-		this.board = createNewBoard();
+	public startGame(options: Partial<GameOptions>): void {
+		console.log('opt', options);
+		this.resetGame();
+		this.board = createNewBoard(options);
+		this.options = options;
+	}
+	public resetGame(): void {
 		this.winner = null;
 		this.suggestions = {};
 		this.log = [];
+		this.board = [];
 		this.currentClue = null;
 		this.gameover = false;
 		this.score = { red: 9, blue: 8 };
@@ -104,6 +133,7 @@ export class Game {
 	}
 
 	public resetTeams() {
+		if (this.hasStarted) return;
 		for (let player of Object.values(this.player)) {
 			player.role = undefined;
 			player.team = undefined;
@@ -120,7 +150,7 @@ export class Game {
 	}
 
 	public endGuessing(player: Player) {
-		if (player.role != 'operative' || player.team != this.currentTeam) {
+		if (!this.isPlayerTurn(player)) {
 			return { success: false };
 		}
 		this.switchTurnToOtherTeam();
@@ -129,7 +159,7 @@ export class Game {
 	}
 
 	public toggleSuggestion(player: Player, cardId: number) {
-		if (player.role != 'operative' || player.team != this.currentTeam) {
+		if (!this.isPlayerTurn(player)) {
 			return { success: false };
 		}
 		let suggestions = this.suggestions[cardId] ?? [];
@@ -155,7 +185,7 @@ export class Game {
 		if (this.currentClue.number < this.currentGuesses) {
 			return { success: false };
 		}
-		if (player.role != 'operative' || player.team != this.currentTeam) {
+		if (!this.isPlayerTurn(player)) {
 			return { success: false };
 		}
 		this.log.push({
@@ -172,7 +202,8 @@ export class Game {
 		if (this.currentClue != null) {
 			return { success: false };
 		}
-		if (player.role != 'spymaster' || player.team != this.currentTeam) {
+		if (!this.isPlayerTurn(player)) {
+			console.log('notplayersTurn');
 			return { success: false };
 		}
 		this.log.push({

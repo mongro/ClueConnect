@@ -1,12 +1,13 @@
 import type { GameState, Player, Role, Team, TeamComposition } from '$shared/src/types';
-import { getContext, setContext } from 'svelte';
+import { getContext, hasContext, setContext } from 'svelte';
 import socket from './socket';
 import { goto } from '$app/navigation';
+import { browser } from '$app/environment';
 
 class LobbyState {
-	players: Player[] = $state([]);
-	gameState: GameState | null = $state(null);
-	myState = $state<Player | null>(null);
+	players = $state<Player[]>([]);
+	gameState = $state<GameState>();
+	myState = $state<Player | undefined>();
 	teams = $derived.by(() => {
 		let result: TeamComposition = {
 			red: { operative: [], spymaster: [] },
@@ -24,7 +25,8 @@ class LobbyState {
 	constructor(players: Player[] = [], game: GameState, myState?: Player) {
 		this.players = players;
 		this.gameState = game;
-		this.myState = myState ?? null;
+		this.myState = myState;
+		console.log('constructLobby', socket.id);
 		socket.on('playerUpdate', (serverPlayerState) => {
 			this.players = serverPlayerState;
 			if (this.myState) {
@@ -40,15 +42,18 @@ class LobbyState {
 
 		socket.on('disconnect', function () {
 			console.log('disconnect');
+			console.log('disconnect', socket.id);
 		});
 		socket.on('connect', function () {
 			console.log('connect');
+			console.log('id', Date.now().toLocaleString('de'), socket.id, browser ? 'browser' : 'server');
 		});
 		socket.on('suggestionsUpdate', (serverSuggestionsState) => {
 			if (this.gameState) this.gameState.suggestions = serverSuggestionsState;
 		});
 		socket.on('gameUpdate', (serverGameState) => {
 			this.gameState = serverGameState;
+			console.log('gameUpdate', serverGameState);
 		});
 
 		socket.on('kick', () => {
@@ -75,6 +80,7 @@ export function setLobbyState(players: Player[] = [], game: GameState) {
 }
 
 export function getLobbyState() {
-	return getContext<ReturnType<typeof setLobbyState>>(KEY);
+	if (hasContext(KEY)) {
+		return getContext<ReturnType<typeof setLobbyState>>(KEY);
+	} else throw 'Context not found.';
 }
-//export const lobby = new LobbyState(players: Player[] = [], game: GameState);

@@ -1,4 +1,4 @@
-import { ClientToServerEvents, ServerToClientEvents } from './types';
+import { ClientToServerEvents, GameOptions, ServerToClientEvents } from './types';
 import type { Game } from './Game';
 import type { Server, Socket } from 'socket.io';
 import type { Lobby } from './Lobby';
@@ -21,6 +21,10 @@ export class SocketController {
 
 	private get lobbyChannel() {
 		return this.lobby.id;
+	}
+
+	private get isHost() {
+		return this.player.isHost;
 	}
 
 	private get spymasterChannel() {
@@ -140,7 +144,7 @@ export class SocketController {
 	}
 
 	public kickPlayer(id: number) {
-		if (!this.player.isHost) return;
+		if (!this.isHost) return;
 		const { success } = this.lobby.kickPlayer(id);
 		if (success) {
 			this.sendToSingleClient(id, 'kick');
@@ -148,7 +152,7 @@ export class SocketController {
 		}
 	}
 	public makeHost(id: number) {
-		if (!this.player.isHost) return;
+		if (!this.isHost) return;
 		const { success } = this.lobby.setHost(id);
 		if (success) {
 			this.sendPlayerState();
@@ -160,22 +164,30 @@ export class SocketController {
 		if (success) this.sendGameState();
 	}
 
-	public startGame() {}
-
 	public handleDisconnect() {
 		this.player.isConnected = false;
 		this.sendPlayerState();
 	}
 
-	public resetGame(): void {
-		if (!this.player.isHost) return;
-		this.game.reset();
+	public startGame(options: Partial<GameOptions> = {}): void {
+		if (!this.isHost) return;
+		console.log('optController', options);
+		this.game.startGame(options);
 		this.io.socketsLeave(this.spymasterChannel);
 		this.sendGameState();
 		this.sendPlayerState();
 	}
+
+	public resetGame(): void {
+		if (!this.isHost) return;
+		this.game.resetGame();
+		this.io.socketsLeave(this.spymasterChannel);
+
+		this.sendGameState();
+		this.sendPlayerState();
+	}
 	public resetTeams(): void {
-		if (!this.player.isHost) return;
+		if (!this.isHost) return;
 		this.io.socketsLeave(this.spymasterChannel);
 		this.game.resetTeams();
 		this.sendPlayerState();

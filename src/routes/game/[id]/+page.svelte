@@ -13,6 +13,7 @@
 	let { data }: { data: PageData } = $props();
 	const { players, game } = data;
 	const lobby = setLobbyState(game, players);
+
 	if (browser) {
 		if (credentials) {
 			socket.connect();
@@ -22,7 +23,7 @@
 </script>
 
 {#if lobby.gameState && lobby.myState}
-	<App {...data} gameState={lobby.gameState} />
+	<App {...data} gameState={lobby.gameState} players={lobby.players} />
 {:else}
 	<JoinLobbyCard {lobbyId} />
 {/if}

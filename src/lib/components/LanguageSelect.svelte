@@ -1,14 +1,12 @@
 <script lang="ts">
 	import { Select, type Selected } from 'bits-ui';
-	import { _, locale } from 'svelte-i18n';
+	import { _, locale, locales } from 'svelte-i18n';
 	import { browser } from '$app/environment';
+	import { languages } from '$lib/i18n';
 
 	const currLocale = $locale ? $locale.split('-')[0] : 'en';
-	const currentLanguage = currLocale === 'en' || currLocale === 'de' ? currLocale : 'en';
-	let selectedLocale = $state<Selected<string>>({
-		value: currentLanguage,
-		label: currentLanguage
-	});
+	const currentLanguage = languages.find((item) => item.value == currLocale) ?? languages[0];
+	let selectedLocale = $state<Selected<string>>(currentLanguage);
 
 	function setLocale(localeNew: string) {
 		if (browser) {
@@ -44,16 +42,13 @@
 		class="absolute z-50 rounded-xl border border-muted bg-background px-3 py-3 shadow-popover outline-none"
 		sameWidth={false}
 	>
-		<Select.Item
-			class="rounded-button flex h-10 w-full select-none items-center justify-center px-2  py-3 text-sm outline-none transition-all duration-75 data-[highlighted]:bg-muted"
-			value={'en'}
-			label={'en'}>English</Select.Item
-		>
-		<Select.Item
-			class="rounded-button flex h-10  w-full select-none items-center justify-center px-2  py-3 text-sm outline-none transition-all duration-75 data-[highlighted]:bg-muted"
-			value={'de'}
-			label={'de'}>Deutsch</Select.Item
-		>
+		{#each languages as language}
+			<Select.Item
+				class="rounded-button flex h-10 w-full select-none items-center justify-center px-2  py-3 text-sm outline-none transition-all duration-75 data-[highlighted]:bg-muted"
+				value={language.value}
+				label={language.label}>{language.label}</Select.Item
+			>
+		{/each}
 	</Select.Content>
 	<Select.Input name="language" />
 </Select.Root>

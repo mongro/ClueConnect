@@ -1,4 +1,4 @@
-export const germanNouns = [
+export const words = [
 	// Abstract Words
 	'Liebe',
 	'Hoffnung',
