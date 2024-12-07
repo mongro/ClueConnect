@@ -1,4 +1,4 @@
-import { createNewBoard } from './Board';
+import { createNewBoard } from './board';
 import { Card, Clue, GameAction, GameOptions, GameState, Player, Role, Team } from './types';
 
 export class Game {

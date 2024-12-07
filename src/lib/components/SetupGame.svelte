@@ -6,12 +6,17 @@
 	import SelectContent from './select/select-content.svelte';
 	import SelectItem from './select/select-item.svelte';
 	import { Checkbox, Label, type Selected } from 'bits-ui';
-	import type { GameLanguage, GameOptions } from '$shared/src/types';
+	import type { AppearanceCustomWords, GameLanguage, GameOptions } from '$shared/src/types';
 	import { languagesGame } from '$lib/i18n';
 	import CustomWordsInput from './CustomWordsInput.svelte';
 	import { getLobbyState } from '$lib/lobby.svelte';
 	import { Check, Minus } from 'lucide-svelte';
 
+	export const APPEARANCE = {
+		low: [1, 3],
+		middle: [4, 6],
+		high: [7, 10]
+	} as const;
 	const gameState = getLobbyState().gameState;
 
 	const currLocale = $locale ? $locale.split('-')[0] : 'en';
@@ -20,13 +25,27 @@
 
 	let customWordsInput = $state<string>(gameState?.options.customWords?.join(' ') ?? '');
 	let customWordsEnabled = $state<boolean>(false);
+	let selectedAppearance = $state<Selected<AppearanceCustomWords>>({
+		value: 'notFixed',
+		label: $_('labelAppearanceNotFixed')
+	});
 	let customWords = $derived(createWords());
-	$inspect(customWordsInput);
-	$inspect(customWords);
+
 	let selectedLanguage = $state<Selected<GameLanguage>>({
 		value: currentLanguage.value,
 		label: currentLanguage.label
 	});
+
+	let selectedLabel = $derived(
+		selectedAppearance.value === 'notFixed'
+			? $_('labelAppearanceNotFixed')
+			: $_('labelAppearanceFixed', {
+					values: {
+						min: APPEARANCE[selectedAppearance.value][0],
+						max: APPEARANCE[selectedAppearance.value][1]
+					}
+				})
+	);
 	function startGame(options: Partial<GameOptions> = {}) {
 		socket.emit('startGame', options);
 	}
@@ -50,7 +69,7 @@
 				}
 			}}
 		>
-			<SelectTrigger><SelectValue /></SelectTrigger>
+			<SelectTrigger><SelectValue>{selectedLabel}</SelectValue></SelectTrigger>
 			<SelectContent>
 				{#each languagesGame as language}
 					<SelectItem value={language.value} label={language.label}>{language.label}</SelectItem>
@@ -69,7 +88,6 @@
 			>
 				<Checkbox.Indicator
 					let:isChecked
-					let:isIndeterminate
 					class="inline-flex items-center justify-center text-background"
 				>
 					{#if isChecked}
@@ -93,11 +111,44 @@
 			<div class="my-2">
 				<p>{$_('wordsBasisCount')}1000</p>
 				<p>{$_('wordsCount') + customWords.length}</p>
+				<Select
+					selected={selectedAppearance}
+					onSelectedChange={(selected) => {
+						if (selected) {
+							selectedAppearance = selected;
+						}
+					}}
+				>
+					<SelectTrigger>{selectedLabel}</SelectTrigger>
+					<SelectContent>
+						{#each Object.entries(APPEARANCE) as [appereance, range]}
+							<SelectItem
+								value={appereance}
+								label={$_('labelAppearanceFixed', {
+									values: { min: range[0], max: range[1] }
+								})}
+								>{$_('labelAppearanceFixed', {
+									values: { min: range[0], max: range[1] }
+								})}</SelectItem
+							>
+						{/each}
+						<SelectItem value="notFixed" label={$_('labelAppearanceNotFixed')}
+							>{$_('labelAppearanceNotFixed')}</SelectItem
+						>
+					</SelectContent>
+				</Select>
 			</div>
 		{/if}
 
 		<div class="flex items-center">
-			<Button onclick={() => startGame({ language: selectedLanguage.value, customWords })}>
+			<Button
+				onclick={() =>
+					startGame({
+						language: selectedLanguage.value,
+						customWords,
+						appearanceCustomWords: selectedAppearance.value
+					})}
+			>
 				{$_('startGame')}
 			</Button>
 		</div>

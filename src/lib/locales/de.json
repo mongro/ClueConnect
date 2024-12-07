@@ -8,6 +8,8 @@
 	"wordsCount": "Eigene Wörter hinzugefügt: ",
 	"wordsBasisCount": "Wörter im Basispaket:",
 	"customWordsExplanation": "Wörter werden durch Leerzeichen getrennt.  Wenn du 25 eigene Wörter hast, kannst du alle Basis-Wörter entfernen.",
+	"labelAppearanceFixed": "{min} bis {max} deiner Wörter erscheinen.",
+	"labelAppearanceNotFixed": "Füge Wörter dem Basis-Pack hinzu",
 	"createLobby": "Erstelle Spielrunde",
 	"setupMessageHost": "Setze ein Spiel auf",
 	"setupMessage": "Warte bis der Moderator das Spiel startet.",

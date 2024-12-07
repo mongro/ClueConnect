@@ -74,4 +74,7 @@ const joinLobby = (req, res) => {
 router.post('/createLobby', createLobby);
 router.post('/joinLobby', joinLobby);
 router.get('/getGame/:id', getGame);
+router.get('/', function (req, res) {
+    res.send('hello world');
+});
 exports.default = router;

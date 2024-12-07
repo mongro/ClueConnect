@@ -8,6 +8,8 @@
 	"customWords": "Custom Words",
 	"wordsCount": "Own words added: ",
 	"customWordsExplanation": "Words are seperated by white spaces. If you have at least 25 custom words, you can remove all base words.",
+	"labelAppearanceFixed": "{min} to {max} of your cards appear.",
+	"labelAppearanceNotFixed": "Treat your cards like basis cards.",
 	"wordsBasisCount": "Words in base pack:",
 	"setupMessageHost": "Setup the game",
 	"setupMessage": "Wait for the host to start the game.",

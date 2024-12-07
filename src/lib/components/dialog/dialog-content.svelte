@@ -2,11 +2,11 @@
 	import { Dialog as DialogPrimitive } from 'bits-ui';
 	import X from 'lucide-svelte/icons/x';
 	import * as Dialog from './index.js';
-	import { scale } from 'svelte/transition';
+	import { flyAndScale } from '$lib/util.js';
 
 	let {
-		transition = scale,
-		transitionConfig = { duration: 150 },
+		transition = flyAndScale,
+		transitionConfig = { duration: 200 },
 		class: className,
 		children,
 		...restProps

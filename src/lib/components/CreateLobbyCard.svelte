@@ -3,16 +3,21 @@
 	import Input from './input/Input.svelte';
 	import { createLobby } from '$lib/api';
 	import { _ } from 'svelte-i18n';
+	import { LoaderCircle } from 'lucide-svelte';
+	import Delayed from './Delayed.svelte';
 
 	let name = $state('');
 	let error = $state('');
+	let loading = $state(false);
 
-	function handleClick(name: string) {
+	async function handleClick() {
 		if (name == '') {
 			error = 'You must enter a name.';
 			return;
 		}
-		createLobby(name);
+		loading = true;
+		await createLobby(name);
+		loading = false;
 	}
 </script>
 
@@ -24,6 +29,13 @@
 			<div class="text-destructive">{error}</div>
 		{/if}
 
-		<Button onclick={() => handleClick(name)}>{$_('createLobby')}</Button>
+		<Button onclick={handleClick}>
+			{#if loading}
+				<Delayed delay={200}>
+					<LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
+				</Delayed>
+			{/if}
+			{$_('createLobby')}</Button
+		>
 	</div>
 </div>

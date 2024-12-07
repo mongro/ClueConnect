@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Game = void 0;
-const Board_1 = require("./Board");
+const board_1 = require("./board");
 class Game {
     id;
     winner = null;
@@ -98,7 +98,7 @@ class Game {
     startGame(options) {
         console.log('opt', options);
         this.resetGame();
-        this.board = (0, Board_1.createNewBoard)(options);
+        this.board = (0, board_1.createNewBoard)(options);
         this.options = options;
     }
     resetGame() {

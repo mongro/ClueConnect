@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { APPEARANCE, createNewBoard } from './Board';
+import { APPEARANCE, createNewBoard } from './board';
 import { words as wordListEn } from './words/en.js';
 import { words as wordListDe } from './words/de.js';
 import { AppearanceCustomWords, Card } from './types';
