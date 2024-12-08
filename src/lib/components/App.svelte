@@ -18,8 +18,6 @@
 	}
 	let { gameState, players }: Props = $props();
 	const lobby = getLobbyState();
-	console.log('lobby', gameState.board);
-	console.log('lobby', lobby.gameState?.board);
 	onDestroy(() => {
 		console.log('disconnect client');
 		socket.disconnect();

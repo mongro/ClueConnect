@@ -9,7 +9,7 @@
 <Dialog.Root bind:open={dialogOpen} preventScroll={false}>
 	<Dialog.Trigger
 		class={buttonVariants({ variant: 'outline' })}
-		on:click={() => (dialogOpen = true)}>Rules</Dialog.Trigger
+		on:click={() => (dialogOpen = true)}>{$_('rules')}</Dialog.Trigger
 	>
 
 	<Dialog.Content>

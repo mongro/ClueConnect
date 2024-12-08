@@ -6,7 +6,8 @@
 	import PlayersCard from './PlayersCard.svelte';
 	import { _ } from 'svelte-i18n';
 	import LanguageSelect from './LanguageSelect.svelte';
-	import Modal from './Modal.svelte';
+	import Modal from './RulesModal.svelte';
+	import RulesModal from './RulesModal.svelte';
 
 	let showPlayersCard = $state(false);
 	let lobby = getLobbyState();
@@ -37,5 +38,5 @@
 		<Button onclick={resetTeams}>{$_('resetTeams')}</Button>
 	{/if}
 	<LanguageSelect />
-	<Modal />
+	<RulesModal />
 </div>

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Team } from '$shared/src/types';
-	import { fade } from 'svelte/transition';
 	import { quartInOut } from 'svelte/easing';
 
 	function moveScale(node: Element, { duration = 200, startScale = 1.5 }) {
