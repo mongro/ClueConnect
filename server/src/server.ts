@@ -51,7 +51,6 @@ io.on('connection', (socket) => {
 		const controller = new SocketController(socket, io, lobby, player);
 		controller.sync();
 
-		//socket.on('sync', (team, role) => controller.startGame());
 		socket.on('joinTeamAndRole', (team, role) => controller.joinTeamAndRole(team, role));
 		socket.on('startGame', (options?: Partial<GameOptions>) => controller.startGame(options));
 		socket.on('resetGame', () => controller.resetGame());

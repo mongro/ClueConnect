@@ -10,11 +10,11 @@
 		hasStarted: boolean;
 	}
 	import { getLobbyState } from '$lib/lobby.svelte';
+	import LoadingDots from './LoadingDots.svelte';
 
 	let { currentTeam, inGuessPhase, winner, hasStarted }: Props = $props();
-
-	let message = $derived(createMessage());
 	let lobby = getLobbyState();
+	let message = $derived(createMessage());
 
 	function typewriter(node: Element, { speed = 1 }): TransitionConfig {
 		const text = node.textContent;
@@ -59,12 +59,19 @@
 </script>
 
 <div class="mt-2 flex h-8 select-none items-center justify-center sm:mt-4 sm:h-12">
-	{#key message}
-		<div
-			class="rounded bg-white p-1 text-center text-base sm:p-2 sm:text-2xl"
-			in:typewriter={{ speed: 2 }}
-		>
-			{message}
+	{#if lobby.isConnectingToLobby}
+		<div class="rounded bg-white p-1 text-center text-base sm:p-2 sm:text-2xl">
+			<span class="mr-2 text-xl">{'Joining Lobby'}</span>
+			<LoadingDots size="sm" />
 		</div>
-	{/key}
+	{:else}
+		{#key message}
+			<div
+				class="rounded bg-white p-1 text-center text-base sm:p-2 sm:text-2xl"
+				in:typewriter={{ speed: 4 }}
+			>
+				{message}
+			</div>
+		{/key}
+	{/if}
 </div>

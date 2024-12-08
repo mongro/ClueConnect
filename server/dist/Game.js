@@ -24,6 +24,16 @@ class Game {
     get hasStarted() {
         return this.board.length > 0;
     }
+    initGameState() {
+        this.winner = null;
+        this.suggestions = {};
+        this.log = [];
+        this.board = [];
+        this.currentClue = null;
+        this.gameover = false;
+        this.score = { red: 9, blue: 8 };
+        this.currentTeam = 'red';
+    }
     isPlayerTurn(player) {
         return (this.hasStarted &&
             player.team == this.currentTeam &&
@@ -96,20 +106,12 @@ class Game {
         };
     }
     startGame(options) {
-        console.log('opt', options);
-        this.resetGame();
+        this.initGameState();
         this.board = (0, board_1.createNewBoard)(options);
         this.options = options;
     }
     resetGame() {
-        this.winner = null;
-        this.suggestions = {};
-        this.log = [];
-        this.board = [];
-        this.currentClue = null;
-        this.gameover = false;
-        this.score = { red: 9, blue: 8 };
-        this.currentTeam = 'red';
+        this.initGameState();
         this.resetTeams();
     }
     resetTeams() {

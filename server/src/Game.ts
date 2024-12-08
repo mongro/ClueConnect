@@ -26,6 +26,17 @@ export class Game {
 		return this.board.length > 0;
 	}
 
+	private initGameState() {
+		this.winner = null;
+		this.suggestions = {};
+		this.log = [];
+		this.board = [];
+		this.currentClue = null;
+		this.gameover = false;
+		this.score = { red: 9, blue: 8 };
+		this.currentTeam = 'red';
+	}
+
 	private isPlayerTurn(player: Player) {
 		return (
 			this.hasStarted &&
@@ -115,20 +126,12 @@ export class Game {
 	}
 
 	public startGame(options: Partial<GameOptions>): void {
-		console.log('opt', options);
-		this.resetGame();
+		this.initGameState();
 		this.board = createNewBoard(options);
 		this.options = options;
 	}
 	public resetGame(): void {
-		this.winner = null;
-		this.suggestions = {};
-		this.log = [];
-		this.board = [];
-		this.currentClue = null;
-		this.gameover = false;
-		this.score = { red: 9, blue: 8 };
-		this.currentTeam = 'red';
+		this.initGameState();
 		this.resetTeams();
 	}
 

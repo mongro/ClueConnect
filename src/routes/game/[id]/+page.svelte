@@ -7,22 +7,18 @@
 	import JoinLobbyCard from '$lib/components/JoinLobbyCard.svelte';
 	import type { PageData } from './$types';
 	import { setLobbyState } from '$lib/lobby.svelte';
+	import { getContext, hasContext, setContext } from 'svelte';
 
 	const lobbyId = $page.params.id;
-	let credentials = $state(browser ? LocalStorageHelper.getLobbyEntry(lobbyId) : '');
 	let { data }: { data: PageData } = $props();
 	const { players, game } = data;
-	const lobby = setLobbyState(game, players);
-
+	const lobby = setLobbyState(lobbyId, players, game);
 	if (browser) {
-		if (credentials) {
-			socket.connect();
-			socket.emit('joinLobby', lobbyId, credentials);
-		}
+		lobby.connect();
 	}
 </script>
 
-{#if lobby.gameState && lobby.myState}
+{#if lobby.gameState && lobby.credentials}
 	<App {...data} gameState={lobby.gameState} players={lobby.players} />
 {:else}
 	<JoinLobbyCard {lobbyId} />

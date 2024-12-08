@@ -4,15 +4,21 @@
 	import Input from './input/Input.svelte';
 
 	import { joinLobby } from '$lib/api';
+	import { LocalStorageHelper } from './LocalStorageHelper';
+	import { getLobbyState } from '$lib/lobby.svelte';
 
 	let name = $state('');
 	let loading = $state(false);
 	let { lobbyId }: { lobbyId: string } = $props();
+	const lobby = getLobbyState();
 
 	async function handleClick() {
 		loading = true;
-		await joinLobby(name, lobbyId);
+		const response = await joinLobby(name, lobbyId);
 		loading = false;
+		LocalStorageHelper.setLobbyEntry(response.lobbyId, response.credentials);
+		lobby.credentials = response.credentials;
+		lobby.connect();
 	}
 </script>
 

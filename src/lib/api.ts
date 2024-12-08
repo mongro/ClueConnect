@@ -1,19 +1,8 @@
 import { goto } from '$app/navigation';
 import { PUBLIC_SERVER_URL } from '$env/static/public';
 import { LocalStorageHelper } from './components/LocalStorageHelper';
-import socket from './socket';
-
-function syncWithLobby(id: string) {
-	const credentials = LocalStorageHelper.getLobbyEntry(id);
-	if (credentials) {
-		socket.connect();
-		console.log('connect Socket, sync');
-		socket.emit('joinLobby', id, credentials);
-	}
-}
 
 export async function getGame(id: string) {
-	console.log('req to', `${PUBLIC_SERVER_URL}/getGame/${id}`);
 	return await fetch(`${PUBLIC_SERVER_URL}/getGame/${id}`);
 }
 
@@ -32,8 +21,7 @@ export async function joinLobby(name: string, id: string) {
 		}
 
 		const response = await res.json();
-		LocalStorageHelper.setLobbyEntry(response.lobbyId, response.credentials);
-		syncWithLobby(response.lobbyId);
+		return response;
 	} catch (error) {
 		console.error(error);
 	}

@@ -3,11 +3,15 @@ import { getContext, hasContext, setContext } from 'svelte';
 import socket from './socket';
 import { goto } from '$app/navigation';
 import { browser } from '$app/environment';
+import { LocalStorageHelper } from './components/LocalStorageHelper';
 
 class LobbyState {
+	id: string;
 	players = $state<Player[]>([]);
 	gameState = $state<GameState>();
+	credentials = $state<string>();
 	myState = $state<Player | undefined>();
+	isConnectingToLobby = $state<boolean>(false);
 	teams = $derived.by(() => {
 		let result: TeamComposition = {
 			red: { operative: [], spymaster: [] },
@@ -22,11 +26,12 @@ class LobbyState {
 		return result;
 	});
 
-	constructor(players: Player[] = [], game: GameState, myState?: Player) {
+	constructor(id: string, players: Player[] = [], game: GameState, myState?: Player) {
+		this.id = id;
 		this.players = players;
 		this.gameState = game;
 		this.myState = myState;
-		console.log('constructLobby', socket.id);
+		this.credentials = browser ? LocalStorageHelper.getLobbyEntry(id) : '';
 		socket.on('playerUpdate', (serverPlayerState) => {
 			this.players = serverPlayerState;
 			if (this.myState) {
@@ -38,6 +43,7 @@ class LobbyState {
 
 		socket.on('myStatus', (serverMyState) => {
 			this.myState = serverMyState;
+			this.isConnectingToLobby = false;
 		});
 
 		socket.on('disconnect', function () {
@@ -72,11 +78,18 @@ class LobbyState {
 	getMembers(team: Team, role: Role) {
 		return this.teams[team][role];
 	}
+
+	connect() {
+		if (!this.credentials) return;
+		socket.connect();
+		socket.emit('joinLobby', this.id, this.credentials);
+		this.isConnectingToLobby = true;
+	}
 }
 
 const KEY = 'lobby';
-export function setLobbyState(players: Player[] = [], game: GameState) {
-	return setContext(KEY, new LobbyState(players, game));
+export function setLobbyState(id: string, players: Player[] = [], game: GameState) {
+	return setContext(KEY, new LobbyState(id, players, game));
 }
 
 export function getLobbyState() {
