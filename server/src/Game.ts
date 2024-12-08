@@ -6,7 +6,7 @@ export class Game {
 	winner: Team | null = null;
 	currentClue: Clue | null = null;
 	maxOperatives = 3;
-	maxSpyMasters = 3;
+	maxSpyMasters = 1;
 	currentGuesses: number = 0;
 	currentTeam: Team = 'red';
 	gameover: boolean = false;
@@ -144,7 +144,10 @@ export class Game {
 	}
 
 	public setPlayerRole(player: Player, role: Role, team: Team): { success: boolean } {
-		if (this.playersWithRole(role, team) < this.maxSpyMasters) {
+		if (
+			(role === 'spymaster' && this.playersWithRole('spymaster', team) < this.maxSpyMasters) ||
+			(role === 'operative' && this.playersWithRole('operative', team) < this.maxOperatives)
+		) {
 			player.role = role;
 			player.team = team;
 			return { success: true };

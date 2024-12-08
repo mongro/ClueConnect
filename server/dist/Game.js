@@ -7,7 +7,7 @@ class Game {
     winner = null;
     currentClue = null;
     maxOperatives = 3;
-    maxSpyMasters = 3;
+    maxSpyMasters = 1;
     currentGuesses = 0;
     currentTeam = 'red';
     gameover = false;
@@ -123,7 +123,8 @@ class Game {
         }
     }
     setPlayerRole(player, role, team) {
-        if (this.playersWithRole(role, team) < this.maxSpyMasters) {
+        if ((role === 'spymaster' && this.playersWithRole('spymaster', team) < this.maxSpyMasters) ||
+            (role === 'operative' && this.playersWithRole('operative', team) < this.maxOperatives)) {
             player.role = role;
             player.team = team;
             return { success: true };

@@ -173,7 +173,6 @@ export class SocketController {
 		if (!this.isHost) return;
 		console.log('optController', options);
 		this.game.startGame(options);
-		this.io.socketsLeave(this.spymasterChannel);
 		this.sendGameState();
 		this.sendPlayerState();
 	}

@@ -17,6 +17,20 @@
 	function joinRoleAndTeam(role: Role, team: Team) {
 		socket.emit('joinTeamAndRole', team, role);
 	}
+
+	function showJoinSpyMasterButton() {
+		return (
+			!(getLobbyState().myRole == 'spymaster' && getLobbyState().myTeam == team) &&
+			getLobbyState().getMembers(team, 'spymaster').length == 0
+		);
+	}
+
+	function showJoinOperativeButton() {
+		return (
+			!(getLobbyState().myRole == 'operative' && getLobbyState().myTeam == team) &&
+			(!(getLobbyState().myRole == 'spymaster') || !getLobbyState().hasStarted())
+		);
+	}
 </script>
 
 <div class={teamContainerVariants({ team })}>
@@ -25,7 +39,7 @@
 	<div class="mt-1 flex-grow">
 		{#each getLobbyState().getMembers(team, 'operative') as player}
 			<PlayerDisplay {player} myState={getLobbyState().myState} />{/each}
-		{#if !getLobbyState().myTeam}
+		{#if showJoinOperativeButton()}
 			<Button onclick={() => joinRoleAndTeam('operative', team)}>{$_('joinAgents')}</Button>
 		{/if}
 	</div>
@@ -33,7 +47,7 @@
 	<div class="mt-1 flex-grow">
 		{#each getLobbyState().getMembers(team, 'spymaster') as player}
 			<PlayerDisplay {player} myState={getLobbyState().myState} />{/each}
-		{#if !getLobbyState().myTeam}
+		{#if showJoinSpyMasterButton()}
 			<Button onclick={() => joinRoleAndTeam('spymaster', team)}>{$_('becomeSpymaster')}</Button>
 		{/if}
 	</div>

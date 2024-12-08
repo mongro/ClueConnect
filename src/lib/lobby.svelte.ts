@@ -79,6 +79,10 @@ class LobbyState {
 		return this.teams[team][role];
 	}
 
+	hasStarted() {
+		return this.gameState?.board?.length && this.gameState.board.length > 0;
+	}
+
 	connect() {
 		if (!this.credentials) return;
 		socket.connect();
