@@ -19,22 +19,29 @@ export class SocketController {
 
 	// AUXILIARY PRIVATE METHODS
 
-	private get lobbyChannel() {
-		return this.lobby.id;
-	}
-
 	private get isHost() {
 		return this.player.isHost;
+	}
+
+	private get lobbyChannel() {
+		return this.lobby.id;
 	}
 
 	private get spymasterChannel() {
 		return this.lobby.id + SPYMASTER_CHANNEL_KEYWORD;
 	}
+
+	private get userChannel() {
+		return this.lobbyChannel + '/' + this.player.id;
+	}
 	private sendToAll<T extends keyof ServerToClientEvents>(
 		event: T,
 		...data: Parameters<ServerToClientEvents[T]>
 	): void {
-		this.io.to(this.lobbyChannel).emit(event, ...data);
+		this.io
+			.to(this.lobbyChannel)
+			.to(this.spymasterChannel)
+			.emit(event, ...data);
 	}
 
 	private sendToMe<T extends keyof ServerToClientEvents>(
@@ -52,20 +59,14 @@ export class SocketController {
 		this.io.to(this.lobbyChannel + id).emit(event, ...data);
 	}
 
-	private sendToOthers<T extends keyof ServerToClientEvents>(
-		event: T,
-		...data: Parameters<ServerToClientEvents[T]>
-	) {
-		this.socket.broadcast.to(this.lobbyChannel).emit(event, ...data);
-	}
-
 	private sendToSpyMasters<T extends keyof ServerToClientEvents>(
 		event: T,
 		...data: Parameters<ServerToClientEvents[T]>
 	) {
 		this.io.to(this.spymasterChannel).emit(event, ...data);
 	}
-	private sendToOperatives<T extends keyof ServerToClientEvents>(
+
+	private sendToNotSpyMasters<T extends keyof ServerToClientEvents>(
 		event: T,
 		...data: Parameters<ServerToClientEvents[T]>
 	) {
@@ -84,7 +85,7 @@ export class SocketController {
 	}
 
 	private sendGameState(): void {
-		this.sendToAll('gameUpdate', this.game.getState('operative'));
+		this.sendToNotSpyMasters('gameUpdate', this.game.getState('operative'));
 		this.sendToSpyMasters('gameUpdate', this.game.getState('spymaster'));
 	}
 
@@ -102,12 +103,14 @@ export class SocketController {
 	// PUBLIC METHODS
 
 	public sync() {
+		this.socket.join(this.lobbyChannel);
+		this.socket.join(this.userChannel);
+
 		if (this.player.role === 'spymaster') {
 			this.socket.join(this.spymasterChannel);
+			this.socket.leave(this.lobbyChannel);
 			this.sendToMe('gameUpdate', this.game.getState('spymaster'));
 		}
-		this.socket.join(this.lobbyChannel);
-		this.socket.join(this.lobbyChannel + this.player.id);
 
 		this.player.isConnected = true;
 		this.sendGameState();
@@ -120,9 +123,11 @@ export class SocketController {
 		if (success) {
 			if (role === 'spymaster') {
 				this.socket.join(this.spymasterChannel);
+				this.socket.leave(this.lobbyChannel);
 				this.sendToMe('gameUpdate', this.game.getState('spymaster'));
 			} else {
 				this.socket.leave(this.spymasterChannel);
+				this.socket.join(this.lobbyChannel);
 			}
 			this.sendPlayerState();
 		}
@@ -164,14 +169,17 @@ export class SocketController {
 		if (success) this.sendGameState();
 	}
 
-	public handleDisconnect() {
-		this.player.isConnected = false;
-		this.sendPlayerState();
+	public async handleDisconnect() {
+		const matchingSockets = await this.io.in(this.userChannel).fetchSockets();
+		const isDisconnected = matchingSockets.length === 0;
+		if (isDisconnected) {
+			this.player.isConnected = false;
+			this.sendPlayerState();
+		}
 	}
 
 	public startGame(options: Partial<GameOptions> = {}): void {
 		if (!this.isHost) return;
-		console.log('optController', options);
 		this.game.startGame(options);
 		this.sendGameState();
 		this.sendPlayerState();
