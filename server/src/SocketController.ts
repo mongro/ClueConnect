@@ -34,6 +34,15 @@ export class SocketController {
 	private get userChannel() {
 		return this.lobbyChannel + '/' + this.player.id;
 	}
+
+	async moveSocketsToRoom(from: string, to: string): Promise<void> {
+		const sockets = await this.io.in(from).fetchSockets();
+		for (const socket of sockets) {
+			socket.leave(from);
+			socket.join(to);
+		}
+	}
+
 	private sendToAll<T extends keyof ServerToClientEvents>(
 		event: T,
 		...data: Parameters<ServerToClientEvents[T]>
@@ -188,14 +197,14 @@ export class SocketController {
 	public resetGame(): void {
 		if (!this.isHost) return;
 		this.game.resetGame();
-		this.io.socketsLeave(this.spymasterChannel);
-
+		this.moveSocketsToRoom(this.spymasterChannel, this.lobbyChannel);
 		this.sendGameState();
 		this.sendPlayerState();
 	}
 	public resetTeams(): void {
 		if (!this.isHost) return;
-		this.io.socketsLeave(this.spymasterChannel);
+		this.moveSocketsToRoom(this.spymasterChannel, this.lobbyChannel);
+
 		this.game.resetTeams();
 		this.sendPlayerState();
 	}
