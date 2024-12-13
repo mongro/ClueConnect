@@ -19,7 +19,6 @@
 	let { gameState, players }: Props = $props();
 	const lobby = getLobbyState();
 	onDestroy(() => {
-		console.log('disconnect client');
 		socket.disconnect();
 	});
 </script>

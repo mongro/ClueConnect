@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SocketController = void 0;
+const BotRunner_1 = require("./ai/BotRunner");
 const SPYMASTER_CHANNEL_KEYWORD = '/spymasters';
 /**
  * This class is responsible for handling all events for a given socket.
@@ -11,24 +12,32 @@ class SocketController {
     io;
     lobby;
     player;
-    constructor(socket, io, lobby, player) {
+    botRunner;
+    constructor(socket, io, lobby, player, botRunner) {
         this.socket = socket;
         this.io = io;
         this.lobby = lobby;
         this.player = player;
+        this.botRunner = botRunner;
     }
     // AUXILIARY PRIVATE METHODS
-    get lobbyChannel() {
-        return this.lobby.id;
-    }
     get isHost() {
         return this.player.isHost;
+    }
+    get lobbyChannel() {
+        return this.lobby.id;
     }
     get spymasterChannel() {
         return this.lobby.id + SPYMASTER_CHANNEL_KEYWORD;
     }
+    get userChannel() {
+        return this.lobbyChannel + '/' + this.player.id;
+    }
     sendToAll(event, ...data) {
-        this.io.to(this.lobbyChannel).emit(event, ...data);
+        this.io
+            .to(this.lobbyChannel)
+            .to(this.spymasterChannel)
+            .emit(event, ...data);
     }
     sendToMe(event, ...data) {
         this.socket.emit(event, ...data);
@@ -36,13 +45,10 @@ class SocketController {
     sendToSingleClient(id, event, ...data) {
         this.io.to(this.lobbyChannel + id).emit(event, ...data);
     }
-    sendToOthers(event, ...data) {
-        this.socket.broadcast.to(this.lobbyChannel).emit(event, ...data);
-    }
     sendToSpyMasters(event, ...data) {
         this.io.to(this.spymasterChannel).emit(event, ...data);
     }
-    sendToOperatives(event, ...data) {
+    sendToNotSpyMasters(event, ...data) {
         this.io.to(this.lobbyChannel).emit(event, ...data);
     }
     getAllPlayer() {
@@ -54,7 +60,7 @@ class SocketController {
         return this.lobby.game;
     }
     sendGameState() {
-        this.sendToAll('gameUpdate', this.game.getState('operative'));
+        this.sendToNotSpyMasters('gameUpdate', this.game.getState('operative'));
         this.sendToSpyMasters('gameUpdate', this.game.getState('spymaster'));
     }
     sendSuggestions() {
@@ -68,12 +74,13 @@ class SocketController {
     }
     // PUBLIC METHODS
     sync() {
+        this.socket.join(this.lobbyChannel);
+        this.socket.join(this.userChannel);
         if (this.player.role === 'spymaster') {
             this.socket.join(this.spymasterChannel);
+            this.socket.leave(this.lobbyChannel);
             this.sendToMe('gameUpdate', this.game.getState('spymaster'));
         }
-        this.socket.join(this.lobbyChannel);
-        this.socket.join(this.lobbyChannel + this.player.id);
         this.player.isConnected = true;
         this.sendGameState();
         this.sendPlayerState();
@@ -84,10 +91,15 @@ class SocketController {
         if (success) {
             if (role === 'spymaster') {
                 this.socket.join(this.spymasterChannel);
+                this.socket.leave(this.lobbyChannel);
                 this.sendToMe('gameUpdate', this.game.getState('spymaster'));
+                this.addBot('operative', team, 'Horst');
+                this.addBot('spymaster', team == 'red' ? 'blue' : 'red', 'Horst');
+                this.addBot('operative', team == 'red' ? 'blue' : 'red', 'Horst');
             }
             else {
                 this.socket.leave(this.spymasterChannel);
+                this.socket.join(this.lobbyChannel);
             }
             this.sendPlayerState();
         }
@@ -96,6 +108,9 @@ class SocketController {
         const { success } = this.game.makeGuess(this.player, id);
         if (success)
             this.sendGameState();
+        if (this.botRunner) {
+            this.botRunner.run();
+        }
     }
     toggleSuggestion(id) {
         const { success } = this.game.toggleSuggestion(this.player, id);
@@ -106,6 +121,9 @@ class SocketController {
         const { success } = this.game.endGuessing(this.player);
         if (success)
             this.sendGameState();
+        if (this.botRunner) {
+            this.botRunner.run();
+        }
     }
     kickPlayer(id) {
         if (!this.isHost)
@@ -128,15 +146,21 @@ class SocketController {
         const { success } = this.game.giveClue(this.player, { clue: word, number });
         if (success)
             this.sendGameState();
+        if (this.botRunner) {
+            this.botRunner.run();
+        }
     }
-    handleDisconnect() {
-        this.player.isConnected = false;
-        this.sendPlayerState();
+    async handleDisconnect() {
+        const matchingSockets = await this.io.in(this.userChannel).fetchSockets();
+        const isDisconnected = matchingSockets.length === 0;
+        if (isDisconnected) {
+            this.player.isConnected = false;
+            this.sendPlayerState();
+        }
     }
     startGame(options = {}) {
         if (!this.isHost)
             return;
-        console.log('optController', options);
         this.game.startGame(options);
         this.sendGameState();
         this.sendPlayerState();
@@ -155,6 +179,16 @@ class SocketController {
         this.io.socketsLeave(this.spymasterChannel);
         this.game.resetTeams();
         this.sendPlayerState();
+    }
+    addBot(role, team, name) {
+        if (!this.botRunner) {
+            this.botRunner = new BotRunner_1.BotRunner(this.lobby.game, {
+                onGameChange: this.sendGameState.bind(this),
+                batchUpdates: false,
+                delay: 2000
+            });
+        }
+        this.botRunner.addBot(team, role, name);
     }
 }
 exports.SocketController = SocketController;

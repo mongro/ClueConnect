@@ -56,6 +56,12 @@ class Game {
             return count;
         }, 0);
     }
+    getActivePlayers() {
+        return Object.values(this.player).filter((player) => {
+            return (player.role == (this.currentClue ? 'operative' : 'spymaster') &&
+                player.team === this.currentTeam);
+        });
+    }
     revealCard(cardId) {
         if (!this.currentClue)
             return;
@@ -132,7 +138,7 @@ class Game {
         return { success: false };
     }
     endGuessing(player) {
-        if (!this.isPlayerTurn(player)) {
+        if (player && !this.isPlayerTurn(player)) {
             return { success: false };
         }
         this.switchTurnToOtherTeam();
@@ -156,6 +162,7 @@ class Game {
         return { success: true, suggestions: this.suggestions };
     }
     makeGuess(player, cardId) {
+        console.log('cardId', cardId);
         if (!this.currentClue)
             return {
                 success: false
@@ -163,14 +170,14 @@ class Game {
         if (this.currentClue.number < this.currentGuesses) {
             return { success: false };
         }
-        if (!this.isPlayerTurn(player)) {
+        if (!(player == 'bot') && !this.isPlayerTurn(player)) {
             return { success: false };
         }
         this.log.push({
             type: 'guess',
             team: this.currentTeam,
             word: this.board[cardId].word,
-            player: player.name
+            player: player == 'bot' ? 'BOT' : player.name
         });
         this.revealCard(cardId);
         return { success: true };
@@ -179,7 +186,7 @@ class Game {
         if (this.currentClue != null) {
             return { success: false };
         }
-        if (!this.isPlayerTurn(player)) {
+        if (!(player == 'bot') && !this.isPlayerTurn(player)) {
             console.log('notplayersTurn');
             return { success: false };
         }
@@ -187,7 +194,7 @@ class Game {
             type: 'clue',
             team: this.currentTeam,
             clue: clue,
-            player: player.name
+            player: player == 'bot' ? 'BOT' : player.name
         });
         this.currentClue = clue;
         return { success: true };

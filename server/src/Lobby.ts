@@ -1,11 +1,13 @@
+import { Bot } from './ai/BotRunner';
 import { Game } from './Game';
-import { Player } from './types';
+import { Player, Role, Team } from './types';
 import crypto from 'crypto';
 
 export class Lobby {
 	id: string;
 	game: Game;
 	players: Record<number, Player> = {};
+	bots: Bot[] = [];
 	credentialsToIdMap: Record<string, number> = {};
 	playerLimit: number = 10;
 	isLocked: boolean = false;
@@ -52,6 +54,10 @@ export class Lobby {
 			return { success: true };
 		}
 		return { success: false };
+	}
+
+	public addBot(name: string, role: Role, team: Team) {
+		this.bots.push({ name, role, team });
 	}
 
 	public addPlayer(name: string): string | undefined {

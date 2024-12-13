@@ -41,6 +41,7 @@ export type GameOptions = {
 	language: GameLanguage;
 	customWords: string[];
 	appearanceCustomWords: AppearanceCustomWords;
+	fillEmptyRolesWithAi: boolean;
 };
 export type GameState = {
 	suggestions: Partial<Record<string, number[]>>;
@@ -58,7 +59,8 @@ export type GameState = {
 export const defaultOptions: GameOptions = {
 	language: 'en',
 	customWords: [],
-	appearanceCustomWords: 'notFixed'
+	appearanceCustomWords: 'notFixed',
+	fillEmptyRolesWithAi: false
 };
 
 export interface ServerToClientEvents {

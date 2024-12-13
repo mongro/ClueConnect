@@ -3,6 +3,8 @@ import type { Game } from './Game';
 import type { Server, Socket } from 'socket.io';
 import type { Lobby } from './Lobby';
 import { Role, Team, Player } from './types';
+import { createBotGuesser, createBotSpymaster } from './ai/createBot';
+import { BotRunner } from './ai/BotRunner';
 
 const SPYMASTER_CHANNEL_KEYWORD = '/spymasters';
 /**
@@ -14,27 +16,35 @@ export class SocketController {
 		private socket: Socket<ClientToServerEvents, ServerToClientEvents, {}, {}>,
 		private io: Server<ClientToServerEvents, ServerToClientEvents, {}, {}>,
 		private lobby: Lobby,
-		private player: Player
+		private player: Player,
+		private botRunner?: BotRunner
 	) {}
 
 	// AUXILIARY PRIVATE METHODS
-
-	private get lobbyChannel() {
-		return this.lobby.id;
-	}
 
 	private get isHost() {
 		return this.player.isHost;
 	}
 
+	private get lobbyChannel() {
+		return this.lobby.id;
+	}
+
 	private get spymasterChannel() {
 		return this.lobby.id + SPYMASTER_CHANNEL_KEYWORD;
+	}
+
+	private get userChannel() {
+		return this.lobbyChannel + '/' + this.player.id;
 	}
 	private sendToAll<T extends keyof ServerToClientEvents>(
 		event: T,
 		...data: Parameters<ServerToClientEvents[T]>
 	): void {
-		this.io.to(this.lobbyChannel).emit(event, ...data);
+		this.io
+			.to(this.lobbyChannel)
+			.to(this.spymasterChannel)
+			.emit(event, ...data);
 	}
 
 	private sendToMe<T extends keyof ServerToClientEvents>(
@@ -52,20 +62,14 @@ export class SocketController {
 		this.io.to(this.lobbyChannel + id).emit(event, ...data);
 	}
 
-	private sendToOthers<T extends keyof ServerToClientEvents>(
-		event: T,
-		...data: Parameters<ServerToClientEvents[T]>
-	) {
-		this.socket.broadcast.to(this.lobbyChannel).emit(event, ...data);
-	}
-
 	private sendToSpyMasters<T extends keyof ServerToClientEvents>(
 		event: T,
 		...data: Parameters<ServerToClientEvents[T]>
 	) {
 		this.io.to(this.spymasterChannel).emit(event, ...data);
 	}
-	private sendToOperatives<T extends keyof ServerToClientEvents>(
+
+	private sendToNotSpyMasters<T extends keyof ServerToClientEvents>(
 		event: T,
 		...data: Parameters<ServerToClientEvents[T]>
 	) {
@@ -84,7 +88,7 @@ export class SocketController {
 	}
 
 	private sendGameState(): void {
-		this.sendToAll('gameUpdate', this.game.getState('operative'));
+		this.sendToNotSpyMasters('gameUpdate', this.game.getState('operative'));
 		this.sendToSpyMasters('gameUpdate', this.game.getState('spymaster'));
 	}
 
@@ -102,12 +106,14 @@ export class SocketController {
 	// PUBLIC METHODS
 
 	public sync() {
+		this.socket.join(this.lobbyChannel);
+		this.socket.join(this.userChannel);
+
 		if (this.player.role === 'spymaster') {
 			this.socket.join(this.spymasterChannel);
+			this.socket.leave(this.lobbyChannel);
 			this.sendToMe('gameUpdate', this.game.getState('spymaster'));
 		}
-		this.socket.join(this.lobbyChannel);
-		this.socket.join(this.lobbyChannel + this.player.id);
 
 		this.player.isConnected = true;
 		this.sendGameState();
@@ -120,9 +126,14 @@ export class SocketController {
 		if (success) {
 			if (role === 'spymaster') {
 				this.socket.join(this.spymasterChannel);
+				this.socket.leave(this.lobbyChannel);
 				this.sendToMe('gameUpdate', this.game.getState('spymaster'));
+				this.addBot('operative', team, 'Horst');
+				this.addBot('spymaster', team == 'red' ? 'blue' : 'red', 'Horst');
+				this.addBot('operative', team == 'red' ? 'blue' : 'red', 'Horst');
 			} else {
 				this.socket.leave(this.spymasterChannel);
+				this.socket.join(this.lobbyChannel);
 			}
 			this.sendPlayerState();
 		}
@@ -131,6 +142,9 @@ export class SocketController {
 	public makeGuess(id: number) {
 		const { success } = this.game.makeGuess(this.player, id);
 		if (success) this.sendGameState();
+		if (this.botRunner) {
+			this.botRunner.run();
+		}
 	}
 
 	public toggleSuggestion(id: number) {
@@ -141,6 +155,9 @@ export class SocketController {
 	public endGuessing() {
 		const { success } = this.game.endGuessing(this.player);
 		if (success) this.sendGameState();
+		if (this.botRunner) {
+			this.botRunner.run();
+		}
 	}
 
 	public kickPlayer(id: number) {
@@ -162,16 +179,22 @@ export class SocketController {
 	public giveClue(word: string, number: number) {
 		const { success } = this.game.giveClue(this.player, { clue: word, number });
 		if (success) this.sendGameState();
+		if (this.botRunner) {
+			this.botRunner.run();
+		}
 	}
 
-	public handleDisconnect() {
-		this.player.isConnected = false;
-		this.sendPlayerState();
+	public async handleDisconnect() {
+		const matchingSockets = await this.io.in(this.userChannel).fetchSockets();
+		const isDisconnected = matchingSockets.length === 0;
+		if (isDisconnected) {
+			this.player.isConnected = false;
+			this.sendPlayerState();
+		}
 	}
 
 	public startGame(options: Partial<GameOptions> = {}): void {
 		if (!this.isHost) return;
-		console.log('optController', options);
 		this.game.startGame(options);
 		this.sendGameState();
 		this.sendPlayerState();
@@ -190,5 +213,16 @@ export class SocketController {
 		this.io.socketsLeave(this.spymasterChannel);
 		this.game.resetTeams();
 		this.sendPlayerState();
+	}
+
+	public addBot(role: Role, team: Team, name: string) {
+		if (!this.botRunner) {
+			this.botRunner = new BotRunner(this.lobby.game, {
+				onGameChange: this.sendGameState.bind(this),
+				batchUpdates: false,
+				delay: 2000
+			});
+		}
+		this.botRunner.addBot(team, role, name);
 	}
 }

@@ -46,20 +46,13 @@ class LobbyState {
 			this.isConnectingToLobby = false;
 		});
 
-		socket.on('disconnect', function () {
-			console.log('disconnect');
-			console.log('disconnect', socket.id);
-		});
-		socket.on('connect', function () {
-			console.log('connect');
-			console.log('id', Date.now().toLocaleString('de'), socket.id, browser ? 'browser' : 'server');
-		});
+		socket.on('disconnect', function () {});
+		socket.on('connect', function () {});
 		socket.on('suggestionsUpdate', (serverSuggestionsState) => {
 			if (this.gameState) this.gameState.suggestions = serverSuggestionsState;
 		});
 		socket.on('gameUpdate', (serverGameState) => {
 			this.gameState = serverGameState;
-			console.log('gameUpdate', serverGameState);
 		});
 
 		socket.on('kick', () => {

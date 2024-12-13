@@ -10,9 +10,6 @@ const socket_io_1 = require("socket.io");
 const LobbyDB_1 = __importDefault(require("./LobbyDB"));
 const SocketController_1 = require("./SocketController");
 const router_1 = __importDefault(require("./router"));
-console.log(process.env); /**
- * Express Server
- */
 const app = (0, express_1.default)();
 var corsOptions = {
     origin: process.env.CLIENT_URL,
@@ -22,10 +19,7 @@ const PORT = process.env.PORT ?? 5000;
 app.use((0, cors_1.default)(corsOptions));
 app.use(express_1.default.json());
 app.use(router_1.default);
-const server = app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
-    console.log(`ClientUrl ${process.env.CLIENT_URL}`);
-});
+const server = app.listen(PORT, () => { });
 app.post('/createLobby', (req, res) => {
     res.send('POST request to the homepage');
 });
@@ -39,7 +33,6 @@ const io = new socket_io_1.Server(server, {
  * Socket IO Event Handling
  */
 io.on('connection', (socket) => {
-    console.log('id', socket.id, Date.now().toLocaleString('de'));
     socket.on('joinLobby', (id, credentials) => {
         const lobby = LobbyDB_1.default.get(id);
         if (!lobby)

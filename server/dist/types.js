@@ -4,5 +4,6 @@ exports.defaultOptions = void 0;
 exports.defaultOptions = {
     language: 'en',
     customWords: [],
-    appearanceCustomWords: 'notFixed'
+    appearanceCustomWords: 'notFixed',
+    fillEmptyRolesWithAi: false
 };

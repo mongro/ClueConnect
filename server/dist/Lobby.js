@@ -10,6 +10,7 @@ class Lobby {
     id;
     game;
     players = {};
+    bots = [];
     credentialsToIdMap = {};
     playerLimit = 10;
     isLocked = false;
@@ -54,6 +55,9 @@ class Lobby {
             return { success: true };
         }
         return { success: false };
+    }
+    addBot(name, role, team) {
+        this.bots.push({ name, role, team });
     }
     addPlayer(name) {
         if (this.isFull)

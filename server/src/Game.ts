@@ -63,6 +63,15 @@ export class Game {
 		}, 0);
 	}
 
+	getActivePlayers() {
+		return Object.values(this.player).filter((player) => {
+			return (
+				player.role == (this.currentClue ? 'operative' : 'spymaster') &&
+				player.team === this.currentTeam
+			);
+		});
+	}
+
 	private revealCard(cardId: number) {
 		if (!this.currentClue) return;
 		const { type, word } = this.board[cardId];
@@ -155,8 +164,8 @@ export class Game {
 		return { success: false };
 	}
 
-	public endGuessing(player: Player) {
-		if (!this.isPlayerTurn(player)) {
+	public endGuessing(player?: Player) {
+		if (player && !this.isPlayerTurn(player)) {
 			return { success: false };
 		}
 		this.switchTurnToOtherTeam();
@@ -183,7 +192,8 @@ export class Game {
 		return { success: true, suggestions: this.suggestions };
 	}
 
-	public makeGuess(player: Player, cardId: number) {
+	public makeGuess(player: Player | 'bot', cardId: number) {
+		console.log('cardId', cardId);
 		if (!this.currentClue)
 			return {
 				success: false
@@ -191,24 +201,24 @@ export class Game {
 		if (this.currentClue.number < this.currentGuesses) {
 			return { success: false };
 		}
-		if (!this.isPlayerTurn(player)) {
+		if (!(player == 'bot') && !this.isPlayerTurn(player)) {
 			return { success: false };
 		}
 		this.log.push({
 			type: 'guess',
 			team: this.currentTeam,
 			word: this.board[cardId].word,
-			player: player.name
+			player: player == 'bot' ? 'BOT' : player.name
 		});
 		this.revealCard(cardId);
 		return { success: true };
 	}
 
-	public giveClue(player: Player, clue: Clue) {
+	public giveClue(player: Player | 'bot', clue: Clue) {
 		if (this.currentClue != null) {
 			return { success: false };
 		}
-		if (!this.isPlayerTurn(player)) {
+		if (!(player == 'bot') && !this.isPlayerTurn(player)) {
 			console.log('notplayersTurn');
 			return { success: false };
 		}
@@ -216,7 +226,7 @@ export class Game {
 			type: 'clue',
 			team: this.currentTeam,
 			clue: clue,
-			player: player.name
+			player: player == 'bot' ? 'BOT' : player.name
 		});
 		this.currentClue = clue;
 		return { success: true };
