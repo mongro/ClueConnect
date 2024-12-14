@@ -8,20 +8,13 @@ import { BotSpymaster } from './BotSpymaster';
 
 const clueObject = z.object({
 	clue: z.string(),
-	number: z.number()
+	number: z.number(),
+	words: z.array(z.string())
 });
 
 export class ChatGptSpymaster extends BotSpymaster {
-	private history: Array<ChatCompletionMessageParam>;
 	constructor(game: Game) {
 		super(game);
-		this.history = [
-			{ role: 'system', content: gameRules },
-			{
-				role: 'system',
-				content: `You are playing the association game "Codenames" as the ${game.currentTeam} spymaster`
-			}
-		];
 	}
 
 	private createRemainingWords() {
@@ -33,12 +26,19 @@ export class ChatGptSpymaster extends BotSpymaster {
 
 	async createClue() {
 		console.log(this.createRemainingWords());
+
 		let prompt = 'The remaining words are: ' + this.createRemainingWords() + '. \n';
-		prompt += 'Provide a single word clue and number for the guesser.';
-		prompt += 'Stick to this format exactly and provide no additional text. ';
-		this.history.push({ role: 'user', content: prompt });
+		prompt +=
+			'Provide a single word clue,the words belonging to the clue and the number of words for the guesser.';
+		prompt += `Make sure the words belonging to your clue only consists of type ${this.game.currentTeam}`;
 		const response = await openai.beta.chat.completions.parse({
-			messages: this.history,
+			messages: [
+				{
+					role: 'system',
+					content: `You are playing the word association game "Codenames" as the ${this.game.currentTeam} spymaster`
+				},
+				{ role: 'user', content: prompt }
+			],
 			model: 'gpt-4o-mini',
 			response_format: zodResponseFormat(clueObject, 'clue')
 		});
@@ -46,7 +46,6 @@ export class ChatGptSpymaster extends BotSpymaster {
 		const content = response.choices[0].message.parsed;
 		if (!content) return null;
 		console.log('content', content);
-		this.history.push({ role: 'assistant', content: content.clue });
 		return content;
 	}
 }

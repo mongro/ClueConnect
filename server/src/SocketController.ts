@@ -4,7 +4,7 @@ import type { Server, Socket } from 'socket.io';
 import type { Lobby } from './Lobby';
 import { Role, Team, Player } from './types';
 import { createBotGuesser, createBotSpymaster } from './ai/createBot';
-import { BotRunner } from './ai/BotRunner';
+import { Bot, BotRunner } from './ai/BotRunner';
 
 const SPYMASTER_CHANNEL_KEYWORD = '/spymasters';
 /**
@@ -138,9 +138,14 @@ export class SocketController {
 				this.socket.join(this.spymasterChannel);
 				this.socket.leave(this.lobbyChannel);
 				this.sendToMe('gameUpdate', this.game.getState('spymaster'));
-				this.addBot('operative', team, 'Horst');
-				this.addBot('spymaster', team == 'red' ? 'blue' : 'red', 'Horst');
-				this.addBot('operative', team == 'red' ? 'blue' : 'red', 'Horst');
+				this.addBot({ role: 'operative', team, name: 'Horst' });
+				this.addBot({
+					role: 'spymaster',
+					team: team == 'red' ? 'blue' : 'red',
+					name: 'Horst',
+					type: 'gpt'
+				});
+				this.addBot({ role: 'operative', team: team == 'red' ? 'blue' : 'red', name: 'Horst' });
 			} else {
 				this.socket.leave(this.spymasterChannel);
 				this.socket.join(this.lobbyChannel);
@@ -225,7 +230,7 @@ export class SocketController {
 		this.sendPlayerState();
 	}
 
-	public addBot(role: Role, team: Team, name: string) {
+	public addBot(bot: Bot) {
 		if (!this.botRunner) {
 			this.botRunner = new BotRunner(this.lobby.game, {
 				onGameChange: this.sendGameState.bind(this),
@@ -233,6 +238,6 @@ export class SocketController {
 				delay: 2000
 			});
 		}
-		this.botRunner.addBot(team, role, name);
+		this.botRunner.addBot(bot);
 	}
 }

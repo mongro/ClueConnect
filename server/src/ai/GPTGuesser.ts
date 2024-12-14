@@ -13,16 +13,8 @@ const guessObject = z.object({
 });
 
 export class ChatGptGuesser extends BotGuesser {
-	private history: Array<ChatCompletionMessageParam>;
 	constructor(game: Game, onGameChange?: (gameState?: GameState) => void) {
 		super(game, onGameChange);
-		this.history = [
-			{ role: 'system', content: gameRules },
-			{
-				role: 'system',
-				content: `You are playing the association game 'Codenames' as the ${game.currentTeam} guesser`
-			}
-		];
 	}
 
 	private createRemainingWords(board: Card[]) {
@@ -34,15 +26,20 @@ export class ChatGptGuesser extends BotGuesser {
 
 	async createGuess(board: Card[], clue: Clue) {
 		console.log(this.createRemainingWords(board));
-		let prompt = 'The remaining words are: ' + this.createRemainingWords(board) + '. \n';
-		prompt += "The following is the codemaster's clue: " + `(${clue.clue},${clue.number}` + '. \n';
+		let prompt = 'Remaining words: ' + this.createRemainingWords(board) + '. \n';
+		prompt += 'Clue of codemaster: ' + `(${clue.clue},${clue.number}` + '. \n';
 		prompt += 'Provide a guess for one of the remaining words associated with this clue. \n';
 		prompt +=
 			'If you absolutely cant find a word that creates an associatiton with the clue, answer by setting endGuessing in the JSON response to false\n';
 		prompt += 'Provide a reason for your desicion in the reason field of the JSON response" \n';
-		this.history.push({ role: 'user', content: prompt });
 		const response = await openai.beta.chat.completions.parse({
-			messages: this.history,
+			messages: [
+				{
+					role: 'system',
+					content: `You are playing the word association game "Codenames" as the ${this.game.currentTeam} guesser`
+				},
+				{ role: 'user', content: prompt }
+			],
 			model: 'gpt-4o-mini',
 			response_format: zodResponseFormat(guessObject, 'guess')
 		});
@@ -50,7 +47,6 @@ export class ChatGptGuesser extends BotGuesser {
 		const content = response.choices[0].message.parsed;
 		if (!content) return null;
 		console.log('content', content.guess, content.reason);
-		this.history.push({ role: 'assistant', content: content.guess });
 		return content;
 	}
 }

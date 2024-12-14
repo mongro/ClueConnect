@@ -33,8 +33,8 @@ export class BotRunner {
 		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
 
-	addBot(team: Team, role: Role, name: string) {
-		this.bots[team][role] = { team, role, name };
+	addBot(bot: Bot) {
+		this.bots[bot.team][bot.role] = bot;
 	}
 
 	deleteBot(role: Role, team: Team) {
