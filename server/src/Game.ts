@@ -198,7 +198,8 @@ export class Game {
 			type: 'guess',
 			team: this.currentTeam,
 			word: this.board[cardId].word,
-			player: player.name
+			player: player.name,
+			cardType: this.board[cardId].type
 		});
 		this.revealCard(cardId);
 		return { success: true };

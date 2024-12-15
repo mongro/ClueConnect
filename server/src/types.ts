@@ -26,6 +26,7 @@ export type GameAction =
 			player: string;
 			team: Team;
 			word: string;
+			cardType: CardType;
 	  }
 	| {
 			type: 'clue';
