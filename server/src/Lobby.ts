@@ -1,4 +1,4 @@
-import { Bot } from './ai/BotRunner';
+import { Bot, BotComposition, BotRunner } from './ai/BotRunner';
 import { Game } from './Game';
 import { Player, Role, Team } from './types';
 import crypto from 'crypto';
@@ -7,7 +7,7 @@ export class Lobby {
 	id: string;
 	game: Game;
 	players: Record<number, Player> = {};
-	bots: Bot[] = [];
+	bots: BotComposition;
 	credentialsToIdMap: Record<string, number> = {};
 	playerLimit: number = 10;
 	isLocked: boolean = false;
@@ -16,6 +16,10 @@ export class Lobby {
 	constructor(id: string) {
 		this.id = id;
 		this.game = new Game(1, this.players);
+		this.bots = {
+			red: { operative: null, spymaster: null },
+			blue: { operative: null, spymaster: null }
+		};
 	}
 
 	public get isFull(): boolean {
@@ -56,8 +60,16 @@ export class Lobby {
 		return { success: false };
 	}
 
-	public addBot(name: string, role: Role, team: Team) {
-		this.bots.push({ name, role, team });
+	addBot(bot: Bot) {
+		this.bots[bot.team][bot.role] = bot;
+	}
+
+	deleteBot(role: Role, team: Team) {
+		this.bots[team][role] = null;
+	}
+
+	getActiveBot() {
+		return this.bots[this.game.currentTeam][this.game.currentClue ? 'operative' : 'spymaster'];
 	}
 
 	public addPlayer(name: string): string | undefined {

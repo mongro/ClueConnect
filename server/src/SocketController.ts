@@ -16,8 +16,7 @@ export class SocketController {
 		private socket: Socket<ClientToServerEvents, ServerToClientEvents, {}, {}>,
 		private io: Server<ClientToServerEvents, ServerToClientEvents, {}, {}>,
 		private lobby: Lobby,
-		private player: Player,
-		private botRunner?: BotRunner
+		private player: Player
 	) {}
 
 	// AUXILIARY PRIVATE METHODS
@@ -108,6 +107,10 @@ export class SocketController {
 	private sendPlayerState(): void {
 		this.sendToAll('playerUpdate', this.getAllPlayer());
 	}
+
+	private sendBotState(): void {
+		this.sendToAll('botUpdate', this.lobby.bots);
+	}
 	private sendMyPlayerStatus(): void {
 		this.sendToMe('myStatus', this.player);
 	}
@@ -121,12 +124,12 @@ export class SocketController {
 		if (this.player.role === 'spymaster') {
 			this.socket.join(this.spymasterChannel);
 			this.socket.leave(this.lobbyChannel);
-			this.socket.leave(this.lobbyChannel);
 			this.sendToMe('gameUpdate', this.game.getState('spymaster'));
 		}
 
 		this.player.isConnected = true;
 		this.sendGameState();
+		this.sendBotState();
 		this.sendPlayerState();
 		this.sendMyPlayerStatus();
 	}
@@ -138,14 +141,6 @@ export class SocketController {
 				this.socket.join(this.spymasterChannel);
 				this.socket.leave(this.lobbyChannel);
 				this.sendToMe('gameUpdate', this.game.getState('spymaster'));
-				this.addBot({ role: 'operative', team, name: 'Horst' });
-				this.addBot({
-					role: 'spymaster',
-					team: team == 'red' ? 'blue' : 'red',
-					name: 'Horst',
-					type: 'gpt'
-				});
-				this.addBot({ role: 'operative', team: team == 'red' ? 'blue' : 'red', name: 'Horst' });
 			} else {
 				this.socket.leave(this.spymasterChannel);
 				this.socket.join(this.lobbyChannel);
@@ -157,8 +152,10 @@ export class SocketController {
 	public makeGuess(id: number) {
 		const { success } = this.game.makeGuess(this.player, id);
 		if (success) this.sendGameState();
-		if (this.botRunner) {
-			this.botRunner.run();
+		if (this.lobby.getActiveBot()) {
+			const botRunner = new BotRunner(this.lobby, { delay: 2000, batchUpdates: false });
+
+			botRunner.run();
 		}
 	}
 
@@ -170,8 +167,10 @@ export class SocketController {
 	public endGuessing() {
 		const { success } = this.game.endGuessing(this.player);
 		if (success) this.sendGameState();
-		if (this.botRunner) {
-			this.botRunner.run();
+		if (this.lobby.getActiveBot()) {
+			const botRunner = new BotRunner(this.lobby, { delay: 2000, batchUpdates: false });
+
+			botRunner.run();
 		}
 	}
 
@@ -194,8 +193,10 @@ export class SocketController {
 	public giveClue(word: string, number: number) {
 		const { success } = this.game.giveClue(this.player, { clue: word, number });
 		if (success) this.sendGameState();
-		if (this.botRunner) {
-			this.botRunner.run();
+		if (this.lobby.getActiveBot()) {
+			const botRunner = new BotRunner(this.lobby, { delay: 2000, batchUpdates: false });
+
+			botRunner.run();
 		}
 	}
 
@@ -231,13 +232,11 @@ export class SocketController {
 	}
 
 	public addBot(bot: Bot) {
-		if (!this.botRunner) {
-			this.botRunner = new BotRunner(this.lobby.game, {
-				onGameChange: this.sendGameState.bind(this),
-				batchUpdates: false,
-				delay: 2000
-			});
-		}
-		this.botRunner.addBot(bot);
+		this.lobby.addBot(bot);
+		this.sendBotState();
+	}
+	public deleteBot(role: Role, team: Team) {
+		this.lobby.deleteBot(role, team);
+		this.sendBotState();
 	}
 }

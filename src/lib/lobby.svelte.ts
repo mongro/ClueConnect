@@ -1,13 +1,18 @@
-import type { GameState, Player, Role, Team, TeamComposition } from '$shared/src/types';
+import type { Bot, GameState, Player, Role, Team, TeamComposition } from '$shared/src/types';
 import { getContext, hasContext, setContext } from 'svelte';
 import socket from './socket';
 import { goto } from '$app/navigation';
 import { browser } from '$app/environment';
 import { LocalStorageHelper } from './components/LocalStorageHelper';
+import type { BotComposition } from '$shared/src/ai/BotRunner';
 
 class LobbyState {
 	id: string;
 	players = $state<Player[]>([]);
+	bots = $state<BotComposition>({
+		red: { operative: null, spymaster: null },
+		blue: { operative: null, spymaster: null }
+	});
 	gameState = $state<GameState>();
 	credentials = $state<string>();
 	myState = $state<Player | undefined>();
@@ -40,6 +45,9 @@ class LobbyState {
 				if (myStateUpdate) this.myState = myStateUpdate;
 			}
 		});
+		socket.on('botUpdate', (bots) => {
+			this.bots = bots;
+		});
 
 		socket.on('myStatus', (serverMyState) => {
 			this.myState = serverMyState;
@@ -68,8 +76,28 @@ class LobbyState {
 		return this.myState?.role;
 	}
 
+	myRoleIs(team: Team, role: Role) {
+		return this.myRole == role && this.myTeam == team;
+	}
+
+	hasSeenAllCardTypes() {
+		return this.myRole == 'spymaster' && this.hasStarted();
+	}
+
+	hasBot(team: Team, role: Role) {
+		return this.bots[team][role];
+	}
+
 	getMembers(team: Team, role: Role) {
 		return this.teams[team][role];
+	}
+
+	hasHumanMembers(team: Team, role: Role) {
+		return this.teams[team][role].length > 0;
+	}
+
+	hasMembers(team: Team, role: Role) {
+		return this.hasHumanMembers(team, role) || this.hasBot(team, role);
 	}
 
 	hasStarted() {

@@ -1,60 +1,41 @@
 import { Game } from '$server/Game';
+import { Lobby } from '$server/Lobby';
 import { GameState, Role, Team } from '$server/types';
 import { createBotGuesser, createBotSpymaster } from './createBot';
 
-type BotComposition = {
+export type BotComposition = {
 	red: { operative: Bot | null; spymaster: Bot | null };
 	blue: { operative: Bot | null; spymaster: Bot | null };
 };
 
 export class BotRunner {
-	bots: BotComposition;
-	game: Game;
+	lobby: Lobby;
 	onGameChange?: (gameState?: GameState) => void;
 	delay: number;
 	batchUpdates: boolean;
 
-	constructor(game: Game, config: BotRunnerConfig) {
-		this.bots = {
-			red: { operative: null, spymaster: null },
-			blue: { operative: null, spymaster: null }
-		};
-		this.game = game;
+	constructor(lobby: Lobby, config: BotRunnerConfig) {
+		this.lobby = lobby;
 		this.onGameChange = config.onGameChange;
 		this.delay = config.delay ?? 0;
 		this.batchUpdates = config.batchUpdates ?? true;
-	}
-
-	private getActiveBot() {
-		return this.bots[this.game.currentTeam][this.game.currentClue ? 'operative' : 'spymaster'];
 	}
 
 	private sleep(ms: number): Promise<void> {
 		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
 
-	addBot(bot: Bot) {
-		this.bots[bot.team][bot.role] = bot;
-	}
-
-	deleteBot(role: Role, team: Team) {
-		this.bots[team][role] = null;
-	}
-
 	async run() {
-		console.log('bot run');
-		console.log('bots', this.bots);
-		console.log('activeBots', this.getActiveBot());
 		let safeGuard = 20;
-		let activeBot = this.getActiveBot();
-		while (!this.game.gameover && activeBot && safeGuard > 0) {
-			console.log('play turn', this.getActiveBot());
-			this.getActiveBot();
+		let activeBot = this.lobby.getActiveBot();
+		while (!this.lobby.game.gameover && activeBot && safeGuard > 0) {
+			console.log('play turn', this.lobby.getActiveBot());
+			this.lobby.getActiveBot();
 			if (activeBot.role == 'spymaster') {
-				const bot = createBotSpymaster(this.game, activeBot.type);
+				const bot = createBotSpymaster(this.lobby.game, activeBot.type);
 				await bot.playTurn();
 			} else if (activeBot.role == 'operative') {
-				const bot = createBotGuesser(this.game, activeBot.type, this.onGameChange);
+				const bot = createBotGuesser(this.lobby.game, activeBot.type, this.onGameChange);
 				console.log('bot created');
 				console.log('bot created');
 				await bot.playTurn();
@@ -66,7 +47,7 @@ export class BotRunner {
 				this.onGameChange();
 				await this.sleep(this.delay);
 			}
-			activeBot = this.getActiveBot();
+			activeBot = this.lobby.getActiveBot();
 		}
 		if (this.onGameChange) {
 			this.onGameChange();
@@ -79,13 +60,13 @@ export type BotGuesserTypes = 'gpt' | 'random';
 type SpymasterBot = {
 	team: Team;
 	role: 'spymaster';
-	name: string;
+	name?: string;
 	type?: BotSpymasterTypes;
 };
 type GuesserBot = {
 	team: Team;
 	role: 'operative';
-	name: string;
+	name?: string;
 	type?: BotGuesserTypes;
 };
 
