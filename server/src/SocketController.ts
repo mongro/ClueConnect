@@ -152,11 +152,11 @@ export class SocketController {
 	public makeGuess(id: number) {
 		const { success } = this.game.makeGuess(this.player, id);
 		if (success) this.sendGameState();
-		if (this.lobby.getActiveBot()) {
+		/* 	if (this.lobby.getActiveBot()) {
 			const botRunner = new BotRunner(this.lobby, { delay: 2000, batchUpdates: false });
 
 			botRunner.run();
-		}
+		} */
 	}
 
 	public toggleSuggestion(id: number) {
@@ -167,11 +167,11 @@ export class SocketController {
 	public endGuessing() {
 		const { success } = this.game.endGuessing(this.player);
 		if (success) this.sendGameState();
-		if (this.lobby.getActiveBot()) {
+		/* 	if (this.lobby.getActiveBot()) {
 			const botRunner = new BotRunner(this.lobby, { delay: 2000, batchUpdates: false });
 
 			botRunner.run();
-		}
+		} */
 	}
 
 	public kickPlayer(id: number) {
@@ -193,11 +193,11 @@ export class SocketController {
 	public giveClue(word: string, number: number) {
 		const { success } = this.game.giveClue(this.player, { clue: word, number });
 		if (success) this.sendGameState();
-		if (this.lobby.getActiveBot()) {
+		/* 	if (this.lobby.getActiveBot()) {
 			const botRunner = new BotRunner(this.lobby, { delay: 2000, batchUpdates: false });
 
 			botRunner.run();
-		}
+		} */
 	}
 
 	public async handleDisconnect() {
@@ -212,6 +212,12 @@ export class SocketController {
 	public startGame(options: Partial<GameOptions> = {}): void {
 		if (!this.isHost) return;
 		this.game.startGame(options);
+		const botRunner = new BotRunner(this.lobby, {
+			delay: 2000,
+			batchUpdates: false,
+			onGameChange: this.sendGameState.bind(this)
+		});
+		botRunner.run();
 		this.sendGameState();
 		this.sendPlayerState();
 	}

@@ -19,39 +19,28 @@ export class BotRunner {
 		this.onGameChange = config.onGameChange;
 		this.delay = config.delay ?? 0;
 		this.batchUpdates = config.batchUpdates ?? true;
-	}
-
-	private sleep(ms: number): Promise<void> {
-		return new Promise((resolve) => setTimeout(resolve, ms));
+		console.log('create botrunner');
 	}
 
 	async run() {
-		let safeGuard = 20;
+		if (this.lobby.game.gameover) return;
 		let activeBot = this.lobby.getActiveBot();
-		while (!this.lobby.game.gameover && activeBot && safeGuard > 0) {
-			console.log('play turn', this.lobby.getActiveBot());
-			this.lobby.getActiveBot();
+		if (activeBot) {
+			let bot;
 			if (activeBot.role == 'spymaster') {
-				const bot = createBotSpymaster(this.lobby.game, activeBot.type);
-				await bot.playTurn();
-			} else if (activeBot.role == 'operative') {
-				const bot = createBotGuesser(this.lobby.game, activeBot.type, this.onGameChange);
+				bot = createBotSpymaster(this.lobby.game, activeBot.type);
+			} else {
+				bot = createBotGuesser(this.lobby.game, activeBot.type, this.onGameChange);
 				console.log('bot created');
-				console.log('bot created');
-				await bot.playTurn();
 			}
-			safeGuard--;
-
-			//sending gameUpdates between ai turns with delay to simulate human game flow
-			if (!this.batchUpdates && this.onGameChange) {
-				this.onGameChange();
-				await this.sleep(this.delay);
-			}
-			activeBot = this.lobby.getActiveBot();
+			await bot.playTurn();
 		}
 		if (this.onGameChange) {
+			console.log('update game');
+
 			this.onGameChange();
 		}
+		setTimeout(this.run.bind(this), this.delay);
 	}
 }
 export type BotSpymasterTypes = 'gpt';

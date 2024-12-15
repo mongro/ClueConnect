@@ -44,7 +44,7 @@ io.on('connection', (socket) => {
 		controller.sync();
 
 		socket.on('joinTeamAndRole', (team, role) => controller.joinTeamAndRole(team, role));
-		socket.on('addBot', (team, role) => controller.addBot({ team, role }));
+		socket.on('addBot', (team, role) => controller.addBot({ team, role, type: 'gpt' }));
 		socket.on('deleteBot', (team, role) => controller.deleteBot(role, team));
 		socket.on('startGame', (options?: Partial<GameOptions>) => controller.startGame(options));
 		socket.on('resetGame', () => controller.resetGame());
