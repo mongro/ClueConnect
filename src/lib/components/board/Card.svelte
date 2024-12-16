@@ -4,6 +4,8 @@
 	import type { Snippet } from 'svelte';
 	import { getLobbyState } from '$lib/lobby.svelte';
 	import { wordContainerVariants } from './variants';
+	import Button from '../button/button.svelte';
+	import { Pointer } from 'lucide-svelte';
 
 	interface Props {
 		type: CardType;
@@ -11,14 +13,14 @@
 		revealed: boolean;
 		button: Snippet<[boolean, () => void]>;
 		children: Snippet;
-		onclick?: () => void;
 		suggestButton: Snippet<[boolean]>;
 	}
 
-	let { children, type, word, button, revealed, onclick, suggestButton }: Props = $props();
+	let { children, type, word, button, revealed, suggestButton }: Props = $props();
 
 	let showCardbackAfterReveal = $state(true);
 	let revealAnimationEnded = $state(false);
+	let isHovering = $state(false);
 	const lobby = getLobbyState();
 
 	function toggleShowCardbackAfterReveal() {
@@ -40,6 +42,23 @@
 	}
 </script>
 
+{#snippet flipButton()}
+	{#if revealed}
+		<Button
+			onclick={toggleShowCardbackAfterReveal}
+			onmouseover={() => {
+				isHovering = true;
+			}}
+			onmouseout={() => {
+				isHovering = false;
+			}}
+			aria-label="flipCard"
+			class={`absolute right-0 top-0 ${isHovering ? 'opacity-1' : 'opacity-0'}`}
+			variant="outline"><Pointer /></Button
+		>
+	{/if}
+{/snippet}
+
 {#key word}
 	<div
 		class="p relative aspect-[16/9] h-full w-full rounded text-sm uppercase transition-transform duration-1000 perspective preserve3d sm:text-xl"
@@ -54,14 +73,11 @@
 			<Cardback
 				colors={['#f9fafb', '#f3f4f6', '#e5e7eb', '#fef3c7', '#fde68a', '#d1d5db', '#9ca3af']}
 			/>
-			<div
-				class={wordContainerVariants({
-					type: lobby.myRole === 'spymaster' ? type : 'grey'
-				})}
-			>
+			<div class={wordContainerVariants({ type })}>
 				{@render suggestButton(revealed)}
 				{word}
 			</div>
+			{@render flipButton()}
 			{@render button(revealed, toggleShowCardbackAfterReveal)}
 			{@render children()}
 		</div>
@@ -87,7 +103,7 @@
 					back
 				/>
 			{/if}
-			{@render button(revealed, toggleShowCardbackAfterReveal)}
+			{@render flipButton()}
 		</div>
 	</div>
 {/key}

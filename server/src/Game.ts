@@ -37,6 +37,13 @@ export class Game {
 		this.currentTeam = 'red';
 	}
 
+	private getBoardWithHiddenTypes() {
+		return this.board.map((card) => {
+			const { revealed, type, word } = card;
+			return { revealed, word, type: revealed ? type : 'grey' };
+		});
+	}
+
 	private isPlayerTurn(player: Player) {
 		return (
 			this.hasStarted &&
@@ -115,11 +122,6 @@ export class Game {
 			suggestions,
 			options
 		} = this;
-		const cardsForOperatorives = this.board.map((card) => {
-			const { revealed, type, word } = card;
-			return { revealed, word, type: revealed ? type : 'grey' };
-		});
-
 		return {
 			options,
 			currentClue,
@@ -129,7 +131,7 @@ export class Game {
 			gameover,
 			log,
 			score,
-			board: role === 'operative' ? cardsForOperatorives : this.board,
+			board: role === 'operative' && !this.gameover ? this.getBoardWithHiddenTypes() : this.board,
 			winner
 		};
 	}

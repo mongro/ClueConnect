@@ -53,18 +53,12 @@
 <div class=" flex w-full flex-col items-center gap-4">
 	<div class="grid w-full grid-cols-5 gap-1 sm:gap-2">
 		{#each gameState.board as card, index}
-			<Card
-				type={card.type}
-				word={card.word}
-				revealed={card.revealed}
-				onclick={() => toggleSuggestion(index)}
-			>
-				{#snippet button(revealed: boolean, flip: () => void)}
-					{#if isGuessing() || revealed}
+			<Card type={card.type} word={card.word} revealed={card.revealed}>
+				{#snippet button(revealed: boolean)}
+					{#if isGuessing() && !revealed}
 						<Button
 							onclick={() => {
-								if (!revealed) makeGuess(index);
-								else flip();
+								makeGuess(index);
 							}}
 							aria-label="guessCard"
 							class="absolute right-0 top-0"
@@ -89,12 +83,14 @@
 			</Card>
 		{/each}
 	</div>
-	<GameControls
-		currentClue={gameState.currentClue}
-		currentTeam={gameState.currentTeam}
-		isGuessing={isGuessing()}
-		isGivingClue={isGivingClue()}
-		{endGuessing}
-		{giveClue}
-	/>
+	{#if !gameState.gameover}
+		<GameControls
+			currentClue={gameState.currentClue}
+			currentTeam={gameState.currentTeam}
+			isGuessing={isGuessing()}
+			isGivingClue={isGivingClue()}
+			{endGuessing}
+			{giveClue}
+		/>
+	{/if}
 </div>
