@@ -23,23 +23,27 @@ export class BotRunner {
 	}
 
 	async run() {
-		if (this.lobby.game.gameover) return;
+		console.log(this.lobby.game.getState('operative').currentClue);
+		if (this.lobby.hasNoConnectedPlayers()) return;
 		let activeBot = this.lobby.getActiveBot();
+		console.log('aciveBot', activeBot);
 		if (activeBot) {
 			let bot;
+			console.log('bot active');
 			if (activeBot.role == 'spymaster') {
 				bot = createBotSpymaster(this.lobby.game, activeBot.type);
 			} else {
 				bot = createBotGuesser(this.lobby.game, activeBot.type, this.onGameChange);
-				console.log('bot created');
 			}
+			console.log('bot created');
 			await bot.playTurn();
-		}
-		if (this.onGameChange) {
-			console.log('update game');
+			if (this.onGameChange) {
+				console.log('update game');
 
-			this.onGameChange();
+				this.onGameChange();
+			}
 		}
+
 		setTimeout(this.run.bind(this), this.delay);
 	}
 }

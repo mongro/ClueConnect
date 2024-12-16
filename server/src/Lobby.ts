@@ -26,6 +26,10 @@ export class Lobby {
 		return this.isLocked || this.playerLimit < Object.keys(this.players).length - 1;
 	}
 
+	hasNoConnectedPlayers() {
+		return this.playersAll.every((player) => player.isConnected == false);
+	}
+
 	hasPlayer(id: number) {
 		return this.players[id] !== undefined;
 	}
@@ -69,6 +73,7 @@ export class Lobby {
 	}
 
 	getActiveBot() {
+		if (this.game.gameover || !this.game.hasStarted) return null;
 		return this.bots[this.game.currentTeam][this.game.currentClue ? 'operative' : 'spymaster'];
 	}
 

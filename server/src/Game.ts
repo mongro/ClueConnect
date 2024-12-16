@@ -22,7 +22,7 @@ export class Game {
 		this.player = player;
 	}
 
-	private get hasStarted() {
+	get hasStarted() {
 		return this.board.length > 0;
 	}
 

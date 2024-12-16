@@ -117,14 +117,13 @@ export class SocketController {
 
 	// PUBLIC METHODS
 
-	public sync() {
-		this.socket.join(this.lobbyChannel);
+	public async sync() {
 		this.socket.join(this.userChannel);
 
 		if (this.player.role === 'spymaster') {
 			this.socket.join(this.spymasterChannel);
-			this.socket.leave(this.lobbyChannel);
-			this.sendToMe('gameUpdate', this.game.getState('spymaster'));
+		} else {
+			this.socket.join(this.lobbyChannel);
 		}
 
 		this.player.isConnected = true;
@@ -132,6 +131,17 @@ export class SocketController {
 		this.sendBotState();
 		this.sendPlayerState();
 		this.sendMyPlayerStatus();
+
+		//If first player joins lobby, start loop that controls bot behaviour
+		console.log(this.lobby.playersAll);
+		if (this.lobby.playersAll.length == 1) {
+			const botRunner = new BotRunner(this.lobby, {
+				delay: 2000,
+				batchUpdates: false,
+				onGameChange: this.sendGameState.bind(this)
+			});
+			botRunner.run();
+		}
 	}
 
 	public joinTeamAndRole(team: Team, role: Role) {
@@ -152,11 +162,6 @@ export class SocketController {
 	public makeGuess(id: number) {
 		const { success } = this.game.makeGuess(this.player, id);
 		if (success) this.sendGameState();
-		/* 	if (this.lobby.getActiveBot()) {
-			const botRunner = new BotRunner(this.lobby, { delay: 2000, batchUpdates: false });
-
-			botRunner.run();
-		} */
 	}
 
 	public toggleSuggestion(id: number) {
@@ -167,11 +172,6 @@ export class SocketController {
 	public endGuessing() {
 		const { success } = this.game.endGuessing(this.player);
 		if (success) this.sendGameState();
-		/* 	if (this.lobby.getActiveBot()) {
-			const botRunner = new BotRunner(this.lobby, { delay: 2000, batchUpdates: false });
-
-			botRunner.run();
-		} */
 	}
 
 	public kickPlayer(id: number) {
@@ -193,11 +193,6 @@ export class SocketController {
 	public giveClue(word: string, number: number) {
 		const { success } = this.game.giveClue(this.player, { clue: word, number });
 		if (success) this.sendGameState();
-		/* 	if (this.lobby.getActiveBot()) {
-			const botRunner = new BotRunner(this.lobby, { delay: 2000, batchUpdates: false });
-
-			botRunner.run();
-		} */
 	}
 
 	public async handleDisconnect() {
@@ -212,12 +207,6 @@ export class SocketController {
 	public startGame(options: Partial<GameOptions> = {}): void {
 		if (!this.isHost) return;
 		this.game.startGame(options);
-		const botRunner = new BotRunner(this.lobby, {
-			delay: 2000,
-			batchUpdates: false,
-			onGameChange: this.sendGameState.bind(this)
-		});
-		botRunner.run();
 		this.sendGameState();
 		this.sendPlayerState();
 	}
