@@ -31,6 +31,10 @@ export class ChatGptSpymaster extends BotSpymaster {
 		prompt +=
 			'Provide a single word clue,the words belonging to the clue and the number of words for the guesser.';
 		prompt += `Make sure the words belonging to your clue only consists of type ${this.game.currentTeam}`;
+		prompt += `Make sure the clue is NOT a word on the board.`;
+		prompt += `The clue must have the same language as the words on the board`;
+		prompt += `Make sure there is not a close connection between the black word and your clue`;
+		prompt += `Again it is important, the clue should connect words of the type ${this.game.currentTeam}`;
 		const response = await openai.beta.chat.completions.parse({
 			messages: [
 				{
