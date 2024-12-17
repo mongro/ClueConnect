@@ -47,6 +47,7 @@ export class Game {
 	private isPlayerTurn(player: Player) {
 		return (
 			this.hasStarted &&
+			!this.gameover &&
 			player.team == this.currentTeam &&
 			player.role == (this.currentClue ? 'operative' : 'spymaster')
 		);
