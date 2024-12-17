@@ -3,7 +3,6 @@ import type { LayoutServerLoad } from './$types';
 export const load: LayoutServerLoad = async ({ cookies, request, params }) => {
 	let lang = cookies.get('lang');
 	const id = params.id;
-	console.log('layout', params.id);
 	if (!lang) {
 		lang = request.headers.get('accept-language')?.split(',')[0];
 	}

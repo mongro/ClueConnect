@@ -10,7 +10,6 @@
 
 	const timeoutId = window.setTimeout(() => {
 		show = true;
-		console.log('schedule');
 	}, delay);
 	onDestroy(() => clearTimeout(timeoutId));
 </script>

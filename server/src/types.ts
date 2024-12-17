@@ -1,3 +1,5 @@
+import { BotComposition } from './ai/BotRunner';
+
 export type Team = 'red' | 'blue';
 export type TeamComposition = {
 	red: { operative: Player[]; spymaster: Player[] };
@@ -42,6 +44,7 @@ export type GameOptions = {
 	language: GameLanguage;
 	customWords: string[];
 	appearanceCustomWords: AppearanceCustomWords;
+	fillEmptyRolesWithAi: boolean;
 };
 export type GameState = {
 	suggestions: Partial<Record<string, number[]>>;
@@ -59,13 +62,47 @@ export type GameState = {
 export const defaultOptions: GameOptions = {
 	language: 'en',
 	customWords: [],
-	appearanceCustomWords: 'notFixed'
+	appearanceCustomWords: 'notFixed',
+	fillEmptyRolesWithAi: false
 };
+
+export type BotSpymasterTypes = 'gpt';
+export type BotGuesserTypes = 'gpt' | 'random';
+
+type SpymasterBot = {
+	team: Team;
+	role: 'spymaster';
+	name?: string;
+	type?: BotSpymasterTypes;
+};
+type GuesserBot = {
+	team: Team;
+	role: 'operative';
+	name?: string;
+	type?: BotGuesserTypes;
+};
+
+export type BotRunnerConfig = {
+	onGameChange?: (gameState?: GameState) => void;
+	batchUpdates?: boolean;
+	delay?: number;
+} & (
+	| {
+			batchUpdates?: true;
+	  }
+	| {
+			delay: number;
+			batchUpdates?: false;
+	  }
+);
+
+export type Bot = GuesserBot | SpymasterBot;
 
 export interface ServerToClientEvents {
 	kick: () => void;
 	gameUpdate: (state: GameState) => void;
 	playerUpdate: (player: Player[]) => void;
+	botUpdate: (bots: BotComposition) => void;
 	suggestionsUpdate: (suggestions: Partial<Record<number, number[]>>) => void;
 	myStatus: (player: Player) => void;
 }
@@ -83,4 +120,6 @@ export interface ClientToServerEvents {
 	makeGuess: (cardId: number) => void;
 	toggleSuggestion: (cardId: number) => void;
 	endGuessing: () => void;
+	addBot: (team: Team, role: Role) => void;
+	deleteBot: (team: Team, role: Role) => void;
 }

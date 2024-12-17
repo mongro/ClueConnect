@@ -3,6 +3,8 @@ import type { Game } from './Game';
 import type { Server, Socket } from 'socket.io';
 import type { Lobby } from './Lobby';
 import { Role, Team, Player } from './types';
+import { createBotGuesser, createBotSpymaster } from './ai/createBot';
+import { Bot, BotRunner } from './ai/BotRunner';
 
 const SPYMASTER_CHANNEL_KEYWORD = '/spymasters';
 /**
@@ -105,26 +107,41 @@ export class SocketController {
 	private sendPlayerState(): void {
 		this.sendToAll('playerUpdate', this.getAllPlayer());
 	}
+
+	private sendBotState(): void {
+		this.sendToAll('botUpdate', this.lobby.bots);
+	}
 	private sendMyPlayerStatus(): void {
 		this.sendToMe('myStatus', this.player);
 	}
 
 	// PUBLIC METHODS
 
-	public sync() {
-		this.socket.join(this.lobbyChannel);
+	public async sync() {
 		this.socket.join(this.userChannel);
 
 		if (this.player.role === 'spymaster') {
 			this.socket.join(this.spymasterChannel);
-			this.socket.leave(this.lobbyChannel);
-			this.sendToMe('gameUpdate', this.game.getState('spymaster'));
+		} else {
+			this.socket.join(this.lobbyChannel);
 		}
 
 		this.player.isConnected = true;
 		this.sendGameState();
+		this.sendBotState();
 		this.sendPlayerState();
 		this.sendMyPlayerStatus();
+
+		//If first player joins lobby, start loop that controls bot behaviour
+		console.log(this.lobby.playersAll);
+		if (this.lobby.playersAll.length == 1) {
+			const botRunner = new BotRunner(this.lobby, {
+				delay: 2000,
+				batchUpdates: false,
+				onGameChange: this.sendGameState.bind(this)
+			});
+			botRunner.run();
+		}
 	}
 
 	public joinTeamAndRole(team: Team, role: Role) {
@@ -207,5 +224,14 @@ export class SocketController {
 
 		this.game.resetTeams();
 		this.sendPlayerState();
+	}
+
+	public addBot(bot: Bot) {
+		this.lobby.addBot(bot);
+		this.sendBotState();
+	}
+	public deleteBot(role: Role, team: Team) {
+		this.lobby.deleteBot(role, team);
+		this.sendBotState();
 	}
 }

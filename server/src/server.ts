@@ -7,10 +7,6 @@ import lobbyDb from './LobbyDB';
 import { SocketController } from './SocketController';
 import router from './router';
 
-console.log(process.env); /**
- * Express Server
- */
-
 const app = express();
 var corsOptions = {
 	origin: process.env.CLIENT_URL,
@@ -21,10 +17,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(router);
 
-const server = app.listen(PORT, () => {
-	console.log(`Server listening on port ${PORT}`);
-	console.log(`ClientUrl ${process.env.CLIENT_URL}`);
-});
+const server = app.listen(PORT, () => {});
 
 app.post('/createLobby', (req, res) => {
 	res.send('POST request to the homepage');
@@ -41,7 +34,6 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents, {}, {}>(server
  * Socket IO Event Handling
  */
 io.on('connection', (socket) => {
-	console.log('id', socket.id, Date.now().toLocaleString('de'));
 	socket.on('joinLobby', (id, credentials) => {
 		const lobby = lobbyDb.get(id);
 		if (!lobby) return;
@@ -52,6 +44,8 @@ io.on('connection', (socket) => {
 		controller.sync();
 
 		socket.on('joinTeamAndRole', (team, role) => controller.joinTeamAndRole(team, role));
+		socket.on('addBot', (team, role) => controller.addBot({ team, role, type: 'gpt' }));
+		socket.on('deleteBot', (team, role) => controller.deleteBot(role, team));
 		socket.on('startGame', (options?: Partial<GameOptions>) => controller.startGame(options));
 		socket.on('resetGame', () => controller.resetGame());
 		socket.on('resetTeams', () => controller.resetTeams());

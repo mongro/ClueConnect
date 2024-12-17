@@ -16,6 +16,7 @@
 	function kickPlayer(id: number) {
 		socket.emit('kickPlayer', id);
 	}
+
 	function makeHost(id: number) {
 		socket.emit('makeHost', id);
 	}

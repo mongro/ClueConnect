@@ -1,11 +1,13 @@
+import { Bot, BotComposition, BotRunner } from './ai/BotRunner';
 import { Game } from './Game';
-import { Player } from './types';
+import { Player, Role, Team } from './types';
 import crypto from 'crypto';
 
 export class Lobby {
 	id: string;
 	game: Game;
 	players: Record<number, Player> = {};
+	bots: BotComposition;
 	credentialsToIdMap: Record<string, number> = {};
 	playerLimit: number = 10;
 	isLocked: boolean = false;
@@ -14,10 +16,18 @@ export class Lobby {
 	constructor(id: string) {
 		this.id = id;
 		this.game = new Game(1, this.players);
+		this.bots = {
+			red: { operative: null, spymaster: null },
+			blue: { operative: null, spymaster: null }
+		};
 	}
 
 	public get isFull(): boolean {
 		return this.isLocked || this.playerLimit < Object.keys(this.players).length - 1;
+	}
+
+	hasNoConnectedPlayers() {
+		return this.playersAll.every((player) => player.isConnected == false);
 	}
 
 	hasPlayer(id: number) {
@@ -52,6 +62,19 @@ export class Lobby {
 			return { success: true };
 		}
 		return { success: false };
+	}
+
+	addBot(bot: Bot) {
+		this.bots[bot.team][bot.role] = bot;
+	}
+
+	deleteBot(role: Role, team: Team) {
+		this.bots[team][role] = null;
+	}
+
+	getActiveBot() {
+		if (this.game.gameover || !this.game.hasStarted) return null;
+		return this.bots[this.game.currentTeam][this.game.currentClue ? 'operative' : 'spymaster'];
 	}
 
 	public addPlayer(name: string): string | undefined {
