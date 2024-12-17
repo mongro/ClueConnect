@@ -28,7 +28,8 @@
 		return (
 			lobby.myRole === 'operative' &&
 			lobby.myTeam === gameState?.currentTeam &&
-			lobby.gameState?.currentClue !== null
+			lobby.gameState?.currentClue !== null &&
+			!lobby.gameState?.gameover
 		);
 	}
 
@@ -36,7 +37,8 @@
 		return (
 			lobby.myTeam === gameState?.currentTeam &&
 			lobby.gameState?.currentClue === null &&
-			lobby.myRole === 'spymaster'
+			lobby.myRole === 'spymaster' &&
+			!lobby.gameState?.gameover
 		);
 	}
 

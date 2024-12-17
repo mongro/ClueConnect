@@ -19,7 +19,6 @@
 	let { children, type, word, button, revealed, suggestButton }: Props = $props();
 
 	let showCardbackAfterReveal = $state(true);
-	let revealAnimationEnded = $state(false);
 	let isHovering = $state(false);
 	const lobby = getLobbyState();
 
@@ -63,10 +62,6 @@
 	<div
 		class="p relative aspect-[16/9] h-full w-full rounded text-sm uppercase transition-transform duration-1000 perspective preserve3d sm:text-xl"
 		class:flip-it={revealed && showCardbackAfterReveal}
-		ontransitionend={(event) => {
-			console.log(event);
-			if (event.propertyName === 'transform') revealAnimationEnded = true;
-		}}
 		in:deal|global={{ duration: 400, delay: Math.random() * 1000 }}
 	>
 		<div class="absolute h-full w-full backface-hidden">
