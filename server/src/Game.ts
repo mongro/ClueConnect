@@ -38,10 +38,10 @@ export class Game {
 	}
 
 	private getBoardWithHiddenTypes() {
-		return this.board.map((card) => {
-			const { revealed, type, word } = card;
-			return { revealed, word, type: revealed ? type : 'grey' };
-		});
+		return this.board.map((card) => ({
+			...card,
+			type: card.revealed ? card.type : 'grey'
+		}));
 	}
 
 	private isPlayerTurn(player: Player) {
