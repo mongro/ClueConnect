@@ -9,11 +9,9 @@
 		suggestions: number[];
 	}
 	let { suggestions }: Props = $props();
-
+	const lobby = getLobbyState();
 	let suggestingPlayers = $derived.by(() => {
-		let player = suggestions.map((id) =>
-			getLobbyState().players.find((player) => player.id === id)
-		);
+		let player = suggestions.map((id) => lobby.players.find((player) => player.id === id));
 		return player.filter((player) => player !== undefined);
 	});
 </script>

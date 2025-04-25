@@ -133,9 +133,8 @@ export class SocketController {
 		this.sendMyPlayerStatus();
 
 		//If first player joins lobby, start loop that controls bot behaviour
-		console.log(this.lobby.playersAll);
 		if (this.lobby.playersAll.length == 1) {
-			const botRunner = new BotRunner(this.lobby, {
+			const botRunner = new BotRunner(this.lobby, this.sendToAll.bind(this), {
 				delay: 2000,
 				batchUpdates: false,
 				onGameChange: this.sendGameState.bind(this)

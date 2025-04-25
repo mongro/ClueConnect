@@ -1,6 +1,7 @@
 import { Game } from '$server/Game';
 import { Lobby } from '$server/Lobby';
-import { GameState, Role, Team } from '$server/types';
+import { GameState, Role, ServerToClientEvents, Team } from '$server/types';
+import OpenAI from 'openai';
 import { createBotGuesser, createBotSpymaster } from './createBot';
 
 export type BotComposition = {
@@ -10,12 +11,24 @@ export type BotComposition = {
 
 export class BotRunner {
 	lobby: Lobby;
+	sendToAll: <T extends keyof ServerToClientEvents>(
+		event: T,
+		...data: Parameters<ServerToClientEvents[T]>
+	) => void;
 	onGameChange?: (gameState?: GameState) => void;
 	delay: number;
 	batchUpdates: boolean;
 
-	constructor(lobby: Lobby, config: BotRunnerConfig) {
+	constructor(
+		lobby: Lobby,
+		sendToAll: <T extends keyof ServerToClientEvents>(
+			event: T,
+			...data: Parameters<ServerToClientEvents[T]>
+		) => void,
+		config: BotRunnerConfig
+	) {
 		this.lobby = lobby;
+		this.sendToAll = sendToAll;
 		this.onGameChange = config.onGameChange;
 		this.delay = config.delay ?? 0;
 		this.batchUpdates = config.batchUpdates ?? true;
@@ -36,7 +49,24 @@ export class BotRunner {
 				bot = createBotGuesser(this.lobby.game, activeBot.type, this.onGameChange);
 			}
 			console.log('bot created');
-			await bot.playTurn();
+			try {
+				console.log('play turn');
+
+				await bot.playTurn();
+			} catch (error) {
+				if (error instanceof OpenAI.APIError) {
+					this.lobby.deleteAllBots();
+					this.sendToAll('errorMessage', {
+						message: 'Bots are currently not working',
+						status: error.status
+					});
+				} else {
+					console.log('Error');
+
+					throw error;
+				}
+			}
+
 			if (this.onGameChange) {
 				console.log('update game');
 

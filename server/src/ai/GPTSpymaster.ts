@@ -5,6 +5,7 @@ import { Game } from '../Game';
 import { z } from 'zod';
 import { zodResponseFormat } from 'openai/helpers/zod';
 import { BotSpymaster } from './BotSpymaster';
+import OpenAI from 'openai';
 
 const clueObject = z.object({
 	clue: z.string(),
@@ -35,6 +36,7 @@ export class ChatGptSpymaster extends BotSpymaster {
 		prompt += `The clue must have the same language as the words on the board`;
 		prompt += `Make sure there is not a close connection between the black word and your clue`;
 		prompt += `Again it is important, the clue should connect words of the type ${this.game.currentTeam}`;
+
 		const response = await openai.beta.chat.completions.parse({
 			messages: [
 				{

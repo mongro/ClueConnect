@@ -5,6 +5,7 @@ import { goto } from '$app/navigation';
 import { browser } from '$app/environment';
 import { LocalStorageHelper } from './components/LocalStorageHelper';
 import type { BotComposition } from '$shared/src/ai/BotRunner';
+import { ModalManager } from './modalManager.svelte';
 
 class LobbyState {
 	id: string;
@@ -16,6 +17,7 @@ class LobbyState {
 	gameState = $state<GameState>();
 	credentials = $state<string>();
 	myState = $state<Player | undefined>();
+	modalManager: ModalManager;
 	isConnectingToLobby = $state<boolean>(false);
 	teams = $derived.by(() => {
 		let result: TeamComposition = {
@@ -31,11 +33,18 @@ class LobbyState {
 		return result;
 	});
 
-	constructor(id: string, players: Player[] = [], game: GameState, myState?: Player) {
+	constructor(
+		id: string,
+		players: Player[] = [],
+		game: GameState,
+		modalManager: ModalManager,
+		myState?: Player
+	) {
 		this.id = id;
 		this.players = players;
 		this.gameState = game;
 		this.myState = myState;
+		this.modalManager = modalManager;
 		this.credentials = browser ? LocalStorageHelper.getLobbyEntry(id) : '';
 		socket.on('playerUpdate', (serverPlayerState) => {
 			this.players = serverPlayerState;
@@ -47,6 +56,28 @@ class LobbyState {
 		});
 		socket.on('botUpdate', (bots) => {
 			this.bots = bots;
+		});
+		socket.on('errorMessage', (error) => {
+			if (error.status === 429) {
+				this.bots = {
+					red: { operative: null, spymaster: null },
+					blue: { operative: null, spymaster: null }
+				};
+				this.modalManager.open(
+					'Bots are currently not working',
+					'Reason: The rate limit for requests to the openAi api is reached.  '
+				);
+			}
+			if (error.status === 503) {
+				this.bots = {
+					red: { operative: null, spymaster: null },
+					blue: { operative: null, spymaster: null }
+				};
+				this.modalManager.open(
+					'Bots are currently not working',
+					'Reason: OpenAi servers are experiencing high traffic. '
+				);
+			}
 		});
 
 		socket.on('myStatus', (serverMyState) => {
@@ -113,8 +144,13 @@ class LobbyState {
 }
 
 const KEY = 'lobby';
-export function setLobbyState(id: string, players: Player[] = [], game: GameState) {
-	return setContext(KEY, new LobbyState(id, players, game));
+export function setLobbyState(
+	id: string,
+	players: Player[] = [],
+	game: GameState,
+	modalManager: ModalManager
+) {
+	return setContext(KEY, new LobbyState(id, players, game, modalManager));
 }
 
 export function getLobbyState() {

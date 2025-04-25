@@ -72,6 +72,13 @@ export class Lobby {
 		this.bots[team][role] = null;
 	}
 
+	deleteAllBots() {
+		this.bots = {
+			red: { operative: null, spymaster: null },
+			blue: { operative: null, spymaster: null }
+		};
+	}
+
 	getActiveBot() {
 		if (this.game.gameover || !this.game.hasStarted) return null;
 		return this.bots[this.game.currentTeam][this.game.currentClue ? 'operative' : 'spymaster'];

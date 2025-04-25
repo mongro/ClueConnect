@@ -12,12 +12,14 @@
 	import CopyToClipboard from './CopyToClipboard.svelte';
 	import SetupGame from './SetupGame.svelte';
 	import { getLobbyState } from '$lib/lobby.svelte';
+
 	interface Props {
 		gameState: GameState;
 		players: Player[];
 	}
 	let { gameState, players }: Props = $props();
 	const lobby = getLobbyState();
+
 	onDestroy(() => {
 		socket.disconnect();
 	});

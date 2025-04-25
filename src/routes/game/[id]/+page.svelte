@@ -8,11 +8,13 @@
 	import type { PageData } from './$types';
 	import { setLobbyState } from '$lib/lobby.svelte';
 	import { getContext, hasContext, setContext } from 'svelte';
+	import { getModalState } from '$lib/modalManager.svelte';
 
 	const lobbyId = $page.params.id;
 	let { data }: { data: PageData } = $props();
 	const { players, game } = data;
-	const lobby = setLobbyState(lobbyId, players, game);
+	const modalState = getModalState();
+	const lobby = setLobbyState(lobbyId, players, game, modalState);
 	if (browser) {
 		lobby.connect();
 	}

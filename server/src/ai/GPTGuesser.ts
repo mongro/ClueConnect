@@ -32,6 +32,7 @@ export class ChatGptGuesser extends BotGuesser {
 		prompt +=
 			'If you absolutely cant find a word that creates an associatiton with the clue, answer by setting endGuessing in the JSON response to false\n';
 		prompt += 'Provide a reason for your desicion in the reason field of the JSON response" \n';
+
 		const response = await openai.beta.chat.completions.parse({
 			messages: [
 				{
@@ -45,8 +46,9 @@ export class ChatGptGuesser extends BotGuesser {
 		});
 
 		const content = response.choices[0].message.parsed;
+		console.log('content', content?.guess, content?.reason);
 		if (!content) return null;
-		console.log('content', content.guess, content.reason);
+
 		return content;
 	}
 }

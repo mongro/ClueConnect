@@ -6,7 +6,6 @@
 	import PlayersCard from './PlayersCard.svelte';
 	import { _ } from 'svelte-i18n';
 	import LanguageSelect from './LanguageSelect.svelte';
-	import Modal from './RulesModal.svelte';
 	import RulesModal from './RulesModal.svelte';
 
 	let showPlayersCard = $state(false);

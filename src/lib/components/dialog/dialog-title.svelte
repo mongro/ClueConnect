@@ -5,7 +5,7 @@
 </script>
 
 <DialogPrimitive.Title
-	class={'text-4xl font-semibold leading-none tracking-tight' + className}
+	class={'text-lg font-semibold leading-none tracking-tight' + className}
 	{...restProps}
 >
 	{@render children?.()}</DialogPrimitive.Title

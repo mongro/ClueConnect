@@ -98,6 +98,10 @@ export type BotRunnerConfig = {
 
 export type Bot = GuesserBot | SpymasterBot;
 
+export type ErrorMessage = {
+	message: string;
+	status?: number;
+};
 export interface ServerToClientEvents {
 	kick: () => void;
 	gameUpdate: (state: GameState) => void;
@@ -105,6 +109,7 @@ export interface ServerToClientEvents {
 	botUpdate: (bots: BotComposition) => void;
 	suggestionsUpdate: (suggestions: Partial<Record<number, number[]>>) => void;
 	myStatus: (player: Player) => void;
+	errorMessage: (error: ErrorMessage) => void;
 }
 
 export interface ClientToServerEvents {
