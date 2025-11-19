@@ -24,7 +24,7 @@
 <div class="item-center mt-4 flex justify-center">
 	<div class="w-full max-w-96 rounded bg-white p-4 shadow">
 		<h1 class="mb-4 text-xl font-bold">{$_('welcome')}</h1>
-		<Input bind:value={name} class="mb-2 w-full" />
+		<Input bind:value={name} class="mb-2 w-full" type="text" />
 		{#if error}
 			<div class="text-destructive">{error}</div>
 		{/if}

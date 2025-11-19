@@ -11,8 +11,18 @@
 	let number = $state(0);
 </script>
 
-<div class="inline-flex items-center justify-center space-x-2">
-	<Input placeholder="Give your clue here.." class=" max-w-48" bind:value={word} />
-	<Input bind:value={number} class="max-w-28" type="number" min="1" step="1" />
-	<Button onclick={(event) => sendClue(word, number)} size="lg">{$_('giveClueButton')}</Button>
+<div
+	class="inline-flex w-full items-center justify-center space-x-2 rounded-sm bg-gradient-to-r from-slate-900 to-slate-700 p-4"
+>
+	<Input
+		type="text"
+		textSize="large"
+		placeholder="Give your clue here.."
+		class="min-w-32 grow uppercase"
+		bind:value={word}
+	/>
+	<Input bind:value={number} class="max-w-14" type="number" min="1" max="9" step="1" />
+	<Button onclick={(event) => sendClue(word, number)} size="lg" variant="secondary"
+		>{$_('giveClueButton')}</Button
+	>
 </div>
