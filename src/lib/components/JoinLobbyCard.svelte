@@ -6,6 +6,7 @@
 	import { joinLobby } from '$lib/api';
 	import { LocalStorageHelper } from './LocalStorageHelper';
 	import { getLobbyState } from '$lib/lobby.svelte';
+	import { Label } from 'bits-ui';
 
 	let name = $state('');
 	let loading = $state(false);
@@ -25,12 +26,21 @@
 <div class="item-center mt-4 flex justify-center">
 	<div class="w-full max-w-96 rounded bg-white p-4 shadow">
 		<h1 class="mb-4 text-xl font-bold">Welcome to Clue Connect!</h1>
-		<Input bind:value={name} class="mb-2 w-full" />
-		<Button onclick={handleClick} disabled={loading}>
-			{#if loading}
-				<LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
-			{/if}
-			Join Lobby</Button
-		>
+		<form>
+			<Label.Root
+				id="terms-label"
+				for="terms"
+				class="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+			>
+				Enter your Nickname
+			</Label.Root>
+			<Input bind:value={name} class="mb-2 w-full" name="nickname" />
+			<Button onclick={handleClick} disabled={loading}>
+				{#if loading}
+					<LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
+				{/if}
+				Join Lobby</Button
+			>
+		</form>
 	</div>
 </div>

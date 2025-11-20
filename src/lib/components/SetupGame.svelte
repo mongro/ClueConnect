@@ -2,10 +2,10 @@
 	import socket from '$lib/socket';
 	import Button from './button/button.svelte';
 	import { _, locale } from 'svelte-i18n';
-	import { Select, SelectTrigger, SelectValue } from './select';
+	import { Select, SelectTrigger } from './select';
 	import SelectContent from './select/select-content.svelte';
 	import SelectItem from './select/select-item.svelte';
-	import { Checkbox, Label, type Selected } from 'bits-ui';
+	import { Checkbox, Label } from 'bits-ui';
 	import type { AppearanceCustomWords, GameLanguage, GameOptions } from '$shared/src/types';
 	import { languagesGame } from '$lib/i18n';
 	import CustomWordsInput from './CustomWordsInput.svelte';
@@ -25,26 +25,23 @@
 
 	let customWordsInput = $state<string>(gameState?.options.customWords?.join(' ') ?? '');
 	let customWordsEnabled = $state<boolean>(false);
-	let selectedAppearance = $state<Selected<AppearanceCustomWords>>({
-		value: 'notFixed',
-		label: $_('labelAppearanceNotFixed')
-	});
+	let selectedAppearance = $state<AppearanceCustomWords>('notFixed');
 	let customWords = $derived(createWords());
 
-	let selectedLanguage = $state<Selected<GameLanguage>>({
-		value: currentLanguage.value,
-		label: currentLanguage.label
-	});
+	let selectedLanguage = $state<GameLanguage>(currentLanguage.value);
 
-	let selectedLabel = $derived(
-		selectedAppearance.value === 'notFixed'
+	let selectedLabelAppearance = $derived(
+		selectedAppearance === 'notFixed'
 			? $_('labelAppearanceNotFixed')
 			: $_('labelAppearanceFixed', {
 					values: {
-						min: APPEARANCE[selectedAppearance.value][0],
-						max: APPEARANCE[selectedAppearance.value][1]
+						min: APPEARANCE[selectedAppearance][0],
+						max: APPEARANCE[selectedAppearance][1]
 					}
 				})
+	);
+	let selectedLabelLanguage = $derived(
+		languagesGame.find((item) => item.value == selectedLanguage)?.label ?? languagesGame[0].label
 	);
 	function startGame(options: Partial<GameOptions> = {}) {
 		socket.emit('startGame', options);
@@ -58,18 +55,18 @@
 </script>
 
 <div class="flex w-full justify-center">
-	<div class="w-80 rounded bg-white p-4 lg:w-96">
+	<div class="bg-card color-card-foreground w-80 rounded p-4 lg:w-96">
 		<h1 class="my-4 text-2xl font-bold">{$_('settings')}</h1>
 		<h2 class="my-2 text-xl font-semibold">{$_('languageWords')}</h2>
 		<Select
-			selected={selectedLanguage}
-			onSelectedChange={(selected) => {
-				if (selected) {
-					selectedLanguage = selected;
-				}
-			}}
+			items={[
+				{ value: 'en', label: 'En' },
+				{ value: 'de', label: 'De' }
+			]}
+			bind:value={selectedLanguage}
+			type="single"
 		>
-			<SelectTrigger><SelectValue>{selectedLabel}</SelectValue></SelectTrigger>
+			<SelectTrigger>{selectedLabelLanguage}</SelectTrigger>
 			<SelectContent>
 				{#each languagesGame as language}
 					<SelectItem value={language.value} label={language.label}>{language.label}</SelectItem>
@@ -80,20 +77,19 @@
 			<Checkbox.Root
 				id="customWordsEnabled"
 				aria-labelledby="customWordsEnabled"
-				class="peer box-content h-4 w-4 shrink-0 rounded-sm border border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[disabled=true]:cursor-not-allowed data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[disabled=true]:opacity-50"
+				class="peer border-primary ring-offset-background focus-visible:ring-ring data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground box-content h-4 w-4 shrink-0 rounded-sm border focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50"
 				checked={customWordsEnabled}
 				onCheckedChange={(checked: boolean | 'indeterminate') => {
 					customWordsEnabled = checked === 'indeterminate' ? false : checked;
 				}}
 			>
-				<Checkbox.Indicator
-					let:isChecked
-					class="flex h-4 w-4 items-center justify-center text-current"
-				>
-					{#if isChecked}
-						<Check class="size-[15px]" />
+				{#snippet children({ checked, indeterminate })}
+					{#if checked}
+						<div class="flex h-4 w-4 items-center justify-center text-current">
+							<Check class="size-[15px]" />
+						</div>
 					{/if}
-				</Checkbox.Indicator>
+				{/snippet}
 			</Checkbox.Root>
 			<Label.Root
 				id="customWordsEnabledLabel"
@@ -104,22 +100,16 @@
 			</Label.Root>
 		</div>
 		{#if customWordsEnabled}
-			<div class="my-2">
+			<div class="flex flex-col gap-4">
 				<p>{$_('customWordsExplanation')}</p>
-			</div>
-			<CustomWordsInput bind:value={customWordsInput} />
-			<div class="my-2">
-				<p>{$_('wordsBasisCount')}1000</p>
-				<p>{$_('wordsCount') + customWords.length}</p>
-				<Select
-					selected={selectedAppearance}
-					onSelectedChange={(selected) => {
-						if (selected) {
-							selectedAppearance = selected;
-						}
-					}}
-				>
-					<SelectTrigger>{selectedLabel}</SelectTrigger>
+
+				<CustomWordsInput bind:value={customWordsInput} />
+				<div>
+					<p>{$_('wordsBasisCount')}1000</p>
+					<p>{$_('wordsCount') + customWords.length}</p>
+				</div>
+				<Select bind:value={selectedAppearance} type="single">
+					<SelectTrigger>{selectedLabelAppearance}</SelectTrigger>
 					<SelectContent>
 						{#each Object.entries(APPEARANCE) as [appereance, range]}
 							<SelectItem
@@ -137,20 +127,18 @@
 						>
 					</SelectContent>
 				</Select>
+				<Button
+					variant="secondary"
+					onclick={() =>
+						startGame({
+							language: selectedLanguage,
+							customWords,
+							appearanceCustomWords: selectedAppearance
+						})}
+				>
+					{$_('startGame')}
+				</Button>
 			</div>
 		{/if}
-
-		<div class="flex items-center">
-			<Button
-				onclick={() =>
-					startGame({
-						language: selectedLanguage.value,
-						customWords,
-						appearanceCustomWords: selectedAppearance.value
-					})}
-			>
-				{$_('startGame')}
-			</Button>
-		</div>
 	</div>
 </div>

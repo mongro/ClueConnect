@@ -14,9 +14,9 @@
 	}
 </script>
 
-<div class="relative h-screen">
+<div class=" relative h-screen">
 	<AlertModal bind:isOpen={modalState.isOpen} text={modalState.text} title={modalState.title} />
-	<div class="background absolute inset-0 bg-cover">
+	<div class=" absolute inset-0 bg-cover">
 		{#if $navigating && $navigating.to && isGameRoute($navigating.to.url, $navigating.to.params)}
 			<Delayed delay={200}>
 				<NavigationLoading text="Loading Game" />
@@ -26,9 +26,3 @@
 		{/if}
 	</div>
 </div>
-
-<style>
-	.background {
-		background-image: url('$lib/images/pattern.svg');
-	}
-</style>

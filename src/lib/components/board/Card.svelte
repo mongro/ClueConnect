@@ -52,7 +52,7 @@
 				isHovering = false;
 			}}
 			aria-label="flipCard"
-			class={`absolute right-0 top-0 ${isHovering ? 'opacity-1' : 'opacity-0'}`}
+			class={`absolute top-0 right-0 ${isHovering ? 'opacity-1' : 'opacity-0'}`}
 			variant="outline"><Pointer /></Button
 		>
 	{/if}
@@ -60,7 +60,7 @@
 
 {#key word}
 	<div
-		class="p relative aspect-[16/9] h-full w-full rounded text-sm uppercase transition-transform duration-1000 perspective preserve3d sm:text-xl"
+		class="p perspective preserve3d relative aspect-video h-full w-full rounded text-sm uppercase transition-transform duration-1000 sm:text-xl"
 		class:flip-it={revealed && showCardbackAfterReveal}
 		in:deal|global={{ duration: 400, delay: Math.random() * 1000 }}
 	>

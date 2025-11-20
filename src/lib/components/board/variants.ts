@@ -23,8 +23,8 @@ export const wordContainerVariants = cva(
 			type: {
 				red: 'bg-red-team text-white',
 				blue: 'bg-blue-team text-white',
-				grey: 'bg-white ',
-				black: 'bg-primary text-white '
+				grey: 'bg-white text-black',
+				black: 'bg-neutral-950 text-white '
 			}
 		}
 	}

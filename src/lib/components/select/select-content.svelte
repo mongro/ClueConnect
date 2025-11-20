@@ -1,36 +1,35 @@
 <script lang="ts">
 	import { flyAndScale } from '$lib/util';
-	import { Select as SelectPrimitive } from 'bits-ui';
+	import { Select as SelectPrimitive, type WithoutChildrenOrChild } from 'bits-ui';
+	import type { Snippet } from 'svelte';
 
-	type $$Props = SelectPrimitive.ContentProps;
-	type $$Events = SelectPrimitive.ContentEvents;
-
-	export let sideOffset: $$Props['sideOffset'] = 4;
-	export let inTransition: $$Props['inTransition'] = flyAndScale;
-	export let inTransitionConfig: $$Props['inTransitionConfig'] = undefined;
-	export let outTransition: $$Props['outTransition'] = flyAndScale;
-	export let outTransitionConfig: $$Props['outTransitionConfig'] = {
-		start: 0.95,
-		opacity: 0,
-		duration: 50
-	};
-
-	let className: $$Props['class'] = undefined;
-	export { className as class };
+	let {
+		ref = $bindable(null),
+		children,
+		class: className,
+		...restProps
+	}: WithoutChildrenOrChild<SelectPrimitive.ContentProps> & {
+		children?: Snippet;
+	} = $props();
 </script>
 
-<SelectPrimitive.Content
-	{inTransition}
-	{inTransitionConfig}
-	{outTransition}
-	{outTransitionConfig}
-	{sideOffset}
-	class={'relative z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md outline-none ' +
-		className}
-	{...$$restProps}
-	on:keydown
->
-	<div class="w-full p-1">
-		<slot />
-	</div>
-</SelectPrimitive.Content>
+<SelectPrimitive.Portal>
+	<SelectPrimitive.Content
+		forceMount={true}
+		class={' focus-override bg-popover text-popover-foreground relative z-50 min-w-32 overflow-hidden rounded-md border px-3 py-3 shadow-md outline-none ' +
+			className}
+		{...restProps}
+	>
+		{#snippet child({ wrapperProps, props, open })}
+			{#if open}
+				<div {...wrapperProps}>
+					<div {...props} transition:flyAndScale>
+						<SelectPrimitive.Viewport>
+							{@render children?.()}
+						</SelectPrimitive.Viewport>
+					</div>
+				</div>
+			{/if}
+		{/snippet}
+	</SelectPrimitive.Content>
+</SelectPrimitive.Portal>

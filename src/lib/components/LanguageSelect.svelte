@@ -3,10 +3,11 @@
 	import { _, locale, locales } from 'svelte-i18n';
 	import { browser } from '$app/environment';
 	import { languages } from '$lib/i18n';
+	import { SelectContent, SelectItem, SelectTrigger } from './select';
 
 	const currLocale = $locale ? $locale.split('-')[0] : 'en';
 	const currentLanguage = languages.find((item) => item.value == currLocale) ?? languages[0];
-	let selectedLocale = $state<Selected<string>>(currentLanguage);
+	let selectedLocale = $state<string>(currentLanguage.value);
 
 	function setLocale(localeNew: string) {
 		if (browser) {
@@ -17,38 +18,32 @@
 			document.cookie = `lang=${localeNew};expires=${expires}; path=/`;
 		}
 	}
+
+	const currentLabel = $derived(languages.find((item) => item.value === selectedLocale)?.label);
 </script>
 
 <Select.Root
-	portal={null}
 	items={[
 		{ value: 'en', label: 'En' },
 		{ value: 'de', label: 'De' }
 	]}
-	selected={selectedLocale}
-	onSelectedChange={(selected) => {
+	type="single"
+	value={selectedLocale}
+	onValueChange={(selected) => {
 		if (selected) {
-			setLocale(selected.value);
+			setLocale(selected);
 			selectedLocale = selected;
 		}
 	}}
 >
-	<Select.Trigger
-		class="rounded-9px border-border-input placeholder:text-foreground-alt/50 inline-flex h-10 w-12 items-center border bg-background px-[11px] text-sm transition-colors  focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2 focus:ring-offset-background"
-	>
-		<Select.Value class="uppercase" placeholder="Select a language" />
-	</Select.Trigger>
-	<Select.Content
-		class="absolute z-50 rounded-xl border border-muted bg-background px-3 py-3 shadow-popover outline-none"
-		sameWidth={false}
-	>
+	<SelectTrigger>
+		<div class="uppercase">
+			{currentLabel}
+		</div>
+	</SelectTrigger>
+	<SelectContent>
 		{#each languages as language}
-			<Select.Item
-				class="rounded-button flex h-10 w-full select-none items-center justify-center px-2  py-3 text-sm outline-none transition-all duration-75 data-[highlighted]:bg-muted"
-				value={language.value}
-				label={language.label}>{language.label}</Select.Item
-			>
+			<SelectItem value={language.value} label={language.label}>{language.label}</SelectItem>
 		{/each}
-	</Select.Content>
-	<Select.Input name="language" />
+	</SelectContent>
 </Select.Root>

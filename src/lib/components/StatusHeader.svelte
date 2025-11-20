@@ -58,16 +58,18 @@
 	}
 </script>
 
-<div class="mt-2 flex h-8 select-none items-center justify-center sm:mt-4 sm:h-12">
+<div class="mt-2 flex h-8 items-center justify-center select-none sm:mt-4 sm:h-12">
 	{#if lobby.isConnectingToLobby}
-		<div class="rounded bg-white p-1 text-center text-base sm:p-2 sm:text-2xl">
+		<div
+			class="bg-primary text-primary-foreground rounded p-1 text-center text-base sm:p-2 sm:text-2xl"
+		>
 			<span class="mr-2 text-xl">{'Joining Lobby'}</span>
 			<LoadingDots size="sm" />
 		</div>
 	{:else}
 		{#key message}
 			<div
-				class="rounded bg-white p-1 text-center text-base sm:p-2 sm:text-2xl"
+				class="bg-primary text-primary-foreground rounded p-1 text-center text-base sm:p-2 sm:text-2xl"
 				in:typewriter={{ speed: 4 }}
 			>
 				{message}

@@ -12,7 +12,9 @@
 	let { player, myState, rightSide }: Props = $props();
 </script>
 
-<div class="mb-1 flex items-center justify-between rounded bg-primary p-2 text-base lg:text-lg">
+<div
+	class="bg-background text-foreground mb-1 flex items-center justify-between rounded p-2 text-base lg:text-lg"
+>
 	<div class="flex items-center">
 		<OnlineStatus online={player.isConnected} />
 		<span>{player.name}</span>

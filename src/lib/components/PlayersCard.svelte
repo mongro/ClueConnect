@@ -26,16 +26,16 @@
 	use:clickOutside
 	onclick_outside={close}
 	transition:fly={{ y: -20 }}
-	class="absolute top-10 z-50 min-h-40 min-w-80 rounded bg-white p-4 text-secondary shadow-md"
+	class="bg-popover text-popover-foreground absolute top-10 z-50 min-h-40 min-w-80 rounded p-4 shadow-md"
 >
-	<div class="hidden flex-col items-center rounded bg-secondary p-2 text-primary sm:flex">
+	<div class="bg-secondary text-primary hidden flex-col items-center rounded p-2 sm:flex">
 		<span class="mr-2">{$_('copyToClipboard')}</span>
 		<CopyToClipboard />
 	</div>
-	<h2 class="mb-2 text-xl text-primary">{$_('playersLobby')}</h2>
+	<h2 class="text-primary mb-2 text-xl">{$_('playersLobby')}</h2>
 	{#each getLobbyState().players as player}
 		<Player {player} myState={getLobbyState().myState}>
-			{#snippet rightSide(player: PlayerType, myState: PlayerType | null)}
+			{#snippet rightSide(player, myState)}
 				{#if myState?.isHost && !player.isHost}
 					<div class="flex items-center gap-1">
 						<Button size="sm" onclick={() => kickPlayer(player.id)} variant="destructive"

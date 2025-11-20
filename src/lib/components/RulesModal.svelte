@@ -1,20 +1,27 @@
 <script>
 	import * as Dialog from './dialog/index';
 	import { buttonVariants } from './button/variants';
+	import { X } from 'lucide-svelte';
 	import { _ } from 'svelte-i18n';
 
 	let dialogOpen = $state(false);
 </script>
 
-<Dialog.Root bind:open={dialogOpen} preventScroll={false}>
-	<Dialog.Trigger
-		class={buttonVariants({ variant: 'outline' })}
-		on:click={() => (dialogOpen = true)}>{$_('rules')}</Dialog.Trigger
+<Dialog.Root bind:open={dialogOpen}>
+	<Dialog.Trigger class={buttonVariants({ variant: 'outline' })} onclick={() => (dialogOpen = true)}
+		>{$_('rules')}</Dialog.Trigger
 	>
 
-	<Dialog.Content>
+	<Dialog.Content preventScroll={false}>
 		<Dialog.Title>{$_('rules')}</Dialog.Title>
-		<Dialog.Close />
+		<Dialog.Close
+			class="focus-visible:ring-foreground focus-visible:ring-offset-background absolute top-5 right-5 rounded-md focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden active:scale-[0.98]"
+		>
+			<div>
+				<X />
+				<span class="sr-only">Close</span>
+			</div>
+		</Dialog.Close>
 		<div class="*: container">
 			<h2 class="mt-5 text-xl font-bold">{$_('overview')}</h2>
 			<p class="mt-2">

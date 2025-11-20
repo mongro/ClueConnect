@@ -1,4 +1,4 @@
-import type { Bot, GameState, Player, Role, Team, TeamComposition } from '$shared/src/types';
+import type { GameState, Player, Role, Team, TeamComposition } from '$shared/src/types';
 import { getContext, hasContext, setContext } from 'svelte';
 import socket from './socket';
 import { goto } from '$app/navigation';

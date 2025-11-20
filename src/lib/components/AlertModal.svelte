@@ -10,8 +10,8 @@
 	let { title, text, isOpen = $bindable() }: Props = $props();
 </script>
 
-<Dialog.Root bind:open={isOpen} preventScroll={false}>
-	<Dialog.Content class="">
+<Dialog.Root bind:open={isOpen}>
+	<Dialog.Content class="" preventScroll={false}>
 		<Dialog.Title>{$_(title)}</Dialog.Title>
 		<Dialog.Close />
 		<div class="*: container">

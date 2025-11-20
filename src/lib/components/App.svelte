@@ -35,9 +35,7 @@
 			hasStarted={gameState.board.length > 0}
 		/>
 	</div>
-	<div
-		class=" mt-2 grid flex-grow grid-cols-5 grid-rows-[max-content_1fr] gap-4 sm:mt-4 lg:grid-rows-1"
-	>
+	<div class=" mt-2 grid grow grid-cols-5 grid-rows-[max-content_1fr] gap-4 sm:mt-4 lg:grid-rows-1">
 		<TeamsDisplay score={gameState.score} />
 		<div class="col-span-5 col-start-1 lg:col-span-3 lg:col-start-2 lg:row-start-1">
 			{#if gameState.board.length > 0}
@@ -47,7 +45,7 @@
 			{/if}
 		</div>
 		<div class="col-span-3 row-start-2 flex flex-col gap-2 lg:row-start-1">
-			<div class="hidden flex-col items-center rounded bg-secondary p-2 sm:flex">
+			<div class="bg-secondary hidden flex-col items-center rounded p-2 sm:flex">
 				<span class="mr-2">{$_('copyToClipboard')}</span>
 				<CopyToClipboard />
 			</div>
