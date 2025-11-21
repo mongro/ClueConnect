@@ -9,6 +9,13 @@
 	let { sendClue }: Props = $props();
 	let word = $state('');
 	let number = $state(0);
+
+	const validInput = $derived(word.length > 0 && Number.isInteger(number));
+	const handleClick = () => {
+		if (validInput) {
+			sendClue(word, number);
+		}
+	};
 </script>
 
 <div
@@ -22,7 +29,7 @@
 		bind:value={word}
 	/>
 	<Input bind:value={number} class="max-w-14" type="number" min="1" max="9" step="1" />
-	<Button onclick={(event) => sendClue(word, number)} size="lg" variant="secondary"
+	<Button disabled={!validInput} onclick={handleClick} size="lg" variant="secondary"
 		>{$_('giveClueButton')}</Button
 	>
 </div>
