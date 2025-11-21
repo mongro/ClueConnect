@@ -165,6 +165,7 @@ export class SocketController {
 
 	public toggleSuggestion(id: number) {
 		const { success } = this.game.toggleSuggestion(this.player, id);
+		console.log('sendSuggs');
 		if (success) this.sendSuggestions();
 	}
 

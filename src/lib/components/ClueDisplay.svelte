@@ -21,7 +21,10 @@
 	let { clue, number, team }: Props = $props();
 </script>
 
-<div in:moveScale={{ duration: 1500 }} class="flex items-center justify-center gap-4 text-xl">
+<div
+	in:moveScale={{ duration: 1500 }}
+	class="text-primary-foreground flex items-center justify-center gap-4 text-xl"
+>
 	<div
 		class="text-bold rounded bg-white p-2 uppercase ring-4"
 		class:ring-red-card={team === 'red'}

@@ -60,7 +60,7 @@
 
 {#key word}
 	<div
-		class="p perspective preserve3d relative aspect-video h-full w-full rounded text-sm uppercase transition-transform duration-1000 sm:text-xl"
+		class="relative aspect-video h-full w-full rounded text-sm uppercase transition-transform duration-1000 perspective-distant transform-3d sm:text-xl"
 		class:flip-it={revealed && showCardbackAfterReveal}
 		in:deal|global={{ duration: 400, delay: Math.random() * 1000 }}
 	>

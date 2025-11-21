@@ -99,8 +99,8 @@
 				{$_('customWords')}
 			</Label.Root>
 		</div>
-		{#if customWordsEnabled}
-			<div class="flex flex-col gap-4">
+		<div class="flex flex-col gap-4">
+			{#if customWordsEnabled}
 				<p>{$_('customWordsExplanation')}</p>
 
 				<CustomWordsInput bind:value={customWordsInput} />
@@ -127,18 +127,18 @@
 						>
 					</SelectContent>
 				</Select>
-				<Button
-					variant="secondary"
-					onclick={() =>
-						startGame({
-							language: selectedLanguage,
-							customWords,
-							appearanceCustomWords: selectedAppearance
-						})}
-				>
-					{$_('startGame')}
-				</Button>
-			</div>
-		{/if}
+			{/if}
+			<Button
+				variant="secondary"
+				onclick={() =>
+					startGame({
+						language: selectedLanguage,
+						customWords,
+						appearanceCustomWords: selectedAppearance
+					})}
+			>
+				{$_('startGame')}
+			</Button>
+		</div>
 	</div>
 </div>

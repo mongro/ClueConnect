@@ -214,16 +214,3 @@ body {
 		}
 	}
 }
-
-@utility backface-visible {
-	backface-visibility: visible;
-}
-@utility backface-hidden {
-	backface-visibility: hidden;
-}
-@utility perspective {
-	perspective: 1000px;
-}
-@utility preserve3d {
-	transformstyle: preserve-3d;
-}

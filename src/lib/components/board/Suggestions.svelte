@@ -16,12 +16,12 @@
 	});
 </script>
 
-<div class={'absolute left-2 top-2 flex flex-wrap items-center text-xs'}>
+<div class={'absolute top-2 left-2 flex flex-wrap items-center text-xs'}>
 	{#each suggestingPlayers as player (player.id)}
 		<div
 			class={suggestionVariants({ team: player.team })}
-			in:scale={{ duration: 400 }}
-			animate:flip
+			in:scale
+			animate:flip={{ duration: 300 }}
 		>
 			{player.name}
 		</div>

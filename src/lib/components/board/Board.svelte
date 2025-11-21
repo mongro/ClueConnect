@@ -48,6 +48,7 @@
 
 	function toggleSuggestion(cardId: number) {
 		if (!isGuessing()) return;
+		console.log('emitToggle');
 		socket.emit('toggleSuggestion', cardId);
 	}
 </script>
@@ -63,7 +64,7 @@
 								makeGuess(index);
 							}}
 							aria-label="guessCard"
-							class="absolute right-0 top-0"
+							class="absolute top-0 right-0"
 							size="icon"
 							variant="outline"><Pointer /></Button
 						>
