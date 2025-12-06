@@ -2,7 +2,6 @@
 	import Cardback from '$lib/svg/Cardback.svelte';
 	import type { CardType } from '$shared/src/types';
 	import type { Snippet } from 'svelte';
-	import { getLobbyState } from '$lib/lobby.svelte';
 	import { wordContainerVariants } from './variants';
 	import Button from '../button/button.svelte';
 	import { Pointer } from 'lucide-svelte';
@@ -19,8 +18,6 @@
 	let { children, type, word, button, revealed, suggestButton }: Props = $props();
 
 	let showCardbackAfterReveal = $state(true);
-	let isHovering = $state(false);
-	const lobby = getLobbyState();
 
 	function toggleShowCardbackAfterReveal() {
 		showCardbackAfterReveal = !showCardbackAfterReveal;
@@ -45,14 +42,8 @@
 	{#if revealed}
 		<Button
 			onclick={toggleShowCardbackAfterReveal}
-			onmouseover={() => {
-				isHovering = true;
-			}}
-			onmouseout={() => {
-				isHovering = false;
-			}}
 			aria-label="flipCard"
-			class={`absolute top-0 right-0 ${isHovering ? 'opacity-1' : 'opacity-0'}`}
+			class={`absolute top-0 right-0 opacity-0 group-hover:opacity-100`}
 			variant="outline"><Pointer /></Button
 		>
 	{/if}
@@ -60,7 +51,7 @@
 
 {#key word}
 	<div
-		class="relative aspect-video h-full w-full rounded text-sm uppercase transition-transform duration-1000 perspective-distant transform-3d sm:text-xl"
+		class="group relative aspect-video h-full w-full rounded text-sm uppercase transition-transform duration-1000 perspective-distant transform-3d sm:text-xl"
 		class:flip-it={revealed && showCardbackAfterReveal}
 		in:deal|global={{ duration: 400, delay: Math.random() * 1000 }}
 	>

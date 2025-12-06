@@ -8,7 +8,7 @@ import { SocketController } from './SocketController';
 import router from './router';
 
 const app = express();
-var corsOptions = {
+const corsOptions = {
 	origin: process.env.CLIENT_URL,
 	optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
@@ -44,7 +44,7 @@ io.on('connection', (socket) => {
 		controller.sync();
 
 		socket.on('joinTeamAndRole', (team, role) => controller.joinTeamAndRole(team, role));
-		socket.on('addBot', (team, role) => controller.addBot({ team, role, type: 'gpt' }));
+		socket.on('addBot', (team, role) => controller.addBot({ team, role, type: 'gemini' }));
 		socket.on('deleteBot', (team, role) => controller.deleteBot(role, team));
 		socket.on('startGame', (options?: Partial<GameOptions>) => controller.startGame(options));
 		socket.on('resetGame', () => controller.resetGame());

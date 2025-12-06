@@ -1,16 +1,13 @@
 <script lang="ts">
 	import App from '$lib/components/App.svelte';
 	import { browser } from '$app/environment';
-	import { LocalStorageHelper } from '$lib/components/LocalStorageHelper';
-	import socket from '$lib/socket';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import JoinLobbyCard from '$lib/components/JoinLobbyCard.svelte';
 	import type { PageData } from './$types';
 	import { setLobbyState } from '$lib/lobby.svelte';
-	import { getContext, hasContext, setContext } from 'svelte';
 	import { getModalState } from '$lib/modalManager.svelte';
 
-	const lobbyId = $page.params.id;
+	const lobbyId = page.params.id;
 	let { data }: { data: PageData } = $props();
 	const { players, game } = data;
 	const modalState = getModalState();

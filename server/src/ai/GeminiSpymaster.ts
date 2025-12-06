@@ -1,8 +1,7 @@
-import openai from './gpt';
 import { Game } from '../Game';
 import { z } from 'zod';
-import { zodResponseFormat } from 'openai/helpers/zod';
 import { BotSpymaster } from './BotSpymaster';
+import geminiAi from './gemini';
 
 const clueObject = z.object({
 	clue: z.string(),
@@ -10,7 +9,7 @@ const clueObject = z.object({
 	words: z.array(z.string())
 });
 
-export class ChatGptSpymaster extends BotSpymaster {
+export class GeminiSpymaster extends BotSpymaster {
 	constructor(game: Game) {
 		super(game);
 	}
@@ -34,21 +33,17 @@ export class ChatGptSpymaster extends BotSpymaster {
 		prompt += `Make sure there is not a close connection between the black word and your clue`;
 		prompt += `Again it is important, the clue should connect words of the type ${this.game.currentTeam}`;
 
-		const response = await openai.chat.completions.parse({
-			messages: [
-				{
-					role: 'system',
-					content: `You are playing the word association game "Codenames" as the ${this.game.currentTeam} spymaster`
-				},
-				{ role: 'user', content: prompt }
-			],
-			model: 'gpt-4o-mini',
-			response_format: zodResponseFormat(clueObject, 'clue')
+		const response = await geminiAi.models.generateContent({
+			model: 'gemini-2.5-flash',
+			contents: prompt,
+			config: {
+				systemInstruction: `You are playing the word association game "Codenames" as the ${this.game.currentTeam} guesser`,
+				responseMimeType: 'application/json',
+				responseJsonSchema: z.toJSONSchema(clueObject)
+			}
 		});
-
-		const content = response.choices[0].message.parsed;
-		if (!content) return null;
-		console.log('content', content);
+		if (!response.text) return null;
+		const content = clueObject.parse(JSON.parse(response.text));
 		return content;
 	}
 }

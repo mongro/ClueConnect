@@ -1,4 +1,4 @@
-import { Bot, BotComposition, BotRunner } from './ai/BotRunner';
+import { Bot, BotComposition } from './ai/BotRunner';
 import { Game } from './Game';
 import { Player, Role, Team } from './types';
 import crypto from 'crypto';
@@ -82,6 +82,10 @@ export class Lobby {
 	getActiveBot() {
 		if (this.game.gameover || !this.game.hasStarted) return null;
 		return this.bots[this.game.currentTeam][this.game.currentClue ? 'operative' : 'spymaster'];
+	}
+
+	setBotisThinking(bot: Bot, isThinking: boolean) {
+		this.bots[bot.team][bot.role] = { ...bot, isThinking };
 	}
 
 	public addPlayer(name: string): string | undefined {

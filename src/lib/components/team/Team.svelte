@@ -46,11 +46,14 @@
 <div class={teamContainerVariants({ team })}>
 	<div class="flex items-center justify-center text-xl md:text-3xl lg:text-5xl">{score}</div>
 	<div class={teamTextVariants({ team })}>{$_('agents')}</div>
-	<div class="mt-1 flex-grow">
+	<div class="mt-1 grow">
 		{#each getLobbyState().getMembers(team, 'operative') as player}
 			<PlayerDisplay {player} myState={getLobbyState().myState} />{/each}
 		{#if getLobbyState().hasBot(team, 'operative')}
-			<Bot deleteBot={() => deleteBot('operative', team)} />
+			<Bot
+				deleteBot={() => deleteBot('operative', team)}
+				isThinking={getLobbyState().bots[team]['operative']?.isThinking ?? false}
+			/>
 		{/if}
 		{#if showJoinOperativeButton()}
 			<Button onclick={() => joinRoleAndTeam('operative', team)}>{$_('joinAgents')}</Button>
@@ -60,11 +63,14 @@
 		{/if}
 	</div>
 	<div class={teamTextVariants({ team })}>{$_('spymaster')}</div>
-	<div class="mt-1 flex-grow">
+	<div class="mt-1 grow">
 		{#each getLobbyState().getMembers(team, 'spymaster') as player}
 			<PlayerDisplay {player} myState={getLobbyState().myState} />{/each}
 		{#if getLobbyState().hasBot(team, 'spymaster')}
-			<Bot deleteBot={() => deleteBot('spymaster', team)} />
+			<Bot
+				deleteBot={() => deleteBot('spymaster', team)}
+				isThinking={getLobbyState().bots[team]['spymaster']?.isThinking ?? false}
+			/>
 		{/if}
 		{#if showJoinSpyMasterButton()}
 			<Button onclick={() => joinRoleAndTeam('spymaster', team)}>{$_('becomeSpymaster')}</Button>

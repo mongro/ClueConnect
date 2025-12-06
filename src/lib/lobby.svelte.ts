@@ -6,6 +6,7 @@ import { browser } from '$app/environment';
 import { LocalStorageHelper } from './components/LocalStorageHelper';
 import type { BotComposition } from '$shared/src/ai/BotRunner';
 import { ModalManager } from './modalManager.svelte';
+import { resolve } from '$app/paths';
 
 class LobbyState {
 	id: string;
@@ -20,7 +21,7 @@ class LobbyState {
 	modalManager: ModalManager;
 	isConnectingToLobby = $state<boolean>(false);
 	teams = $derived.by(() => {
-		let result: TeamComposition = {
+		const result: TeamComposition = {
 			red: { operative: [], spymaster: [] },
 			blue: { operative: [], spymaster: [] }
 		};
@@ -95,7 +96,7 @@ class LobbyState {
 		});
 
 		socket.on('kick', () => {
-			goto('/');
+			goto(resolve('/'));
 		});
 	}
 

@@ -3,7 +3,6 @@ import type { Game } from './Game';
 import type { Server, Socket } from 'socket.io';
 import type { Lobby } from './Lobby';
 import { Role, Team, Player } from './types';
-import { createBotGuesser, createBotSpymaster } from './ai/createBot';
 import { Bot, BotRunner } from './ai/BotRunner';
 
 const SPYMASTER_CHANNEL_KEYWORD = '/spymasters';
@@ -137,7 +136,8 @@ export class SocketController {
 			const botRunner = new BotRunner(this.lobby, this.sendToAll.bind(this), {
 				delay: 2000,
 				batchUpdates: false,
-				onGameChange: this.sendGameState.bind(this)
+				onGameChange: this.sendGameState.bind(this),
+				onBotChange: this.sendBotState.bind(this)
 			});
 			botRunner.run();
 		}
@@ -227,6 +227,7 @@ export class SocketController {
 	}
 
 	public addBot(bot: Bot) {
+		console.log('Adding bot', bot);
 		this.lobby.addBot(bot);
 		this.sendBotState();
 	}

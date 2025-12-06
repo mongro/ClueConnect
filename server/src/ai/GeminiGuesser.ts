@@ -1,8 +1,7 @@
-import openai from './gpt';
+import geminiAi from './gemini';
 import { Card, Clue, GameState } from '../types';
 import { Game } from '../Game';
 import { BotGuesser } from './BotGuesser';
-import { zodResponseFormat } from 'openai/helpers/zod';
 import { z } from 'zod';
 
 const guessObject = z.object({
@@ -11,7 +10,7 @@ const guessObject = z.object({
 	reason: z.string()
 });
 
-export class ChatGptGuesser extends BotGuesser {
+export class GeminiGuesser extends BotGuesser {
 	constructor(game: Game, onGameChange?: (gameState?: GameState) => void) {
 		super(game, onGameChange);
 	}
@@ -32,21 +31,17 @@ export class ChatGptGuesser extends BotGuesser {
 			'If you absolutely cant find a word that creates an associatiton with the clue, answer by setting endGuessing in the JSON response to false\n';
 		prompt += 'Provide a reason for your desicion in the reason field of the JSON response" \n';
 
-		const response = await openai.chat.completions.parse({
-			messages: [
-				{
-					role: 'system',
-					content: `You are playing the word association game "Codenames" as the ${this.game.currentTeam} guesser`
-				},
-				{ role: 'user', content: prompt }
-			],
-			model: 'gpt-4o-mini',
-			response_format: zodResponseFormat(guessObject, 'guess')
+		const response = await geminiAi.models.generateContent({
+			model: 'gemini-2.5-flash',
+			contents: prompt,
+			config: {
+				systemInstruction: `You are playing the word association game "Codenames" as the ${this.game.currentTeam} guesser`,
+				responseMimeType: 'application/json',
+				responseJsonSchema: z.toJSONSchema(guessObject)
+			}
 		});
-
-		const content = response.choices[0].message.parsed;
-		console.log('content', content?.guess, content?.reason);
-		if (!content) return null;
+		if (!response.text) return null;
+		const content = guessObject.parse(JSON.parse(response.text));
 
 		return content;
 	}
