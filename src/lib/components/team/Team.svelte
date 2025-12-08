@@ -7,6 +7,7 @@
 	import socket from '$lib/socket';
 	import { getLobbyState } from '$lib/lobby.svelte';
 	import Bot from './Bot.svelte';
+	import { CirclePlus } from 'lucide-svelte';
 
 	interface Props {
 		score: number;
@@ -55,12 +56,18 @@
 				isThinking={getLobbyState().bots[team]['operative']?.isThinking ?? false}
 			/>
 		{/if}
-		{#if showJoinOperativeButton()}
-			<Button onclick={() => joinRoleAndTeam('operative', team)}>{$_('joinAgents')}</Button>
-		{/if}
-		{#if showAddBotButton('operative', team)}
-			<Button onclick={() => addBot('operative', team)}>+Bot</Button>
-		{/if}
+		<div class="flex flex-wrap items-center gap-0.5">
+			{#if showJoinOperativeButton()}
+				<Button onclick={() => joinRoleAndTeam('operative', team)}>
+					<span class="lg:hidden"><CirclePlus /></span><span class="hidden lg:inline"
+						>{$_('joinAgents')}</span
+					>
+				</Button>
+			{/if}
+			{#if showAddBotButton('operative', team)}
+				<Button onclick={() => addBot('operative', team)}>+Bot</Button>
+			{/if}
+		</div>
 	</div>
 	<div class={teamTextVariants({ team })}>{$_('spymaster')}</div>
 	<div class="mt-1 grow">
@@ -72,11 +79,17 @@
 				isThinking={getLobbyState().bots[team]['spymaster']?.isThinking ?? false}
 			/>
 		{/if}
-		{#if showJoinSpyMasterButton()}
-			<Button onclick={() => joinRoleAndTeam('spymaster', team)}>{$_('becomeSpymaster')}</Button>
-		{/if}
-		{#if showAddBotButton('spymaster', team)}
-			<Button onclick={() => addBot('spymaster', team)}>+Bot</Button>
-		{/if}
+		<div class="flex flex-wrap items-center gap-0.5">
+			{#if showJoinSpyMasterButton()}
+				<Button onclick={() => joinRoleAndTeam('spymaster', team)}
+					><span class="lg:hidden"><CirclePlus /></span><span class="hidden lg:inline"
+						>{$_('becomeSpymaster')}</span
+					></Button
+				>
+			{/if}
+			{#if showAddBotButton('spymaster', team)}
+				<Button onclick={() => addBot('spymaster', team)}>+Bot</Button>
+			{/if}
+		</div>
 	</div>
 </div>

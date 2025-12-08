@@ -12,8 +12,8 @@ const SPYMASTER_CHANNEL_KEYWORD = '/spymasters';
  */
 export class SocketController {
 	constructor(
-		private socket: Socket<ClientToServerEvents, ServerToClientEvents, {}, {}>,
-		private io: Server<ClientToServerEvents, ServerToClientEvents, {}, {}>,
+		private socket: Socket<ClientToServerEvents, ServerToClientEvents, object, object>,
+		private io: Server<ClientToServerEvents, ServerToClientEvents, object, object>,
 		private lobby: Lobby,
 		private player: Player
 	) {}

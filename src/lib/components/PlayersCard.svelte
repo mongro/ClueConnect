@@ -20,6 +20,14 @@
 	function makeHost(id: number) {
 		socket.emit('makeHost', id);
 	}
+
+	function resetTeams() {
+		socket.emit('resetTeams');
+	}
+
+	function restart() {
+		socket.emit('resetGame');
+	}
 </script>
 
 <div
@@ -58,4 +66,8 @@
 			{/snippet}
 		</Player>
 	{/each}
+	<div class="mt-4 flex items-center justify-end gap-2">
+		<Button onclick={resetTeams}>{$_('resetTeams')}</Button>
+		<Button onclick={restart}>{$_('resetGame')}</Button>
+	</div>
 </div>

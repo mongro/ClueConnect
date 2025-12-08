@@ -12,6 +12,9 @@
 	import CopyToClipboard from './CopyToClipboard.svelte';
 	import SetupGame from './SetupGame.svelte';
 	import { getLobbyState } from '$lib/lobby.svelte';
+	import Button from './button/button.svelte';
+	import { clsx } from 'clsx';
+	import { Maximize, Minimize } from 'lucide-svelte';
 
 	interface Props {
 		gameState: GameState;
@@ -23,6 +26,7 @@
 	onDestroy(() => {
 		socket.disconnect();
 	});
+	let eventLogExpanded = $state(false);
 </script>
 
 <div class="mx-auto flex h-full max-w-screen-2xl flex-col px-2">
@@ -35,8 +39,12 @@
 			hasStarted={gameState.board.length > 0}
 		/>
 	</div>
-	<div class=" mt-2 grid grow grid-cols-5 grid-rows-[max-content_1fr] gap-4 sm:mt-4 lg:grid-rows-1">
-		<TeamsDisplay score={gameState.score} />
+	<div
+		class=" mt-2 grid grow auto-rows-fr grid-cols-5 grid-rows-[max-content_1fr] gap-4 sm:mt-4 lg:grid-rows-1"
+	>
+		{#if !eventLogExpanded}
+			<TeamsDisplay score={gameState.score} />
+		{/if}
 		<div class="col-span-5 col-start-1 lg:col-span-3 lg:col-start-2 lg:row-start-1">
 			{#if gameState.board.length > 0}
 				<Board {gameState} />
@@ -44,8 +52,12 @@
 				<SetupGame />
 			{/if}
 		</div>
-		<div class="col-span-3 row-start-2 flex flex-col gap-2 lg:row-start-1">
-			<div class="bg-secondary hidden flex-col items-center rounded p-2 sm:flex">
+		<div
+			class={clsx(
+				'relative col-span-5 flex flex-col lg:col-span-3 lg:row-start-1 lg:flex lg:gap-2'
+			)}
+		>
+			<div class={'bg-secondary hidden flex-col items-center rounded p-2 sm:flex'}>
 				<span class="mr-2">{$_('copyToClipboard')}</span>
 				<CopyToClipboard />
 			</div>
@@ -54,6 +66,20 @@
 					<Message message={d} />
 				{/snippet}
 			</EventLog>
+			<div class="absolute top-2 right-2 lg:hidden">
+				<Button
+					onclick={() => {
+						eventLogExpanded = !eventLogExpanded;
+					}}
+				>
+					{#if eventLogExpanded}
+						<Minimize />
+					{/if}
+					{#if !eventLogExpanded}
+						<Maximize />
+					{/if}
+				</Button>
+			</div>
 		</div>
 	</div>
 </div>

@@ -18,7 +18,7 @@
 <Dialog.Portal>
 	<Dialog.Overlay />
 	<DialogPrimitive.Content
-		class={'bg-background fixed top-[50%] left-[50%] z-50 grid  max-h-[90%] translate-x-[-50%] translate-y-[-50%] gap-4 overflow-y-auto border p-6 shadow-lg sm:rounded-lg ' +
+		class={'bg-background fixed top-[50%] left-[50%] z-50 grid  max-h-[90%] w-full translate-x-[-50%] translate-y-[-50%] gap-4 overflow-y-auto border p-6 shadow-lg sm:rounded-lg ' +
 			className}
 		forceMount={true}
 		{...restProps}

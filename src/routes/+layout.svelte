@@ -14,15 +14,14 @@
 	}
 </script>
 
-<div class=" relative h-screen">
+<div class=" relative h-screen overflow-hidden">
 	<AlertModal bind:isOpen={modalState.isOpen} text={modalState.text} title={modalState.title} />
-	<div class=" absolute inset-0 bg-cover">
-		{#if $navigating && $navigating.to && isGameRoute($navigating.to.url, $navigating.to.params)}
-			<Delayed delay={200}>
-				<NavigationLoading text="Loading Game" />
-			</Delayed>
-		{:else}
-			{@render children()}
-		{/if}
-	</div>
+
+	{#if $navigating && $navigating.to && isGameRoute($navigating.to.url, $navigating.to.params)}
+		<Delayed delay={200}>
+			<NavigationLoading text="Loading Game" />
+		</Delayed>
+	{:else}
+		{@render children()}
+	{/if}
 </div>

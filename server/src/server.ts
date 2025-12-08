@@ -23,7 +23,7 @@ app.post('/createLobby', (req, res) => {
 	res.send('POST request to the homepage');
 });
 
-const io = new Server<ClientToServerEvents, ServerToClientEvents, {}, {}>(server, {
+const io = new Server<ClientToServerEvents, ServerToClientEvents, object, object>(server, {
 	cors: {
 		origin: process.env.CLIENT_URL,
 		methods: ['GET', 'POST']

@@ -1,4 +1,3 @@
-import { GameState } from '../types';
 import { Game } from '../Game';
 import { BotSpymaster } from './BotSpymaster';
 

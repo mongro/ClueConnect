@@ -12,7 +12,7 @@
 		>{$_('rules')}</Dialog.Trigger
 	>
 
-	<Dialog.Content preventScroll={false}>
+	<Dialog.Content class="max-w-3xl" preventScroll={false}>
 		<Dialog.Title>{$_('rules')}</Dialog.Title>
 		<Dialog.Close
 			class="focus-visible:ring-foreground focus-visible:ring-offset-background absolute top-5 right-5 rounded-md focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden active:scale-[0.98]"

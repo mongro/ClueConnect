@@ -149,7 +149,7 @@ export class Game {
 
 	public resetTeams() {
 		if (this.hasStarted) return;
-		for (let player of Object.values(this.player)) {
+		for (const player of Object.values(this.player)) {
 			player.role = undefined;
 			player.team = undefined;
 		}
@@ -180,7 +180,7 @@ export class Game {
 		if (!this.isPlayerTurn(player)) {
 			return { success: false };
 		}
-		let suggestions = this.suggestions[cardId] ?? [];
+		const suggestions = this.suggestions[cardId] ?? [];
 		const index = suggestions.indexOf(player.id);
 
 		if (index === -1) {
