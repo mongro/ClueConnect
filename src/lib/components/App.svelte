@@ -40,7 +40,7 @@
 		/>
 	</div>
 	<div
-		class=" mt-2 grid grow auto-rows-fr grid-cols-5 grid-rows-[max-content_1fr] gap-4 sm:mt-4 lg:grid-rows-1"
+		class=" mt-2 grid grow auto-rows-fr grid-cols-5 grid-rows-[max-content_max-content_1fr] gap-4 sm:mt-4 lg:grid-rows-1"
 	>
 		{#if !eventLogExpanded}
 			<TeamsDisplay score={gameState.score} />
@@ -54,7 +54,7 @@
 		</div>
 		<div
 			class={clsx(
-				'relative col-span-5 flex flex-col lg:col-span-3 lg:row-start-1 lg:flex lg:gap-2'
+				'relative col-span-5 row-start-3 flex flex-col lg:col-span-3 lg:row-start-1 lg:flex lg:gap-2'
 			)}
 		>
 			<div class={'bg-secondary hidden flex-col items-center rounded p-2 sm:flex'}>
