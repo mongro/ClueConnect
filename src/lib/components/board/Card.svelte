@@ -13,11 +13,33 @@
 		button: Snippet<[boolean, () => void]>;
 		children: Snippet;
 		suggestButton: Snippet<[boolean]>;
+		spymaster: boolean;
 	}
 
-	let { children, type, word, button, revealed, suggestButton }: Props = $props();
+	let { children, type, word, button, revealed, suggestButton, spymaster }: Props = $props();
 
 	let showCardbackAfterReveal = $state(true);
+
+	let animating = $state(false);
+	let revealedFinal = $state(revealed);
+	let duration = $state(3000);
+
+	// Watch for changes to revealed
+	$effect(() => {
+		if (revealed !== revealedFinal && !animating) {
+			runAnimation();
+		}
+	});
+
+	async function runAnimation() {
+		animating = true;
+		revealedFinal = false;
+
+		await new Promise((r) => setTimeout(r, duration));
+
+		revealedFinal = revealed;
+		animating = false;
+	}
 
 	function toggleShowCardbackAfterReveal() {
 		showCardbackAfterReveal = !showCardbackAfterReveal;
@@ -51,45 +73,59 @@
 
 {#key word}
 	<div
-		class="group relative aspect-video h-full w-full rounded text-sm uppercase transition-transform duration-1000 perspective-distant transform-3d sm:text-xl"
-		class:flip-it={revealed && showCardbackAfterReveal}
+		class="group relative aspect-video h-full w-full rounded text-sm uppercase perspective-distant transform-3d sm:text-xl"
 		in:deal|global={{ duration: 400, delay: Math.random() * 1000 }}
+		class:is-animating={animating}
+		style={`--duration:${duration}ms`}
 	>
-		<div class="absolute h-full w-full backface-hidden">
-			<Cardback
-				colors={['#f9fafb', '#f3f4f6', '#e5e7eb', '#fef3c7', '#fde68a', '#d1d5db', '#9ca3af']}
-			/>
-			<div class={wordContainerVariants({ type })}>
-				{@render suggestButton(revealed)}
-				{word}
+		<div
+			class=" relative h-full w-full transition-transform duration-1000 transform-3d"
+			class:first-reveal={revealed && !revealedFinal}
+			class:flip-it={revealed && revealedFinal && showCardbackAfterReveal}
+		>
+			<div class="absolute h-full w-full backface-hidden">
+				{#if !revealedFinal}
+					<Cardback
+						colors={['#f9fafb', '#f3f4f6', '#e5e7eb', '#fef3c7', '#fde68a', '#d1d5db', '#9ca3af']}
+					/>
+				{/if}
+				<div
+					class={wordContainerVariants({
+						type: spymaster || revealedFinal ? type : 'grey',
+						status: revealedFinal ? 'revealed' : 'beforeReveal'
+					})}
+				>
+					{@render suggestButton(revealed)}
+					{word}
+				</div>
+				{@render flipButton()}
+				{@render button(revealed, toggleShowCardbackAfterReveal)}
+				{@render children()}
 			</div>
-			{@render flipButton()}
-			{@render button(revealed, toggleShowCardbackAfterReveal)}
-			{@render children()}
-		</div>
-		<div class="flip-it absolute h-full w-full backface-hidden">
-			{#if type === 'red'}
-				<Cardback
-					colors={['#fecaca', '#fca5a5', '#f87171', '#ef4444', '#dc2626', '#b91c1c', '#991b1b']}
-					back
-				/>
-			{:else if type === 'blue'}
-				<Cardback
-					colors={['#bfdbfe', '#93c5fd', '#60a5fa', '#3b82f6', '#2563eb', '#1d4ed8', '#1e40af']}
-					back
-				/>
-			{:else if type === 'grey'}
-				<Cardback
-					colors={['#f9fafb', '#f3f4f6', '#e5e7eb', '#fef3c7', '#fde68a', '#d1d5db', '#9ca3af']}
-					back
-				/>
-			{:else if type === 'black'}
-				<Cardback
-					colors={['#e5e7eb', '#d1d5db', '#9ca3af', '#6b7280', '#4b5563', '#374151', '#1f2937']}
-					back
-				/>
-			{/if}
-			{@render flipButton()}
+			<div class="flip-it absolute h-full w-full backface-hidden">
+				{#if type === 'red'}
+					<Cardback
+						colors={['#fecaca', '#fca5a5', '#f87171', '#ef4444', '#dc2626', '#b91c1c', '#991b1b']}
+						back
+					/>
+				{:else if type === 'blue'}
+					<Cardback
+						colors={['#bfdbfe', '#93c5fd', '#60a5fa', '#3b82f6', '#2563eb', '#1d4ed8', '#1e40af']}
+						back
+					/>
+				{:else if type === 'grey'}
+					<Cardback
+						colors={['#f9fafb', '#f3f4f6', '#e5e7eb', '#fef3c7', '#fde68a', '#d1d5db', '#9ca3af']}
+						back
+					/>
+				{:else if type === 'black'}
+					<Cardback
+						colors={['#e5e7eb', '#d1d5db', '#9ca3af', '#6b7280', '#4b5563', '#374151', '#1f2937']}
+						back
+					/>
+				{/if}
+				{@render flipButton()}
+			</div>
 		</div>
 	</div>
 {/key}
@@ -97,5 +133,36 @@
 <style>
 	.flip-it {
 		transform: rotateY(180deg);
+	}
+
+	.is-animating {
+		z-index: 100;
+	}
+
+	.first-reveal {
+		animation: liftPauseFlip var(--duration) forwards;
+	}
+
+	@keyframes liftPauseFlip {
+		/* Phase 1 — Lift */
+		0% {
+			transform: translateY(0) translateZ(0) rotateY(0deg);
+		}
+		25% {
+			transform: translate3d(0, -10px, 100px) rotateY(0deg);
+		}
+
+		/* Phase 2 — Pause */
+		40% {
+			transform: translate3d(0, -10px, 200px) rotateY(0deg);
+		}
+
+		60% {
+			transform: translate3d(0, -10px, 200px) rotateY(0deg);
+		}
+
+		100% {
+			transform: translate3d(0, 0, 0) rotateY(180deg);
+		}
 	}
 </style>

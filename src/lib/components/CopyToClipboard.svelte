@@ -25,8 +25,8 @@
 	}
 </script>
 
-<div class="flex items-center">
-	<Input readonly value={url} />
+<div class="flex w-full items-center gap-2">
+	<Input readonly value={url} class="w-full" />
 	<Button size="icon" onclick={copyToClipboard} aria-label="copyToClipboard">
 		{#if !error && !success}
 			<Clipboard />

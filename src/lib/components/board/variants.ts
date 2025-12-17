@@ -17,9 +17,13 @@ export const teamContainerVariants = cva('w-full rounded p-2 text-white shadow-2
 });
 
 export const wordContainerVariants = cva(
-	' absolute bottom-1 flex w-full items-center justify-center text-center sm:bottom-4',
+	' absolute  flex w-full items-center justify-center text-center transform-gpu ',
 	{
 		variants: {
+			status: {
+				beforeReveal: 'bottom-1 sm:bottom-4',
+				revealed: 'inset-0'
+			},
 			type: {
 				red: 'bg-red-team text-white',
 				blue: 'bg-blue-team text-white',

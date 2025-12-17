@@ -36,7 +36,7 @@
 	transition:fly={{ y: -20 }}
 	class="bg-popover text-popover-foreground absolute top-10 z-50 min-h-40 min-w-80 rounded p-4 shadow-md"
 >
-	<div class="bg-secondary text-primary hidden flex-col items-center rounded p-2 sm:flex">
+	<div class="bg-secondary text-primary flex flex-col items-center gap-2 rounded">
 		<span class="mr-2">{$_('copyToClipboard')}</span>
 		<CopyToClipboard />
 	</div>

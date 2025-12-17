@@ -56,7 +56,12 @@
 <div class=" flex w-full flex-col items-center gap-4">
 	<div class="grid w-full grid-cols-5 gap-1 sm:gap-2">
 		{#each gameState.board as card, index}
-			<Card type={card.type} word={card.word} revealed={card.revealed}>
+			<Card
+				type={card.type}
+				word={card.word}
+				revealed={card.revealed}
+				spymaster={lobby.myRole === 'spymaster'}
+			>
 				{#snippet button(revealed: boolean)}
 					{#if isGuessing() && !revealed}
 						<Button
